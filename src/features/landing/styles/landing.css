@@ -1,0 +1,381 @@
+/* ════════════════════════════════
+   GLOBAL RESET & BASE
+════════════════════════════════ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --navy:      #1B2A4A;
+    --blue:      #2563EB;
+    --gold:      #D4A843;
+    --bg:        #F8FAFC;
+    --white:     #FFFFFF;
+    --text-dark: #0F172A;
+    --text-gray: #64748B;
+    --border:    #E2E8F0;
+    --success:   #16A34A;
+    --danger:    #DC2626;
+
+    --font-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --transition: 0.25s ease;
+    --radius:    8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-base);
+    color: var(--text-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ════════════════════════════════
+   NAVBAR — TRANSPARENT ON HERO
+════════════════════════════════ */
+
+/* Default — transparent, sits on dark hero */
+.lts-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: transparent;
+    padding: 18px 0;
+    transition: all var(--transition);
+}
+
+/* Scrolled — white background, dark text */
+.lts-navbar--scrolled {
+    background-color: var(--white);
+    padding: 12px 0;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.lts-navbar__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* ── Logo ── */
+.lts-navbar__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.lts-navbar__logo-icon {
+    font-size: 20px;
+    background-color: var(--gold);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.lts-navbar__logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+/* Transparent — white text */
+.lts-navbar__logo-title {
+    color: var(--white);
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 2px;
+    transition: color var(--transition);
+}
+
+.lts-navbar__logo-subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    transition: color var(--transition);
+}
+
+/* Scrolled — dark text */
+.lts-navbar--scrolled .lts-navbar__logo-title {
+    color: var(--navy);
+}
+
+.lts-navbar--scrolled .lts-navbar__logo-subtitle {
+    color: var(--text-gray);
+}
+
+/* ── Nav Links ── */
+.lts-navbar__links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+/* Transparent — white text */
+.lts-navbar__links a {
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 4px 0;
+    position: relative;
+    transition: color var(--transition);
+}
+
+.lts-navbar__links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--gold);
+    transition: width var(--transition);
+    border-radius: 2px;
+}
+
+.lts-navbar__links a:hover {
+    color: var(--white);
+}
+
+.lts-navbar__links a:hover::after {
+    width: 100%;
+}
+
+/* Scrolled — dark text */
+.lts-navbar--scrolled .lts-navbar__links a {
+    color: var(--text-gray);
+}
+
+.lts-navbar--scrolled .lts-navbar__links a:hover {
+    color: var(--navy);
+}
+
+/* ── Action Buttons ── */
+.lts-navbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Login button — transparent state */
+.lts-navbar__btn-login {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.lts-navbar__btn-login:hover {
+    color: var(--white);
+    border-color: rgba(255,255,255,0.7);
+    background-color: rgba(255,255,255,0.08);
+}
+
+/* Login button — scrolled state */
+.lts-navbar--scrolled .lts-navbar__btn-login {
+    color: var(--navy);
+    border-color: var(--border);
+}
+
+.lts-navbar--scrolled .lts-navbar__btn-login:hover {
+    color: var(--navy);
+    border-color: var(--navy);
+    background-color: var(--bg);
+}
+
+/* Register button — same in both states */
+.lts-navbar__btn-register {
+    color: var(--text-dark);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 18px;
+    background-color: var(--gold);
+    border-radius: var(--radius);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all var(--transition);
+}
+
+.lts-navbar__btn-register:hover {
+    background-color: #C49A35;
+    color: var(--text-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(212,168,67,0.35);
+}
+
+/* ── Hamburger ── */
+.lts-navbar__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    flex-shrink: 0;
+}
+
+/* Transparent — white lines */
+.lts-navbar__hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: var(--white);
+    border-radius: 2px;
+    transition: all var(--transition);
+    transform-origin: center;
+}
+
+/* Scrolled — dark lines */
+.lts-navbar--scrolled .lts-navbar__hamburger span {
+    background-color: var(--navy);
+}
+
+/* Hamburger → X animation */
+.lts-navbar__hamburger span.open:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.lts-navbar__hamburger span.open:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.lts-navbar__hamburger span.open:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile Menu ── */
+.lts-navbar__mobile-menu {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    border-top: 1px solid var(--border);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+}
+
+.lts-navbar__mobile-menu--open {
+    max-height: 420px;
+    padding: 8px 0 16px;
+}
+
+.lts-navbar__mobile-menu a {
+    color: var(--text-gray);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 13px 24px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.lts-navbar__mobile-menu a:last-child {
+    border-bottom: none;
+}
+
+.lts-navbar__mobile-menu a:hover {
+    color: var(--navy);
+    background-color: var(--bg);
+    padding-left: 32px;
+}
+
+.lts-navbar__mobile-cta {
+    margin: 12px 24px 0;
+    background-color: var(--gold) !important;
+    color: var(--text-dark) !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius);
+    text-align: center;
+    padding: 12px 24px !important;
+    border-bottom: none !important;
+}
+
+.lts-navbar__mobile-cta:hover {
+    background-color: #C49A35 !important;
+    padding-left: 24px !important;
+}
+
+/* ════════════════════════════════
+   RESPONSIVE
+════════════════════════════════ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .lts-navbar__links {
+        gap: 20px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .lts-navbar__links,
+    .lts-navbar__actions {
+        display: none;
+    }
+
+    .lts-navbar__hamburger {
+        display: flex;
+    }
+
+    .lts-navbar__logo-subtitle {
+        display: none;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 380px) {
+    .lts-navbar__container {
+        padding: 0 16px;
+    }
+
+    .lts-navbar__logo-title {
+        font-size: 15px;
+    }
+}
