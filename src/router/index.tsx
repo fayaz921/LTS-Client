@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import LoginPage from "../features/auth/components/LoginPage";
 import Layout from "../shared/components/Layout";
 import LandingPage from "../features/landing/components/LandingPage";
+import DocumentsPage from "../features/documents/components/documentPage";
 
 export const router = createBrowserRouter([
   // default redirect
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
     path: "/app",
     element: <Layout />,
     children: [
+        {
+        path: "documents/:caseId",
+        element: <DocumentsPage />,
+      },
       // team uncomments and adds their routes here
       // { path: 'dashboard',   element: <DashboardPage /> },
       // { path: 'cases',       element: <CasesPage /> },
