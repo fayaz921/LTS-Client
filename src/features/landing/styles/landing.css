@@ -624,3 +624,133 @@ ul {
         gap: 12px;
     }
 }
+
+/* ════════════════════════════════
+   FEATURES
+════════════════════════════════ */
+.lts-features {
+    padding: 100px 0;
+    background-color: #F8FAFC;
+}
+
+.lts-features__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Header */
+.lts-features__header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+.lts-features__label {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563EB;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 16px;
+}
+
+.lts-features__title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    color: #0F172A;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.lts-features__subtitle {
+    font-size: 16px;
+    color: #64748B;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* Grid */
+.lts-features__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+/* Card */
+.lts-features__card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 32px 28px;
+    border: 1px solid #E2E8F0;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.3s ease;
+}
+
+.lts-features__card:hover {
+    border-color: transparent;
+}
+
+.lts-features__card-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    border-radius: 0 0 16px 16px;
+}
+
+.lts-features__card:hover .lts-features__card-line {
+    transform: scaleX(1);
+}
+
+.lts-features__card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.lts-features__card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 10px;
+}
+
+.lts-features__card-desc {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .lts-features__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .lts-features {
+        padding: 70px 0;
+    }
+
+    .lts-features__grid {
+        grid-template-columns: 1fr;
+    }
+}
