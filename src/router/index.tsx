@@ -1,23 +1,26 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import LoginPage from "../features/auth/components/LoginPage";
 import Layout from "../shared/components/Layout";
 import LandingPage from "../features/landing/components/LandingPage";
 import DocumentsPage from "../features/documents/components/documentPage";
+import { RegisterForm } from "../features/auth/components/RegisterForm";
+import { LoginForm } from "../features/auth/components/Login";
 
 export const router = createBrowserRouter([
-  // default redirect
+  // public routes
   {
     path: "/",
     element: <LandingPage />,
   },
-
-  // public routes
+  {
+    path: "/register",
+    element: <RegisterForm />,
+  },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <LoginForm />,
   },
 
-  // protected routes — all inside Layout
+  // protected (layout based)
   {
     path: "/app",
     element: <Layout />,
@@ -36,12 +39,18 @@ export const router = createBrowserRouter([
       // { path: 'documents',   element: <DocumentsPage /> },
       // { path: 'alerts',      element: <AlertsPage /> },
       // { path: 'reports',     element: <ReportsPage /> },
+      //  default child route (/app)
+      { index: true, element: <LandingPage /> },
+
+      // correct nested path
+      { path: "register", element: <RegisterForm /> },
+    {path:"login",element:<LoginForm/>}
     ],
   },
 
-  // catch all — redirect to login
+  // catch all
   {
     path: "*",
-    element: <Navigate to="/login" replace />,
+    element: <Navigate to="/" replace />,
   },
 ]);
