@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
       // { path: 'alerts',      element: <AlertsPage /> },
       // { path: 'reports',     element: <ReportsPage /> },
       //  default child route (/app)
-      { index: true, element: <LandingPage /> },
+      // { index: true, element: <LandingPage /> },
 
       // correct nested path
       { path: "register", element: <RegisterForm /> },
