@@ -5,7 +5,22 @@ export const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
 
   return (
-    <div className="container-fluid p-0" style={{ minHeight: '100vh', overflow: 'hidden' }}>
+    <div className="container-fluid p-0" style={{ minHeight: '100vh', overflow: 'hidden', backgroundColor: '#0f172a', fontFamily: "'Inter', sans-serif" }}>
+      <style>{`
+        .custom-input::placeholder { color: #64748b; }
+        .custom-input:focus { 
+          border-color: #fbbf24 !important; 
+          box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2) !important; 
+          background-color: #0f172a !important;
+          color: white !important;
+        }
+        .btn-lts:hover {
+          background-color: #f59e0b !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3) !important;
+        }
+      `}</style>
+
       <div className="row g-0" style={{ minHeight: '100vh' }}>
         
         {/* Left Side - Info Panel */}
@@ -24,19 +39,17 @@ export const LoginForm: React.FC = () => {
 
           <div className="z-1">
             <div className="d-flex align-items-center gap-2 mb-5">
-              <div style={{ background: '#0056f7', padding: '8px', borderRadius: '8px' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                  <path d="M12 5v14M5 12h14"/>
-                </svg>
+              <div style={{ background: '#fbbf24', width: '38px', height: '38px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                ⚖
               </div>
-              <span className="fw-bold fs-4" style={{ letterSpacing: '-0.5px' }}>LTS</span>
+              <span className="fw-bold fs-4" style={{ letterSpacing: '2px' }}>LTS</span>
             </div>
 
             <div className="mt-5">
               <h1 className="display-3 fw-bold lh-sm mb-3" style={{ letterSpacing: '-2px' }}>
-                Legal case management, <span style={{ color: '#60a5fa', fontStyle: 'italic' }}>simplified.</span>
+                Legal case management, <span style={{ color: '#fbbf24', fontStyle: 'italic' }}>simplified.</span>
               </h1>
-              <p className="text-white-50 fs-5 fw-light" style={{ maxWidth: '420px' }}>
+              <p className="fs-5 fw-light" style={{ maxWidth: '420px', color: '#94a3b8' }}>
                 Coordinated legal tracking for elite teams.
               </p>
             </div>
@@ -50,52 +63,52 @@ export const LoginForm: React.FC = () => {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="col-lg-7 d-flex align-items-center justify-content-center bg-white p-4">
-          <div style={{ width: '100%', maxWidth: '420px' }}>
-            <h2 className="fw-bold mb-1" style={{ fontSize: '32px', letterSpacing: '-1px' }}>Welcome back</h2>
-            <p className="text-muted mb-5">
-              Don't have an account? <Link to="/register" className="text-decoration-none fw-bold" style={{ color: '#0056f7' }}>Sign up</Link>
+        <div className="col-lg-7 d-flex align-items-center justify-content-center p-4" style={{ backgroundColor: '#0f172a' }}>
+          <div style={{ width: '100%', maxWidth: '420px', backgroundColor: '#1e293b', padding: '40px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+            <h2 className="fw-bold mb-1 text-white" style={{ fontSize: '32px', letterSpacing: '-1px' }}>Welcome back</h2>
+            <p className="mb-5" style={{ color: '#94a3b8' }}>
+              Don't have an account? <Link to="/register" className="text-decoration-none fw-bold" style={{ color: '#fbbf24' }}>Sign up</Link>
             </p>
             
             <form>
               <div className="mb-4">
-                <label className="form-label small fw-bold text-muted text-uppercase mb-2" style={{ letterSpacing: '0.5px' }}>
+                <label className="form-label small fw-bold text-uppercase mb-2" style={{ color: '#94a3b8', letterSpacing: '0.5px' }}>
                   Email Address
                 </label>
                 <input 
                   type="email" 
-                  className="form-control border-secondary border-opacity-25" 
+                  className="form-control custom-input" 
                   placeholder="you@lts.gov.pk"
-                  style={{ padding: '12px', borderRadius: '10px', fontSize: '15px' }}
+                  style={{ padding: '12px', borderRadius: '10px', fontSize: '15px', backgroundColor: '#0f172a', border: '1px solid #334155', color: 'white' }}
                 />
               </div>
 
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <label className="form-label small fw-bold text-muted text-uppercase mb-0" style={{ letterSpacing: '0.5px' }}>
+                  <label className="form-label small fw-bold text-uppercase mb-0" style={{ color: '#94a3b8', letterSpacing: '0.5px' }}>
                     Password
                   </label>
-                  <a href="#" className="small text-muted text-decoration-none">Forgot?</a>
+                  <a href="#" className="small text-decoration-none" style={{ color: '#64748b' }}>Forgot?</a>
                 </div>
                 <input 
                   type="password" 
-                  className="form-control border-secondary border-opacity-25" 
+                  className="form-control custom-input" 
                   placeholder="••••••••"
-                  style={{ padding: '12px', borderRadius: '10px', fontSize: '15px' }}
+                  style={{ padding: '12px', borderRadius: '10px', fontSize: '15px', backgroundColor: '#0f172a', border: '1px solid #334155', color: 'white' }}
                 />
               </div>
 
               <button 
                 type="submit" 
-                className="btn w-100 py-3 fw-bold text-white shadow-sm mt-2" 
-                style={{ background: '#0a1128', borderRadius: '10px', fontSize: '16px' }}
+                className="btn btn-lts w-100 py-3 fw-bold shadow-sm mt-2" 
+                style={{ background: '#fbbf24', color: '#0f172a', borderRadius: '10px', fontSize: '16px', border: 'none' }}
               >
                 Sign in to LTS &rarr;
               </button>
             </form>
 
-            <p className="text-center text-muted small mt-5">
-              By signing in you agree to our <a href="#" className="text-dark fw-medium text-decoration-none">Terms</a> and <a href="#" className="text-dark fw-medium text-decoration-none">Privacy Policy</a>.
+            <p className="text-center small mt-5" style={{ color: '#64748b' }}>
+              By signing in you agree to our <a href="#" className="fw-medium text-decoration-none" style={{ color: '#94a3b8' }}>Terms</a> and <a href="#" className="fw-medium text-decoration-none" style={{ color: '#94a3b8' }}>Privacy Policy</a>.
             </p>
           </div>
         </div>

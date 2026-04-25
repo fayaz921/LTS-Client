@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "../shared/components/Layout";
 import LandingPage from "../features/landing/components/LandingPage";
-import DocumentsPage from "../features/documents/components/documentPage";
+// import type DocumentsPage from "../features/documents/components/documentPage";
 import { RegisterForm } from "../features/auth/components/RegisterForm";
 import { LoginForm } from "../features/auth/components/Login";
 
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
     children: [
         {
         path: "documents/:caseId",
-        element: <DocumentsPage />,
+        // element: <DocumentsPage />,
       },
       // team uncomments and adds their routes here
       // { path: 'dashboard',   element: <DashboardPage /> },
