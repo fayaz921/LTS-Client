@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useRegister } from '../hooks/useAuth';
-import type { CreateUserCommand } from '../types/auth.types';
+// import { useRegister } from '../hooks/useAuth';
+// import type { CreateUserCommand } from '../types/auth.types';
 
-export const RegisterForm: React.FC = () => {
-  const { mutate, isPending } = useRegister();
+export const SignUp: React.FC = () => {
+  // const { mutate, isPending } = useRegister();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -13,16 +13,16 @@ export const RegisterForm: React.FC = () => {
     password: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const command: CreateUserCommand = {
-      organizationName: formData.organizationName,
-      ownerName: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      password: formData.password
-    };
-    mutate(command);
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const command: CreateUserCommand = {
+  //     organizationName: formData.organizationName,
+  //     ownerName: `${formData.firstName} ${formData.lastName}`.trim(),
+  //     email: formData.email,
+  //     password: formData.password
+  //   };
+  //   mutate(command);
+  // };
 
   return (
     <div className="register-root" style={{ minHeight: '100vh', fontFamily: "'Inter', sans-serif", backgroundColor: '#0f172a' }}>
@@ -99,7 +99,7 @@ export const RegisterForm: React.FC = () => {
               Start managing cases efficiently. <Link to="/login" style={{ color: '#fbbf24', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form >
               <div className="row mb-3">
                 <div className="col">
                   <label style={labelStyle}>First Name</label>
@@ -135,9 +135,9 @@ export const RegisterForm: React.FC = () => {
                   onChange={(e) => setFormData({...formData, password: e.target.value})} style={inputStyle} />
               </div>
 
-              <button type="submit" disabled={isPending} className="btn-lts shadow-sm" style={buttonStyle}>
-                {isPending ? 'Creating Account...' : 'Sign up for account →'}
-              </button>
+              {/* <button type="submit" disabled={isPending} className="btn-lts shadow-sm" style={buttonStyle}> */}
+                {/* {isPending ? 'Creating Account...' : 'Sign up for account →'} */}
+              {/* </button> */}
             </form>
 
             <p className="text-center small mt-4" style={{ color: '#64748b' }}>
@@ -172,15 +172,15 @@ const inputStyle: React.CSSProperties = {
   boxShadow: 'none'
 };
 
-const buttonStyle: React.CSSProperties = {
-  background: '#fbbf24',
-  color: '#0f172a',
-  padding: '12px',
-  borderRadius: '8px',
-  fontWeight: 800,
-  width: '100%',
-  border: 'none',
-  marginTop: '8px',
-  fontSize: '16px',
-  transition: 'all 0.2s ease'
-};
+// const buttonStyle: React.CSSProperties = {
+//   background: '#fbbf24',
+//   color: '#0f172a',
+//   padding: '12px',
+//   borderRadius: '8px',
+//   fontWeight: 800,
+//   width: '100%',
+//   border: 'none',
+//   marginTop: '8px',
+//   fontSize: '16px',
+//   transition: 'all 0.2s ease'
+// };

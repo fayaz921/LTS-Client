@@ -1,15 +1,15 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Layout from '../shared/components/Layout'
 import LandingPage from '../features/landing/components/LandingPage'
-import { RegisterForm } from '../features/auth/components/RegisterForm'
 import { LoginForm } from '../features/auth/components/Login'
+// import { SignUpForm } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
 
 export const router = createBrowserRouter([
     // public routes
     { path: '/',         element: <LandingPage /> },
     { path: '/login',    element: <LoginForm /> },
-    { path: '/register', element: <RegisterForm /> },
+    // { path: '/register', element: <SignUpForm /> },
 
     // protected routes — inside Layout
     {

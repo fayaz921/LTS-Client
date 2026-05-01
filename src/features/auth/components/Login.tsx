@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useAuth';
 
 export const LoginForm: React.FC = () => {
+  const { mutate, isPending } = useLogin();
   const [formData, setFormData] = useState({ email: '', password: '' });
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutate({ email: formData.email, password: formData.password });
+  };
   return (
     <div className="container-fluid p-0" style={{ minHeight: '100vh', overflow: 'hidden', backgroundColor: '#0f172a', fontFamily: "'Inter', sans-serif" }}>
       <style>{`
@@ -70,15 +76,17 @@ export const LoginForm: React.FC = () => {
               Don't have an account? <Link to="/register" className="text-decoration-none fw-bold" style={{ color: '#fbbf24' }}>Sign up</Link>
             </p>
             
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="form-label small fw-bold text-uppercase mb-2" style={{ color: '#94a3b8', letterSpacing: '0.5px' }}>
                   Email Address
                 </label>
                 <input 
                   type="email" 
+                  value={formData.email}
                   className="form-control custom-input" 
                   placeholder="you@lts.gov.pk"
+                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   style={{ padding: '12px', borderRadius: '10px', fontSize: '15px', backgroundColor: '#0f172a', border: '1px solid #334155', color: 'white' }}
                 />
               </div>
@@ -91,19 +99,22 @@ export const LoginForm: React.FC = () => {
                   <a href="#" className="small text-decoration-none" style={{ color: '#64748b' }}>Forgot?</a>
                 </div>
                 <input 
-                  type="password" 
+                   type="password" 
                   className="form-control custom-input" 
                   placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   style={{ padding: '12px', borderRadius: '10px', fontSize: '15px', backgroundColor: '#0f172a', border: '1px solid #334155', color: 'white' }}
                 />
               </div>
 
               <button 
                 type="submit" 
+                disabled={isPending}
                 className="btn btn-lts w-100 py-3 fw-bold shadow-sm mt-2" 
                 style={{ background: '#fbbf24', color: '#0f172a', borderRadius: '10px', fontSize: '16px', border: 'none' }}
               >
-                Sign in to LTS &rarr;
+                {isPending ? 'Signing in...' : 'Sign in to LTS →'}
               </button>
             </form>
 
