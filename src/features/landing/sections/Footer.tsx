@@ -103,7 +103,7 @@ const Footer = () => {
             {/* Bottom Bar */}
             <div className="lts-footer__bottom">
                 <div className="lts-footer__bottom-container">
-                    <span>© 2025 LTS — Litigation Tracking System. All Rights Reserved.</span>
+                    <span>© 2026 LTS — Litigation Tracking System. All Rights Reserved.</span>
                     <span>🇵🇰 Built for Pakistani Legal Professionals</span>
                 </div>
             </div>
