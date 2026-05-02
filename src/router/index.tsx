@@ -4,12 +4,13 @@ import LandingPage from '../features/landing/components/LandingPage'
 import { LoginForm } from '../features/auth/components/Login'
 // import { SignUpForm } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
+import { SignUp } from '../features/auth/components/SignUp'
 
 export const router = createBrowserRouter([
     // public routes
     { path: '/',         element: <LandingPage /> },
     { path: '/login',    element: <LoginForm /> },
-    // { path: '/register', element: <SignUpForm /> },
+    { path: '/SignUp', element: <SignUp /> },
 
     // protected routes — inside Layout
     {
