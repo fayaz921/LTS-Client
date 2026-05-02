@@ -1,16 +1,31 @@
 import axiosInstance from '../../../lib/axios';
-import type { CreateUserCommand, LoginUserCommand, ApiResponse } from '../types/auth.types';
+import type {
+  CreateUserCommand, LoginUserCommand,
+  VerifyOtpCommand, ForgetPasswordCommand,
+  VerifyEmailCommand, ApiResponse
+} from '../types/auth.types';
 
-
-// Sign In (Register) Call
 export const SignUpUser = async (command: CreateUserCommand): Promise<ApiResponse<string>> => {
   const response = await axiosInstance.post('/Auth/SignIn', command);
   return response.data;
 };
 
-
-// Login Call
 export const loginUser = async (command: LoginUserCommand): Promise<ApiResponse<string>> => {
   const response = await axiosInstance.post('/Auth/Login', command);
+  return response.data;
+};
+
+export const confirmOtp = async (command: VerifyOtpCommand): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/ConfirmOtp', command);
+  return response.data;
+};
+
+export const forgetPassword = async (command: ForgetPasswordCommand): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/ForgetPassword', command);
+  return response.data;
+};
+
+export const verifyEmail = async (command: VerifyEmailCommand): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/VerifyEmail', command);
   return response.data;
 };
