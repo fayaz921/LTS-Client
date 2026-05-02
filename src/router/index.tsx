@@ -4,6 +4,7 @@ import LandingPage from '../features/landing/components/LandingPage'
 import { LoginForm } from '../features/auth/components/Login'
 // import { SignUpForm } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
+import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
 
 export const router = createBrowserRouter([
@@ -17,6 +18,9 @@ export const router = createBrowserRouter([
         path: '/app',
         element: <Layout />,
         children: [
+            { index: true, element: <DashboardPage /> },
+            { path: 'dashboard', element: <DashboardPage /> },
+            // { path: 'cases',         element: <CasesPage /> },
             { path: 'cases', element: <CaseList /> },
             { path: 'cases/new', element: <CaseList /> },
             // { path: 'courts',        element: <CourtsPage /> },
