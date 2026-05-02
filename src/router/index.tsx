@@ -2,23 +2,17 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Layout from '../shared/components/Layout'
 import LandingPage from '../features/landing/components/LandingPage'
 import { LoginForm } from '../features/auth/components/Login'
-// import { SignUpForm } from '../features/auth/components/SignUp'
-import DocumentsPage from '../features/documents/components/DocumentPage'
 import { SignUp } from '../features/auth/components/SignUp'
-
-export const router = createBrowserRouter([
-    // public routes
-    { path: '/',         element: <LandingPage /> },
-    { path: '/login',    element: <LoginForm /> },
-    { path: '/SignUp', element: <SignUp /> },
+import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
+
 
 export const router = createBrowserRouter([
     // public routes
     { path: '/', element: <LandingPage /> },
     { path: '/login', element: <LoginForm /> },
-    { path: '/register', element: <RegisterForm /> },
+    { path: '/register', element: <SignUp /> },
 
     // protected routes — inside Layout
     {
