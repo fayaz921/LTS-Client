@@ -4,6 +4,7 @@ import LandingPage from '../features/landing/components/LandingPage'
 import { RegisterForm } from '../features/auth/components/RegisterForm'
 import { LoginForm } from '../features/auth/components/Login'
 import DocumentsPage from '../features/documents/components/DocumentPage'
+import DashboardPage from '../features/dashboard/components/DashboardPage'
 
 export const router = createBrowserRouter([
     // public routes
@@ -16,6 +17,8 @@ export const router = createBrowserRouter([
         path: '/app',
         element: <Layout />,
         children: [
+            { index: true, element: <DashboardPage /> },
+            { path: 'dashboard', element: <DashboardPage /> },
             // { path: 'cases',         element: <CasesPage /> },
             // { path: 'courts',        element: <CourtsPage /> },
             // { path: 'departments',   element: <DepartmentsPage /> },
