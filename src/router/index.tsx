@@ -6,7 +6,7 @@ import { SignUp } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
-
+import DepartmentsPage from '../features/departments/pages/DepartmentsPage'
 
 export const router = createBrowserRouter([
     // public routes
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
             { path: 'cases', element: <CaseList /> },
             { path: 'cases/new', element: <CaseList /> },
             // { path: 'courts',        element: <CourtsPage /> },
-            // { path: 'departments',   element: <DepartmentsPage /> },
+             { path: 'departments',   element: <DepartmentsPage /> },
             // { path: 'petitioners',   element: <PetitionersPage /> },
             // { path: 'followup',      element: <FollowupPage /> },
             { path: 'documents', element: <DocumentsPage /> },
