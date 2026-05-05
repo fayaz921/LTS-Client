@@ -175,7 +175,7 @@ const Layout = () => {
                                     initial={{ opacity: 0, x: -8 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -8 }}
-                                    transition={{ duration: 0.16 }}
+                                      transition={{ duration: 0.16 }}
                                 >
                                     <div className="lts-sidebar__user-name">{user?.name ?? 'User'}</div>
                                     <div className="lts-sidebar__user-role">{user?.role ?? ''}</div>
