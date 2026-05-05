@@ -33,3 +33,23 @@ export interface ApiResponse<T> {
   message: string;
   isSuccess: boolean;
 }
+
+
+// Login response ka type
+// LoginResponse already hai — bas use karo
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+// User info — JWT se parse hoga
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  organizationId: string;
+  organizationName: string;
+  organizationPlan: string;
+  isActive: boolean;
+}

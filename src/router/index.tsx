@@ -7,6 +7,7 @@ import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
 import DepartmentsPage from '../features/departments/pages/DepartmentsPage'
+import { ProtectedRoute } from './ProtectedRoute'
 
 export const router = createBrowserRouter([
     // public routes
@@ -17,7 +18,11 @@ export const router = createBrowserRouter([
     // protected routes — inside Layout
     {
         path: '/app',
-        element: <Layout />,
+        element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
         children: [
             { index: true, element: <DashboardPage /> },
             { path: 'dashboard', element: <DashboardPage /> },
