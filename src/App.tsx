@@ -13,6 +13,23 @@
 // export default App;
 
 
+import { useIsFetching, useIsMutating } from '@tanstack/react-query'
+import { Loader } from './shared/components/Loader'
+
+const App = () => {
+    const isFetching = useIsFetching()
+    const isMutating = useIsMutating()
+
+    const isLoading = isFetching > 0 || isMutating > 0
+
+    return (
+        <>
+            {isLoading && <Loader />}
+        </>
+    )
+}
+
+export default App
 
 // Add this 
 
