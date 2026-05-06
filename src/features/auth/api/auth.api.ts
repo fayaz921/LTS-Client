@@ -2,7 +2,7 @@ import axiosInstance from '../../../lib/axios';
 import type {
   CreateUserCommand, LoginUserCommand,
   VerifyOtpCommand, ForgetPasswordCommand,
-  VerifyEmailCommand, ApiResponse
+  VerifyEmailCommand, ApiResponse, LoginResponse
 } from '../types/auth.types';
 
 export const SignUpUser = async (command: CreateUserCommand): Promise<ApiResponse<string>> => {
@@ -10,7 +10,7 @@ export const SignUpUser = async (command: CreateUserCommand): Promise<ApiRespons
   return response.data;
 };
 
-export const loginUser = async (command: LoginUserCommand): Promise<ApiResponse<string>> => {
+export const loginUser = async (command: LoginUserCommand): Promise<ApiResponse<LoginResponse>> => {
   const response = await axiosInstance.post('/Auth/Login', command);
   return response.data;
 };
@@ -27,5 +27,14 @@ export const forgetPassword = async (command: ForgetPasswordCommand): Promise<Ap
 
 export const verifyEmail = async (command: VerifyEmailCommand): Promise<ApiResponse<string>> => {
   const response = await axiosInstance.post('/Auth/VerifyEmail', command);
+  return response.data;
+};
+
+export const logoutUser = async (): Promise<void> => {
+  await axiosInstance.post('/Auth/Logout');
+};
+
+export const refreshToken = async (): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/RefreshToken');
   return response.data;
 };

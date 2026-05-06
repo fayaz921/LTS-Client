@@ -8,7 +8,8 @@ import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
 import DepartmentsPage from '../features/departments/pages/DepartmentsPage'
-import PetitionersPage from '../features/petitioners/components/PetitionersPage'
+import { ProtectedRoute } from './ProtectedRoute'
+
 export const router = createBrowserRouter([
     // public routes
     { path: '/', element: <LandingPage /> },
@@ -18,7 +19,11 @@ export const router = createBrowserRouter([
      // protected routes
     {
         path: '/app',
-        // element: <ProtectedRoute />,
+        element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
         children: [
             {
                 element: <Layout />,
