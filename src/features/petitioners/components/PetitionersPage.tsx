@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { usePetitioners, useCreatePetitioner, useUpdatePetitioner, useDeletePetitioner } from '../hooks/usePetitioners'
 import type { PetitionerDto } from '../types/petitioner.types'
 import { formatDate } from '../../../shared/utils/formatDate'
+import { useAuthStore } from '../../../store/authStore'
 import '../styles/petitioners.css'
 
 const emptyForm = {
@@ -16,6 +17,7 @@ const emptyForm = {
 }
 
 const PetitionersPage = () => {
+    const { user } = useAuthStore()
     const { data, isError } = usePetitioners()
     const createMutation = useCreatePetitioner()
     const updateMutation = useUpdatePetitioner()
@@ -66,7 +68,11 @@ const PetitionersPage = () => {
                 onSuccess: () => { setShowForm(false); setForm(emptyForm) }
             })
         } else {
-            createMutation.mutate(form, {
+            createMutation.mutate({
+                ...form,
+                organizationId: user?.organizationId ?? '',
+                createdBy: user?.id ?? '',
+            }, {
                 onSuccess: () => { setShowForm(false); setForm(emptyForm) }
             })
         }

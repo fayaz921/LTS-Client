@@ -45,7 +45,7 @@ const App = () => {
         }
 
         initAuth()
-    }, [])
+    }, [setAuth])
 
     return (
         <>

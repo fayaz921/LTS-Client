@@ -1,7 +1,6 @@
 // src/features/cases/hooks/useCases.ts
 
 import { useQuery } from "@tanstack/react-query";
-import { getCases } from "../api/case-api";
 import type { ApiResponse, PaginatedResponse } from "../../../shared/types/api.types";
 import type { GetCaseDto } from "../types/case.types";
 

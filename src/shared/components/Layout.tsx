@@ -1,7 +1,12 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { useAuthStore } from '../../store/authStore'
+
+const DESKTOP_SIDEBAR_WIDTH = 260
+const TABLET_SIDEBAR_WIDTH = 220
+const COLLAPSED_SIDEBAR_WIDTH = 84
+const MOBILE_SIDEBAR_WIDTH = 76
 
 const navItems = [
     { path: '/app/dashboard',   label: 'Dashboard',   icon: '⊞' },
@@ -20,19 +25,30 @@ const Layout = () => {
     const navigate = useNavigate()
     const [searchValue, setSearchValue] = useState('')
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+    const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia('(max-width: 768px)')
+        const tabletQuery = window.matchMedia('(max-width: 1024px)')
+        const mobileQuery = window.matchMedia('(max-width: 768px)')
 
         const syncSidebarWithViewport = () => {
-            setIsSidebarCollapsed(mediaQuery.matches)
+            const nextViewport = mobileQuery.matches
+                ? 'mobile'
+                : tabletQuery.matches
+                  ? 'tablet'
+                  : 'desktop'
+
+            setViewport(nextViewport)
+            setIsSidebarCollapsed(nextViewport === 'mobile')
         }
 
         syncSidebarWithViewport()
-        mediaQuery.addEventListener('change', syncSidebarWithViewport)
+        tabletQuery.addEventListener('change', syncSidebarWithViewport)
+        mobileQuery.addEventListener('change', syncSidebarWithViewport)
 
         return () => {
-            mediaQuery.removeEventListener('change', syncSidebarWithViewport)
+            tabletQuery.removeEventListener('change', syncSidebarWithViewport)
+            mobileQuery.removeEventListener('change', syncSidebarWithViewport)
         }
     }, [])
 
@@ -45,12 +61,29 @@ const Layout = () => {
         setIsSidebarCollapsed((value) => !value)
     }
 
+    const expandedSidebarWidth = viewport === 'desktop'
+        ? DESKTOP_SIDEBAR_WIDTH
+        : TABLET_SIDEBAR_WIDTH
+
+    const sidebarWidth = isSidebarCollapsed
+        ? viewport === 'mobile'
+            ? MOBILE_SIDEBAR_WIDTH
+            : COLLAPSED_SIDEBAR_WIDTH
+        : expandedSidebarWidth
+
+    const layoutStyle = {
+        '--sidebar-width': `${sidebarWidth}px`,
+    } as CSSProperties
+
     return (
-        <div className={`lts-layout ${isSidebarCollapsed ? 'lts-layout--sidebar-collapsed' : ''}`}>
+        <div
+            className={`lts-layout ${isSidebarCollapsed ? 'lts-layout--sidebar-collapsed' : ''}`}
+            style={layoutStyle}
+        >
             <motion.aside
                 className="lts-sidebar"
                 initial={{ x: -280, opacity: 0.7 }}
-                animate={{ width: isSidebarCollapsed ? 84 : 260, x: 0, opacity: 1 }}
+                animate={{ x: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 210, damping: 26 }}
                 aria-label="Application sidebar"
                 data-collapsed={isSidebarCollapsed}
@@ -207,7 +240,6 @@ const Layout = () => {
                     </motion.button>
                 </motion.div>
             </motion.aside>
-
             <motion.div
                 className="lts-main"
             >
