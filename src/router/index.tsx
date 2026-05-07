@@ -9,6 +9,8 @@ import CaseList from '../features/cases/components/CaseList'
 import DepartmentsPage from '../features/departments/components/DepartmentsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import PetitionersPage from '../features/petitioners/components/PetitionersPage'
+import BenchPage from '../features/Benches/components/BenchPage'
+import ReportsPage from '../features/reports/components/ReportsPage'
 
 export const router = createBrowserRouter([
     // public routes
