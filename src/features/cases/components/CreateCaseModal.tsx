@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/case-list.css';
 
 export default function CreateCaseModal({ onClose }: { onClose: () => void }) {

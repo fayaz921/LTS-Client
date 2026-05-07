@@ -8,11 +8,12 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> {
-    data: T[]
+    items: T[];
     totalCount: number
-    pageNumber: number
+    page: number
     pageSize: number
-    isSuccess: boolean
-    message: string
-    status: HttpStatusCode
+    totalPages: number
+    // isSuccess: boolean
+    // message: string
+    // status: HttpStatusCode
 }
