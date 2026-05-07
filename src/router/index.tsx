@@ -9,14 +9,15 @@ import CaseList from '../features/cases/components/CaseList'
 import DepartmentsPage from '../features/departments/components/DepartmentsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import PetitionersPage from '../features/petitioners/components/PetitionersPage'
+import BenchPage from '../features/Benches/components/BenchPage'
+import ReportsPage from '../features/reports/components/ReportsPage'
 
 export const router = createBrowserRouter([
     // public routes
-    { path: '/',         element: <LandingPage /> },
-    { path: '/login',    element: <LoginForm /> },
+    { path: '/', element: <LandingPage /> },
+    { path: '/login', element: <LoginForm /> },
     { path: '/register', element: <SignUp /> },
-    { path: 'Benches', element: <BenchPage /> },
-    { path: 'reports', element: <ReportsPage /> },
+
 
     // protected routes
     {
@@ -26,19 +27,19 @@ export const router = createBrowserRouter([
             {
                 element: <Layout />,
                 children: [
-                    { index: true,               element: <DashboardPage /> },
-                    { path: 'dashboard',         element: <DashboardPage /> },
-                    { path: 'cases',             element: <CaseList /> },
-                    { path: 'cases/new',         element: <CaseList /> },
-                    { path: 'departments',       element: <DepartmentsPage /> },
-                    { path: 'documents',         element: <DocumentsPage /> },
+                    { index: true, element: <DashboardPage /> },
+                    { path: 'dashboard', element: <DashboardPage /> },
+                    { path: 'cases', element: <CaseList /> },
+                    { path: 'cases/new', element: <CaseList /> },
+                    { path: 'departments', element: <DepartmentsPage /> },
+                    { path: 'documents', element: <DocumentsPage /> },
                     { path: 'documents/:caseId', element: <DocumentsPage /> },
-                    { path: 'petitioners',       element: <PetitionersPage /> },
+                    { path: 'petitioners', element: <PetitionersPage /> },
                     // { path: 'courts',         element: <CourtsPage /> },
                     // { path: 'followup',       element: <FollowupPage /> },
                     // { path: 'alerts',         element: <AlertsPage /> },
-                    // { path: 'reports',        element: <ReportsPage /> },
-                    // { path: 'bench',          element: <BenchPage /> },
+                    { path: 'Benches', element: <BenchPage /> },
+                    { path: 'reports', element: <ReportsPage /> },
                 ]
             }
         ]
