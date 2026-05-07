@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import DepartmentList from '../components/DepartmentList'
-import DepartmentForm from '../components/DepartmentForm'
+import DepartmentList from './DepartmentList'
+import DepartmentForm from './DepartmentForm'
 import type { Department } from '../types/department.types'
 
 const DepartmentsPage = () => {
@@ -18,7 +18,11 @@ const DepartmentsPage = () => {
     }
 
     return (
-        <div className="p-4">
+        <div style={{
+            padding: '32px',
+            minHeight: '100vh',
+            background: 'linear-gradient(160deg, #F8F6F0 0%, #F2EDE0 100%)'
+        }}>
             <DepartmentList
                 onEdit={handleEdit}
                 onAdd={() => setShowModal(true)}

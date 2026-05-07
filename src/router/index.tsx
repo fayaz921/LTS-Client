@@ -6,7 +6,8 @@ import { SignUp } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
 import CaseList from '../features/cases/components/CaseList'
-import DepartmentsPage from '../features/departments/pages/DepartmentsPage'
+// router/index.tsx mein:
+import DepartmentsPage from '../features/departments/components/DepartmentsPage'
 
 export const router = createBrowserRouter([
     // public routes
