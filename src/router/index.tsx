@@ -11,6 +11,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import PetitionersPage from '../features/petitioners/components/PetitionersPage'
 import BenchPage from '../features/Benches/components/BenchPage'
 import ReportsPage from '../features/reports/components/ReportsPage'
+import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
 
 export const router = createBrowserRouter([
     // public routes
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
                     // { path: 'courts',         element: <CourtsPage /> },
                     // { path: 'followup',       element: <FollowupPage /> },
                     // { path: 'alerts',         element: <AlertsPage /> },
+                    {path: 'profile', element: <ProfilePage />},
                     { path: 'Benches', element: <BenchPage /> },
                     { path: 'reports', element: <ReportsPage /> },
                 ]

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface AuthUser {
   id: string;
@@ -21,12 +22,24 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  setAuth: (user, accessToken) => set({ user, accessToken, isAuthenticated: true }),
-  setAccessToken: (token) => set({ accessToken: token }),
-  clearAuth: () => set({ user: null, accessToken: null, isAuthenticated: false }),
-  logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+      setAuth: (user, accessToken) => set({ user, accessToken, isAuthenticated: true }),
+      setAccessToken: (token) => set({ accessToken: token }),
+      clearAuth: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+      logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+    }),
+    {
+      name: 'lts-auth',
+      partialize: (state) => ({ // ✅ partialState nahi — partialize
+        user: state.user,
+        accessToken: state.accessToken,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    }
+  )
+);
