@@ -19,6 +19,7 @@ const navItems = [
     { path: '/app/alerts',      label: 'Alerts',      icon: '🔔' },
     { path: '/app/Benches',     label: 'Benches',     icon: '👨‍⚖️' },
     { path: '/app/reports',     label: 'Reports',     icon: '📊' },
+    { path: '/app/profile',     label: 'Profile',     icon: '🧑' },
 ]
 
 const Layout = () => {
