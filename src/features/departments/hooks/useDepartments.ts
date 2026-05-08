@@ -7,10 +7,11 @@ const KEYS = {
     byId: (id: string) => ['departments', id],
 }
 
-export const useGetDepartments = () =>
+export const useGetDepartments = (enabled: boolean = true) =>
     useQuery({
         queryKey: KEYS.all,
         queryFn: departmentApi.getAll,
+        enabled,
     })
 
 export const useGetDepartmentById = (id: string) =>

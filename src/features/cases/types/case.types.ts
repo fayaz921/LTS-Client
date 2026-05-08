@@ -1,14 +1,13 @@
-
 export interface CreateCaseDto {
-    CourtId: string,
-    DepartmentId: string,
-    PetitionerId: string,
-    DAG: string,
-    Title: string,
-    Subject: string,
-    Detail: string,
-    DateInstitution: string,
-    EmailList: string
+    courtId: string
+    departmentId: string
+    petitionerId: string
+    dag: string
+    title: string
+    subject: string
+    detail: string
+    dateInstitution: string
+    emailList: string
 }
 
 export interface GetCaseDto {
