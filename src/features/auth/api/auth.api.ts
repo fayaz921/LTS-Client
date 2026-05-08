@@ -6,7 +6,9 @@ import type {
 } from '../types/auth.types';
 
 export const SignUpUser = async (command: CreateUserCommand): Promise<ApiResponse<string>> => {
+  console.log("Request Ayii")
   const response = await axiosInstance.post('/Auth/SignIn', command);
+  console.log("Request Gayii")
   return response.data;
 };
 

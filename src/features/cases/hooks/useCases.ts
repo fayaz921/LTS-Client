@@ -1,8 +1,10 @@
-// src/features/cases/hooks/useCases.ts
-
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ApiResponse, PaginatedResponse } from "../../../shared/types/api.types";
-import type { GetCaseDto } from "../types/case.types";
+import type { GetCaseDto, CreateCaseDto } from "../types/case.types";
+import { createCase } from "../api/case-api";
+import { usePetitioners } from "../../petitioners/hooks/usePetitioners";
+import { useGetDepartments } from "../../departments/hooks/useDepartments";
+import { useGetCourts } from '../../courts/hooks/useCourts';
 
 // ── Static Data ──────────────────────────────────────────────────
 const STATIC_CASES: GetCaseDto[] = [
@@ -33,13 +35,12 @@ const STATIC_CASES: GetCaseDto[] = [
     { id: '25', caseNo: 'LTS-2026-0025', title: 'Nadia Hassan vs Insurance Co', subject: 'Civil', dag: 'Adv. Tariq', status: 'Finalized', dateInstitution: '2026-06-01', courtName: 'District Court', departmentName: 'Civil', petitioners: ['Nadia Hassan'] },
 ];
 
-// ── Pagination Logic Frontend Pe ─────────────────────────────────
+// ── Pagination Logic ─────────────────────────────────────────────
 const getStaticPage = (page: number, pageSize: number): ApiResponse<PaginatedResponse<GetCaseDto>> => {
     const totalCount = STATIC_CASES.length;
     const totalPages = Math.ceil(totalCount / pageSize);
     const start = (page - 1) * pageSize;
     const items = STATIC_CASES.slice(start, start + pageSize);
-
     return {
         isSuccess: true,
         message: 'Success',
@@ -48,11 +49,31 @@ const getStaticPage = (page: number, pageSize: number): ApiResponse<PaginatedRes
     };
 };
 
-// ── Hook ─────────────────────────────────────────────────────────
-export const useCases = (page: number = 1, pageSize: number = 10) => {
+// ── Cases ────────────────────────────────────────────────────────
+export const HandleGetAllCases = (page: number = 1, pageSize: number = 10) => {
     return useQuery({
         queryKey: ['cases', page, pageSize],
-        queryFn: () => getStaticPage(page, pageSize), // ← real API
-        // placeholderData: getStaticPage(page, pageSize), // ← static data jab tak API na aaye
+        queryFn: () => getStaticPage(page, pageSize),
     });
 };
+
+export const HandleCreateCase = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: CreateCaseDto) => createCase(data),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['cases'] });
+        },
+    });
+};
+
+// ── Dropdowns ────────────────────────────────────────────────────
+export const DropDownPetitioners = (enabled: boolean = false) =>
+    usePetitioners(enabled);
+
+export const DropDownDepartments = (enabled: boolean = false) =>
+    useGetDepartments(enabled);
+
+export const DropDownCourts = (enabled: boolean = false) =>
+    useGetCourts(enabled);

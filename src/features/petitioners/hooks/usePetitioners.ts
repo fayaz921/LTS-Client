@@ -8,13 +8,13 @@ import {
 } from '../api/petitionersApi'
 import type { CreatePetitionerDto, UpdatePetitionerDto } from '../types/petitioner.types'
 
-export const usePetitioners = () => {
+export const usePetitioners = (fetchEnable: boolean = true) => {
     const { user } = useAuthStore()
 
     return useQuery({
         queryKey: ['petitioners', user?.organizationId],
         queryFn: () => getAllPetitioners(user?.organizationId ?? ''),
-        enabled: !!user?.organizationId,
+        enabled: !!user?.organizationId && fetchEnable,
     })
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import CreateCaseModal from '../components/CreateCaseModal';
-import { useCases } from '../hooks/useCases';
+import { HandleGetAllCases } from '../hooks/useCases';
 import '../styles/case-list.css';
 
 export default function CasesList() {
@@ -8,7 +8,7 @@ export default function CasesList() {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
 
-    const { data: response, isLoading, isError } = useCases(currentPage, pageSize);
+    const { data: response, isLoading, isError } = HandleGetAllCases(currentPage, pageSize);
     const cases = response?.data.items ?? [];
     const totalCasesCount = response?.data.totalCount ?? 0;
     const totalPages: number = response?.data?.totalPages ?? 0;
