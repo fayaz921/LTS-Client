@@ -12,12 +12,14 @@ import PetitionersPage from '../features/petitioners/components/PetitionersPage'
 import BenchPage from '../features/Benches/components/BenchPage'
 import ReportsPage from '../features/reports/components/ReportsPage'
 import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
+import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdminDashboard'
 
 export const router = createBrowserRouter([
     // public routes
     { path: '/', element: <LandingPage /> },
     { path: '/login', element: <LoginForm /> },
     { path: '/register', element: <SignUp /> },
+    { path: '/super-admin', element: <SuperAdminDashboard /> },
 
 
     // protected routes
