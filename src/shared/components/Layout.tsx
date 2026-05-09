@@ -15,7 +15,7 @@ const navItems = [
     { path: '/app/petitioners', label: 'Petitioners', icon: '👥' },
     { path: '/app/courts',      label: 'Courts',      icon: '🏛' },
     { path: '/app/departments', label: 'Departments', icon: '⊞' },
-    { path: '/app/documents/123e4567-e89b-12d3-a456-426614174000', label: 'Documents', icon: '📄' },
+    { path: '/app/documents/3b7a40ff-13a6-45b0-b694-de99624d4f28', label: 'Documents', icon: '📄' },
     { path: '/app/alerts',      label: 'Alerts',      icon: '🔔' },
     { path: '/app/Benches',     label: 'Benches',     icon: '👨‍⚖️' },
     { path: '/app/reports',     label: 'Reports',     icon: '📊' },
