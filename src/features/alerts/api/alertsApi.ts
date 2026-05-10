@@ -10,13 +10,22 @@ export const alertsApi = {
             .get<ApiResponse<GetUpComingHearingDto[]>>(
                 '/alerts/GetUpComingHearing'
             )
-            .then(r => r.data.data),
-
+            .then(r => {
+              if (r.data.status === 404 || !r.data.data) return []
+              if (!r.data.isSuccess) throw new Error(r.data.message || 'Upcoming hearings fetch failed')
+              return r.data.data
+        })
+        .catch(err => {
+            throw err
+        }),
     // POST /api/alerts/SendHearingAlert{CaseId}
     sendAlert: (caseId: string) =>
         instance
             .post<ApiResponse<boolean>>(
                 `/alerts/SendHearingAlert${caseId}`
             )
-            .then(r => r.data),
+             .then(r => {
+                if (!r.data.isSuccess) throw new Error(r.data.message || 'Alert send karne mein masla aaya')
+                return r.data
+            }),
 }
