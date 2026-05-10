@@ -6,11 +6,12 @@ export const documentsApi = {
 getByCase: (caseId: string) =>
     instance
         .get<ApiResponse<GetCaseDocument[]>>(`/casedocument/case/${caseId}`)
-        .then(r => r.data.data)
+        .then(r => {
+            if (r.data.status === 404 || !r.data.data) return []
+            if (!r.data.isSuccess) throw new Error(r.data.message || 'Documents fetch failed')
+            return r.data.data
+        })
         .catch(err => {
-            // 404 matlab koi document nahi — empty array return karo
-            if (err.response?.status === 404) return []
-            // Baaki errors throw karo
             throw err
         }),
 
@@ -19,8 +20,10 @@ getByCase: (caseId: string) =>
             .get<ApiResponse<GetCaseDocument>>(
                 `/casedocument/${id}`
             )
-            .then(r => r.data.data),
-
+            .then(r => {
+            if (!r.data.isSuccess) throw new Error(r.data.message || 'Documents fetch failed')
+            return r.data.data
+        }),
     upload: (dto: UploadDocumentDto) => {
         const formData = new FormData()
         formData.append('caseId', dto.caseId)
@@ -34,7 +37,10 @@ getByCase: (caseId: string) =>
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             )
-            .then(r => r.data)
+           .then(r => {
+                if (!r.data.isSuccess) throw new Error(r.data.message || 'Upload failed')
+                return r.data
+            })
     },
 
     delete: (id: string) =>
@@ -42,5 +48,8 @@ getByCase: (caseId: string) =>
             .delete<ApiResponse<string>>(
                 `/casedocument/${id}`
             )
-            .then(r => r.data),
+            .then(r => {
+                if (!r.data.isSuccess) throw new Error(r.data.message || 'Delete failed')
+                return r.data
+            }),
 }

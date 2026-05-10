@@ -13,6 +13,7 @@ import BenchPage from '../features/Benches/components/BenchPage'
 import ReportsPage from '../features/reports/components/ReportsPage'
 import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
 import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdminDashboard'
+import AlertsPage from '../features/alerts/components/AlertsPage'
 
 export const router = createBrowserRouter([
     // public routes
@@ -40,7 +41,7 @@ export const router = createBrowserRouter([
                     { path: 'petitioners', element: <PetitionersPage /> },
                     // { path: 'courts',         element: <CourtsPage /> },
                     // { path: 'followup',       element: <FollowupPage /> },
-                    // { path: 'alerts',         element: <AlertsPage /> },
+                     { path: 'alerts',         element: <AlertsPage /> },
                     {path: 'profile', element: <ProfilePage />},
                     { path: 'Benches', element: <BenchPage /> },
                     { path: 'reports', element: <ReportsPage /> },
