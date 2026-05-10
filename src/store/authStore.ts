@@ -10,6 +10,7 @@ interface AuthUser {
   organizationName: string;
   organizationPlan: string;
   isActive: boolean;
+    profileImage: string | null; 
 }
 
 interface AuthState {
