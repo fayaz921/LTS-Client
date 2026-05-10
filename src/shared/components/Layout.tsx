@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { useAuthStore } from '../../store/authStore'
 
 const DESKTOP_SIDEBAR_WIDTH = 260
@@ -19,10 +19,12 @@ const navItems = [
     { path: '/app/alerts',      label: 'Alerts',      icon: '🔔' },
     { path: '/app/Benches',     label: 'Benches',     icon: '👨‍⚖️' },
     { path: '/app/reports',     label: 'Reports',     icon: '📊' },
-    { path: '/app/profile',     label: 'Profile',     icon: '🧑' },
 ]
 
 const Layout = () => {
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+
     const { user, logout } = useAuthStore()
     const navigate = useNavigate()
     const [searchValue, setSearchValue] = useState('')
@@ -52,6 +54,16 @@ const Layout = () => {
             tabletQuery.removeEventListener('change', syncSidebarWithViewport)
             mobileQuery.removeEventListener('change', syncSidebarWithViewport)
         }
+    }, [])
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setDropdownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
     const handleLogout = () => {
@@ -198,48 +210,8 @@ const Layout = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.45, duration: 0.35 }}
                 >
-                    <div className="lts-sidebar__user">
-                        <div className="lts-sidebar__user-avatar">
-                            {user?.name?.charAt(0).toUpperCase() ?? 'U'}
-                        </div>
-
-                        <AnimatePresence initial={false}>
-                            {!isSidebarCollapsed && (
-                                <motion.div
-                                    className="lts-sidebar__user-info"
-                                    initial={{ opacity: 0, x: -8 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -8 }}
-                                      transition={{ duration: 0.16 }}
-                                >
-                                    <div className="lts-sidebar__user-name">{user?.name ?? 'User'}</div>
-                                    <div className="lts-sidebar__user-role">{user?.role ?? ''}</div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-
-                    <motion.button
-                        className="lts-sidebar__logout"
-                        onClick={handleLogout}
-                        whileHover={{ scale: 1.02, y: -1 }}
-                        whileTap={{ scale: 0.97 }}
-                        title={isSidebarCollapsed ? 'Logout' : undefined}
-                    >
-                        <span className="lts-sidebar__logout-icon">↗</span>
-                        <AnimatePresence initial={false}>
-                            {!isSidebarCollapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0, x: -8 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -8 }}
-                                    transition={{ duration: 0.16 }}
-                                >
-                                    Logout
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </motion.button>
+                   
+                   
                 </motion.div>
             </motion.aside>
             <motion.div
@@ -289,19 +261,208 @@ const Layout = () => {
 
                         <div className="lts-topbar__divider" />
 
-                        <motion.div
-                            className="lts-topbar__user"
-                            whileHover={{ y: -1 }}
-                            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                        >
-                            <div className="lts-topbar__user-avatar">
-                                {user?.name?.charAt(0).toUpperCase() ?? 'U'}
+                       <div ref={dropdownRef} style={{ position: 'relative' }}>
+<motion.div
+    className="lts-topbar__user"
+    onClick={() => setDropdownOpen(v => !v)}
+    whileHover={{ y: -1 }}
+    transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+    style={{ cursor: 'pointer', userSelect: 'none' }}
+>
+    {/* Avatar */}
+    <div style={{
+        width: 30, height: 30, borderRadius: '50%',
+        overflow: 'hidden', flexShrink: 0,
+        background: user?.profileImage ? 'transparent' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'white', fontWeight: 700, fontSize: 12,
+        boxShadow: '0 2px 8px rgba(102,126,234,0.4)',
+        border: '2px solid rgba(255,255,255,0.8)',
+    }}>
+        {user?.profileImage ? (
+            <img
+                src={user.profileImage}
+                alt={user?.name ?? 'U'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
+        ) : (
+            user?.name?.charAt(0).toUpperCase() ?? 'U'
+        )}
+    </div>
+
+    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-dark)', marginLeft: 7 }}>
+        {user?.name ?? 'User'}
+    </span>
+
+    <span style={{
+        marginLeft: 3,
+        color: 'var(--text-gray)',
+        fontSize: 10,
+        transition: 'transform 0.2s',
+        display: 'inline-block',
+        transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    }}>▾</span>
+</motion.div>
+
+{/* Dropdown */}
+<AnimatePresence>
+    {dropdownOpen && (
+        <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+            style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                minWidth: 210,
+                background: '#ffffff',
+                borderRadius: 12,
+                boxShadow: '0 16px 48px rgba(15,23,42,0.16), 0 4px 12px rgba(15,23,42,0.06)',
+                zIndex: 999,
+                overflow: 'hidden',
+                border: '1px solid rgba(226,232,240,0.8)',
+            }}
+        >
+            {/* Header */}
+            <div style={{
+                padding: '12px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+            }}>
+                <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    overflow: 'hidden', flexShrink: 0,
+                    background: 'rgba(255,255,255,0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'white', fontWeight: 700, fontSize: 15,
+                    border: '2px solid rgba(255,255,255,0.4)',
+                }}>
+                    {user?.profileImage ? (
+                        <img
+                            src={user.profileImage}
+                            alt={user?.name ?? 'U'}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
+                        />
+                    ) : (
+                        user?.name?.charAt(0).toUpperCase() ?? 'U'
+                    )}
+                </div>
+                <div>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: '#ffffff' }}>
+                        {user?.name ?? 'User'}
+                    </div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.75)', marginTop: 1 }}>
+                        {user?.email ?? ''}
+                    </div>
+                    <div style={{
+                        marginTop: 3,
+                        display: 'inline-block',
+                        background: 'rgba(255,255,255,0.2)',
+                        borderRadius: 20,
+                        padding: '1px 7px',
+                        fontSize: 9,
+                        color: 'white',
+                        fontWeight: 600,
+                        letterSpacing: 0.4,
+                    }}>
+                        {user?.organizationName ?? ''}
+                    </div>
+                </div>
+            </div>
+
+            {/* Menu Items */}
+            <div style={{ padding: '4px 0' }}>
+                {[
+                    { icon: '👤', label: 'My Profile',    path: '/app/profile',  desc: 'View & edit profile' },
+                    { icon: '⚙️', label: 'Settings',      path: '/app/settings', desc: 'App preferences'     },
+                    { icon: '🔔', label: 'Notifications', path: '/app/alerts',   desc: 'Manage alerts'       },
+                ].map(item => (
+                    <button
+                        key={item.label}
+                        onClick={() => { setDropdownOpen(false); navigate(item.path) }}
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            padding: '8px 12px',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            transition: 'background 0.15s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                        <div style={{
+                            width: 28, height: 28, borderRadius: 7,
+                            background: '#f1f5f9',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 13, flexShrink: 0,
+                        }}>
+                            {item.icon}
+                        </div>
+                        <div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: '#1e293b' }}>
+                                {item.label}
                             </div>
-                            <div className="lts-topbar__user-info">
-                                <div className="lts-topbar__user-name">{user?.name ?? 'User'}</div>
-                                <div className="lts-topbar__user-org">{user?.organizationName ?? ''}</div>
+                            <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
+                                {item.desc}
                             </div>
-                        </motion.div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+
+            {/* Logout */}
+            <div style={{ padding: '4px 6px 6px', borderTop: '1px solid #f1f5f9' }}>
+                <button
+                    onClick={() => { setDropdownOpen(false); handleLogout() }}
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '8px 12px',
+                        background: 'transparent',
+                        border: 'none',
+                        borderRadius: 7,
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#fff5f5')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                    <div style={{
+                        width: 28, height: 28, borderRadius: 7,
+                        background: '#fff1f2',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, flexShrink: 0,
+                    }}>
+                        🚪
+                    </div>
+                    <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#dc2626' }}>
+                            Logout
+                        </div>
+                        <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
+                            Sign out of account
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </motion.div>
+    )}
+</AnimatePresence>
+</div>
                     </div>
                 </motion.header>
 
