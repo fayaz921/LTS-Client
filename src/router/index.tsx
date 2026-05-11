@@ -14,7 +14,7 @@ import ReportsPage from '../features/reports/components/ReportsPage'
 import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
 import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdminDashboard'
 import AlertsPage from '../features/alerts/components/AlertsPage'
-
+import CourtsPage from '../features/courts/components/CourtsPage'
 export const router = createBrowserRouter([
     // public routes
     { path: '/', element: <LandingPage /> },
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
                     { path: 'documents', element: <DocumentsPage /> },
                     { path: 'documents/:caseId', element: <DocumentsPage /> },
                     { path: 'petitioners', element: <PetitionersPage /> },
-                    // { path: 'courts',         element: <CourtsPage /> },
+                    { path: 'courts',         element: <CourtsPage /> },
                     // { path: 'followup',       element: <FollowupPage /> },
                      { path: 'alerts',         element: <AlertsPage /> },
                     {path: 'profile', element: <ProfilePage />},
