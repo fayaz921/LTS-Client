@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import type { CourtDto, CourtFormValues, CourtFormErrors } from "../types/Court.types";
+import { useState } from "react";
+import type { CourtDto, CourtFormValues, CourtFormErrors } from "../types/court.types";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface CourtFormProps {
@@ -39,22 +39,6 @@ export default function CourtForm({
   });
   const [errors, setErrors] = useState<CourtFormErrors>({});
   const [touched, setTouched] = useState(false);
-
-  // ✅ Fix: saari relevant fields dependency mein hain
-  useEffect(() => {
-    setValues({
-      courtName: initial?.courtName ?? "",
-      addressContact: initial?.addressContact ?? "",
-      isActive: initial?.isActive ?? true,
-    });
-    setErrors({});
-    setTouched(false);
-  }, [
-    initial?.id,
-    initial?.courtName,
-    initial?.addressContact,
-    initial?.isActive,
-  ]);
 
   const set = <K extends keyof CourtFormValues>(
     key: K,

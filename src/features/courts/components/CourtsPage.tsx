@@ -1,5 +1,5 @@
-import { useCourt } from "../hooks/UseCourts";
-import type { StatusFilter, Toast } from "../hooks/UseCourts";
+import { useCourt } from "../hooks/useCourts";
+import type { StatusFilter, Toast } from "../hooks/useCourts";
 import CourtList from "./CourtList";
 import CourtForm from "./CourtForm";
 // ─── Modal ────────────────────────────────────────────────────────────────────

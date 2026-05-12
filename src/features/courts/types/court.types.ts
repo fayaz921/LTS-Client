@@ -8,6 +8,8 @@ export interface CourtDto {
   createdAt: string; // ISO date string from backend
 }
 
+export type Court = CourtDto;
+
 export interface CreateCourtPayload {
   courtName: string;
   addressContact?: string;

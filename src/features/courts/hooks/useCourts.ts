@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import type { CourtDto, CourtFormValues, ModalMode }from "../types/Court.types";
+import { useQuery } from "@tanstack/react-query";
+import type { CourtDto, CourtFormValues, ModalMode } from "../types/court.types";
 import {
   getAllCourts,
   createCourt,
   updateCourt,
   deleteCourt,
-} from "../api/CourtApi";
+} from "../api/courtApi";
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 export type ToastType = "success" | "error";
@@ -19,6 +20,17 @@ let _toastId = 0;
 
 // ─── Filter type ──────────────────────────────────────────────────────────────
 export type StatusFilter = "all" | "active" | "inactive";
+
+const KEYS = {
+  all: ["courts"],
+};
+
+export const useGetCourts = (enabled: boolean = true) =>
+  useQuery({
+    queryKey: KEYS.all,
+    queryFn: () => getAllCourts(true),
+    enabled,
+  });
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useCourt() {
@@ -78,7 +90,7 @@ export function useCourt() {
         } else {
           pushToast(res.message ?? "Failed to load courts", "error");
         }
-      } catch (err) {
+      } catch {
         // Yeh sirf tab hoga jab network completely fail ho
         pushToast("Network error — server se connect nahi ho saka", "error");
       } finally {
@@ -88,11 +100,19 @@ export function useCourt() {
     [statusFilter, pushToast]
   );
 
-  // Initial load
   useEffect(() => {
-    fetchCourts(statusFilter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter]); // statusFilter change hone pe dobara fetch karo
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (!cancelled) {
+        void fetchCourts(statusFilter);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchCourts, statusFilter]);
 
   // ── status filter change ───────────────────────────────────────────────────
   const changeStatusFilter = (f: StatusFilter) => {

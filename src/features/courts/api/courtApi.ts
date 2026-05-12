@@ -3,7 +3,7 @@ import type {
   CreateCourtPayload,
   UpdateCourtPayload,
   ApiResponse,
-} from "../types/Court.types";
+} from "../types/court.types";
 // ── Base URL — apna actual backend URL yahan lagao ────────────────────────────
 const BASE = "/api/Courts";
 

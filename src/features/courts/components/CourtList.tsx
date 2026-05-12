@@ -1,4 +1,4 @@
-import type { CourtDto }from "../types/Court.types";
+import type { CourtDto } from "../types/court.types";
 
 // ─── Icon helpers ──────────────────────────────────────────────────────────────
 const IconEdit = () => (
