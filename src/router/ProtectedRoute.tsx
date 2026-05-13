@@ -1,47 +1,69 @@
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import { refreshToken } from '../features/auth/api/auth.api'
-import { jwtDecode } from 'jwt-decode'
+import { getMe, refreshToken } from '../features/auth/api/auth.api'
 import { Loader } from '../shared/components/Loader'
 
-interface JwtPayload {
-  nameid: string;
-  unique_name: string;
-  email: string;
-  role: string;
-  [key: string]: string;
-}
-
 export const ProtectedRoute = () => {
-    const { accessToken, setAuth, clearAuth } = useAuthStore()
+    const { accessToken, setAuth, setAccessToken, clearAuth } = useAuthStore()
     const [isChecking, setIsChecking] = useState(true)
     const hasChecked = useRef(false)
 
     useEffect(() => {
-          if (hasChecked.current) return 
-          hasChecked.current = true
+        if (hasChecked.current) return
+        hasChecked.current = true
+
+        // Token already hai — /me se fresh data lo
         if (accessToken) {
-           Promise.resolve().then(() => setIsChecking(false))
+            getMe()
+                .then((meResponse) => {
+                    if (meResponse.isSuccess && meResponse.data) {
+                        setAuth({
+                            id: meResponse.data.id,
+                            name: meResponse.data.name,
+                            email: meResponse.data.email,
+                            role: meResponse.data.role,
+                            profileImage: meResponse.data.profileImage,
+                            organizationId: meResponse.data.organizationId,
+                            organizationName: meResponse.data.organizationName,
+                            organizationPlan: meResponse.data.organizationPlan,
+                            isActive: true,
+                        }, accessToken)
+                    }
+                })
+                .catch(() => {
+                    // /me fail — token expire — clear karo
+                    clearAuth()
+                })
+                .finally(() => setIsChecking(false))
             return
         }
 
-        // Token nahi — refresh try karo
+        // Token nahi — cookie se refresh try karo
         const tryRefresh = async () => {
             try {
                 const response = await refreshToken()
                 if (response.isSuccess && response.data) {
-                    const decoded = jwtDecode<JwtPayload>(response.data)
-                    setAuth({
-                        id: decoded.nameid,
-                        name: decoded.unique_name,
-                        email: decoded.email,
-                        role: decoded.role,
-                        organizationId: '',
-                        organizationName: '',
-                        organizationPlan: '',
-                        isActive: true,
-                    }, response.data)
+                    const token = response.data
+
+                    // pehle token store karo
+                    setAccessToken(token)
+
+                    // /me call karo fresh data ke liye
+                    const meResponse = await getMe()
+                    if (meResponse.isSuccess && meResponse.data) {
+                        setAuth({
+                            id: meResponse.data.id,
+                            name: meResponse.data.name,
+                            email: meResponse.data.email,
+                            role: meResponse.data.role,
+                            profileImage: meResponse.data.profileImage,
+                            organizationId: meResponse.data.organizationId,
+                            organizationName: meResponse.data.organizationName,
+                            organizationPlan: meResponse.data.organizationPlan,
+                            isActive: true,
+                        }, token)
+                    }
                 } else {
                     clearAuth()
                 }
@@ -53,9 +75,9 @@ export const ProtectedRoute = () => {
         }
 
         tryRefresh()
-    }, [accessToken, setAuth, clearAuth])
+    }, []) // ← empty — sirf ek baar
 
-    if (isChecking) return <Loader /> // ya apna loader lagao
+    if (isChecking) return <Loader />
 
     return accessToken ? <Outlet /> : <Navigate to='/login' replace />
 }

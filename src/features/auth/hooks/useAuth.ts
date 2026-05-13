@@ -1,39 +1,54 @@
 import { useMutation } from '@tanstack/react-query';
-import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import { confirmOtp, forgetPassword, loginUser,logoutUser,SignUpUser, verifyEmail } from '../api/auth.api';
+import { confirmOtp, forgetPassword, getMe, loginUser, logoutUser, SignUpUser, verifyEmail } from '../api/auth.api';
 import { useAuthStore } from '../../../store/authStore';
 
-interface JwtPayload {
-  nameid: string;
-  unique_name: string;
-  email: string;
-  role: string;
-  [key: string]: string;
-}
 export const useLogin = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: loginUser,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.isSuccess && response.data?.accessToken) {
-        
-        // response.data object hai — .accessToken se nikalo
         const token = response.data.accessToken;
-        const decoded = jwtDecode<JwtPayload>(token);
 
-        setAuth({
-          id: decoded.nameid,
-          name: decoded.unique_name,
-          email: decoded.email,
-          role: decoded.role,
-          organizationId: '',
-          organizationName: '',
-          organizationPlan: '',
-          isActive: true,
-        }, token);
+        // Step 1 — token pehle store karo taake /me call mein header jayega
+        setAccessToken(token);
+
+        try {
+          // Step 2 — /me call karo — DB se fresh user data lo
+          const meResponse = await getMe();
+
+          if (meResponse.isSuccess && meResponse.data) {
+            // Step 3 — poora user data store mein save karo
+            setAuth({
+              id: meResponse.data.id,
+              name: meResponse.data.name,
+              email: meResponse.data.email,
+              role: meResponse.data.role,
+              profileImage: meResponse.data.profileImage,
+              organizationId: meResponse.data.organizationId,
+              organizationName: meResponse.data.organizationName,
+              organizationPlan: meResponse.data.organizationPlan,
+              isActive: true,
+            }, token);
+          }
+        } catch {
+          // /me fail ho — sirf token se kaam chalaao
+          setAuth({
+            id: '',
+            name: '',
+            email: '',
+            role: '',
+            profileImage: null,
+            organizationId: '',
+            organizationName: '',
+            organizationPlan: '',
+            isActive: true,
+          }, token);
+        }
 
         navigate('/app/dashboard');
       } else {
@@ -57,7 +72,6 @@ export const useLogout = () => {
       navigate('/login');
     },
     onError: () => {
-      // Error aaye tab bhi logout karo
       clearAuth();
       navigate('/login');
     }
@@ -69,6 +83,7 @@ export const useRegister = () => {
     mutationFn: SignUpUser,
   });
 };
+
 export const useConfirmOtp = () => {
   const navigate = useNavigate();
   return useMutation({
@@ -82,7 +97,7 @@ export const useConfirmOtp = () => {
       }
     },
     onError: (error: unknown) => {
-      alert((error as unknown as { response?: { data?: { message?: string } } })?.response?.data?.message || 'OTP verification failed.');
+      alert((error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'OTP verification failed.');
     }
   });
 };
@@ -91,7 +106,7 @@ export const useForgetPassword = () => {
   return useMutation({
     mutationFn: forgetPassword,
     onError: (error: unknown) => {
-      alert((error as unknown as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to send OTP.');
+      alert((error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to send OTP.');
     }
   });
 };
@@ -109,7 +124,7 @@ export const useVerifyEmail = () => {
       }
     },
     onError: (error: unknown) => {
-      alert((error as unknown as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Password reset failed.');
+      alert((error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Password reset failed.');
     }
   });
 };

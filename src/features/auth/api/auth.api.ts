@@ -1,4 +1,6 @@
 import axiosInstance from '../../../lib/axios';
+import type { GetMeResponse } from '../types/auth.types';
+
 import type {
   CreateUserCommand, LoginUserCommand,
   VerifyOtpCommand, ForgetPasswordCommand,
@@ -6,9 +8,7 @@ import type {
 } from '../types/auth.types';
 
 export const SignUpUser = async (command: CreateUserCommand): Promise<ApiResponse<string>> => {
-  console.log("Request Ayii")
   const response = await axiosInstance.post('/Auth/SignIn', command);
-  console.log("Request Gayii")
   return response.data;
 };
 
@@ -38,5 +38,12 @@ export const logoutUser = async (): Promise<void> => {
 
 export const refreshToken = async (): Promise<ApiResponse<string>> => {
   const response = await axiosInstance.post('/Auth/RefreshToken');
+  return response.data;
+};
+
+
+export const getMe = async (): Promise<ApiResponse<GetMeResponse>> => {
+  const response = await axiosInstance.get('/Auth/Me');
+  console.log('GetMe response:', response.data); // Debugging log
   return response.data;
 };
