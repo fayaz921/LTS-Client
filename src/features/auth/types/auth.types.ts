@@ -10,7 +10,6 @@ export interface LoginUserCommand {
   password: string;
 }
 
-
 export interface VerifyOtpCommand {
   email: string;
   otp: string;
@@ -26,7 +25,6 @@ export interface VerifyEmailCommand {
   newPassword: string;
 }
 
-
 export interface ApiResponse<T> {
   data: T;
   status: number;
@@ -34,15 +32,11 @@ export interface ApiResponse<T> {
   isSuccess: boolean;
 }
 
-
-// Login response ka type
-// LoginResponse already hai — bas use karo
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
 }
 
-// User info — JWT se parse hoga
 export interface AuthUser {
   id: string;
   name: string;
@@ -52,4 +46,17 @@ export interface AuthUser {
   organizationName: string;
   organizationPlan: string;
   isActive: boolean;
+  profileImage: string | null;
+}
+
+// /me endpoint ka response
+export interface GetMeResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  profileImage: string | null;
+  organizationId: string;
+  organizationName: string;
+  organizationPlan: string;
 }

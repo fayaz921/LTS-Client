@@ -2,7 +2,6 @@ export interface UpdateProfileCommand {
   name: string;
   phone: string;
   location: string;
-  department: string;
 }
 
 export interface ProfileResponse {
@@ -11,7 +10,6 @@ export interface ProfileResponse {
   email: string;
   phone: string | null;
   location: string | null;
-  department: string | null;
   role: string;
   profilePictureUrl: string | null;
   joinedAt: string;
