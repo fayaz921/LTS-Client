@@ -10,7 +10,7 @@ const PlanPill = ({ plan }: { plan: SubscriptionPlan }) => {
     Basic:        { bg: '#f1f3f5', color: '#7a8599' },
     Professional: { bg: '#eef2ff', color: '#3b5bdb' },
     Enterprise:   { bg: '#f3f0ff', color: '#7048e8' },
-  }[plan];
+  }[plan]?? { bg: '#f1f3f5', color: '#7a8599' }; 
   return (
     <span className="px-2 py-1 rounded-pill fw-bold"
       style={{ background: config.bg, color: config.color, fontSize: '0.62rem' }}>

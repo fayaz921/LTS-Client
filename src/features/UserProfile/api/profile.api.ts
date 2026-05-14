@@ -20,3 +20,18 @@ export const updateProfilePicture = async (file: File): Promise<ApiResponse<stri
   });
   return response.data;
 };
+
+
+export const sendChangePasswordOtp = async (email: string): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/ForgetPassword', { email });
+  return response.data;
+};
+
+export const changePassword = async (data: {
+  email: string;
+  otp: string;
+  newPassword: string;
+}): Promise<ApiResponse<string>> => {
+  const response = await axiosInstance.post('/Auth/VerifyEmail', data);
+  return response.data;
+};
