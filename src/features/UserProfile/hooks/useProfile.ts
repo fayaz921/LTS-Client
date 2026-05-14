@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getProfile, updateProfile, updateProfilePicture } from '../api/profile.api';
+import { changePassword, getProfile, sendChangePasswordOtp, updateProfile, updateProfilePicture } from '../api/profile.api';
 import type { UpdateProfileCommand } from '../types/profile.types';
 
 export const useGetProfile = () => {
@@ -26,5 +26,17 @@ export const useUpdateProfilePicture = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
+  });
+};
+
+export const useSendChangePasswordOtp = () => {
+  return useMutation({
+    mutationFn: (email: string) => sendChangePasswordOtp(email),
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: changePassword,
   });
 };

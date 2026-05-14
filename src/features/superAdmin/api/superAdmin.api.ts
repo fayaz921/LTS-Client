@@ -1,4 +1,5 @@
 import axios from '../../../lib/axios';
+import type { ApiResponse } from '../../courts/types/court.types';
 import type { 
   Organization, 
   Payment, 
@@ -9,10 +10,9 @@ import type {
 
 export const superAdminApi = {
   getStats: () =>
-    axios.get<{ data: DashboardStats }>('/super-admin/stats'),
+    axios.get<{ data: DashboardStats }>('/SuperAdmin/stats'),
+  
 
-  getOrganizations: () =>
-    axios.get<{ data: Organization[] }>('/super-admin/organizations'),
 
   getPayments: () =>
     axios.get<{ data: Payment[] }>('/super-admin/payments'),
@@ -20,7 +20,8 @@ export const superAdminApi = {
   getActivity: () =>
     axios.get<{ data: ActivityItem[] }>('/super-admin/activity'),
 
-  // ── Trial Users ──────────────────────────────────
   getTrialUsers: () =>
-    axios.get<{ data: TrailUser[] }>('/super-admin/trial-users'),
+    axios.get<ApiResponse<TrailUser[]>>('/SuperAdmin/trial'),
+    getOrganizations: () =>
+    axios.get<ApiResponse<Organization[]>>('/SuperAdmin/all'),
 };
