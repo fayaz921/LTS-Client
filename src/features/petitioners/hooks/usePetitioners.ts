@@ -8,29 +8,25 @@ import {
 } from '../api/petitionersApi'
 import type { CreatePetitionerDto, UpdatePetitionerDto } from '../types/petitioner.types'
 
-const DEMO_ORG_ID = '4278665f-13ed-445c-ae61-0dabcdc5b3a4'
-
 export const usePetitioners = (fetchEnable: boolean = true) => {
     const { user } = useAuthStore()
-    const organizationId = user?.organizationId || DEMO_ORG_ID
 
     return useQuery({
-        queryKey: ['petitioners', organizationId],
-        queryFn: () => getAllPetitioners(organizationId),
-        enabled: fetchEnable,
+        queryKey: ['petitioners', user?.organizationId],
+        queryFn: () => getAllPetitioners(user?.organizationId ?? ''),
+        enabled: !!user?.organizationId && fetchEnable,
     })
 }
 
 export const useCreatePetitioner = () => {
     const queryClient = useQueryClient()
     const { user } = useAuthStore()
-    const organizationId = user?.organizationId || DEMO_ORG_ID
 
     return useMutation({
         mutationFn: (data: CreatePetitionerDto) => createPetitioner({
             ...data,
-            organizationId,
-            createdBy: user?.email ?? 'system',
+            organizationId: user?.organizationId ?? '',
+            createdBy: user?.email ?? '',
         }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['petitioners'] })
