@@ -10,7 +10,7 @@ import type {
 
 export const superAdminApi = {
   getStats: () =>
-    axios.get<{ data: DashboardStats }>('/SuperAdmin/stats'),
+    axios.get<ApiResponse<DashboardStats>>('/SuperAdmin/dashboard-stats'),
   
 
 
@@ -20,8 +20,8 @@ export const superAdminApi = {
   getActivity: () =>
     axios.get<{ data: ActivityItem[] }>('/super-admin/activity'),
 
-  getTrialUsers: () =>
-    axios.get<ApiResponse<TrailUser[]>>('/SuperAdmin/trial'),
-    getOrganizations: () =>
+   getOrganizations: () =>
     axios.get<ApiResponse<Organization[]>>('/SuperAdmin/all'),
+     getTrialUsers: () =>
+    axios.get<ApiResponse<TrailUser[]>>('/SuperAdmin/trial'),
 };
