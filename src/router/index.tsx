@@ -15,6 +15,8 @@ import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
 import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdminDashboard'
 import AlertsPage from '../features/alerts/components/AlertsPage'
 import CourtsPage from '../features/courts/components/CourtsPage'
+import FollowupPage from '../features/followup/components/FollowupPage'
+
 export const router = createBrowserRouter([
     { path: '/', element: <LandingPage /> },
     { path: '/login', element: <LoginForm /> },
@@ -44,7 +46,8 @@ export const router = createBrowserRouter([
                     { path: 'documents/:caseId', element: <DocumentsPage /> },
                     { path: 'petitioners', element: <PetitionersPage /> },
                     { path: 'courts',         element: <CourtsPage /> },
-                    // { path: 'followup',       element: <FollowupPage /> },
+                    { path: 'followup',       element: <FollowupPage /> },
+                    { path: 'followup/:caseId', element: <FollowupPage /> },
                      { path: 'alerts',         element: <AlertsPage /> },
                     {path: 'profile', element: <ProfilePage />},
                     { path: 'Benches', element: <BenchPage /> },

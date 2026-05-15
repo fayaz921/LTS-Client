@@ -11,7 +11,7 @@ const MOBILE_SIDEBAR_WIDTH = 76
 const navItems = [
     { path: '/app/dashboard',   label: 'Dashboard',   icon: '⊞' },
     { path: '/app/cases',       label: 'Cases',       icon: '⚖' },
-    { path: '/app/hearings',    label: 'Hearings',    icon: '📅' },
+    { path: '/app/followup',    label: 'Follow',      icon: '📅' },
     { path: '/app/petitioners', label: 'Petitioners', icon: '👥' },
     { path: '/app/courts',      label: 'Courts',      icon: '🏛' },
     { path: '/app/departments', label: 'Departments', icon: '⊞' },
