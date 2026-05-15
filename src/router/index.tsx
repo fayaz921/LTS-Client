@@ -16,14 +16,18 @@ import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdmi
 import AlertsPage from '../features/alerts/components/AlertsPage'
 import CourtsPage from '../features/courts/components/CourtsPage'
 export const router = createBrowserRouter([
-    // public routes
     { path: '/', element: <LandingPage /> },
     { path: '/login', element: <LoginForm /> },
     { path: '/register', element: <SignUp /> },
-    { path: '/super-admin', element: <SuperAdminDashboard /> },
+    {
+        path: '/super-admin',
+        element: <ProtectedRoute requiredRole="SuperAdmin" />,
+        children: [
+            { index: true, element: <SuperAdminDashboard /> }
+        ]
+    },
 
 
-    // protected routes
     {
         path: '/app',
         element: <ProtectedRoute />,
@@ -50,6 +54,5 @@ export const router = createBrowserRouter([
         ]
     },
 
-    // catch all
     { path: '*', element: <Navigate to='/login' replace /> }
 ])

@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'lts-auth',
-      partialize: (state) => ({ // ✅ partialState nahi — partialize
+      partialize: (state) => ({ 
         user: state.user,
         accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,

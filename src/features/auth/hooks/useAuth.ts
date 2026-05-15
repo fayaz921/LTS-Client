@@ -13,16 +13,12 @@ export const useLogin = () => {
     onSuccess: async (response) => {
       if (response.isSuccess && response.data?.accessToken) {
         const token = response.data.accessToken;
-
-        // Step 1 — token pehle store karo taake /me call mein header jayega
         setAccessToken(token);
 
         try {
-          // Step 2 — /me call karo — DB se fresh user data lo
           const meResponse = await getMe();
 
           if (meResponse.isSuccess && meResponse.data) {
-            // Step 3 — poora user data store mein save karo
             setAuth({
               id: meResponse.data.id,
               name: meResponse.data.name,
@@ -34,23 +30,19 @@ export const useLogin = () => {
               organizationPlan: meResponse.data.organizationPlan,
               isActive: true,
             }, token);
+
+            const role = meResponse.data.role;
+            navigate(role === 'SuperAdmin' ? '/super-admin' : '/app/dashboard');
           }
         } catch {
-          // /me fail ho — sirf token se kaam chalaao
           setAuth({
-            id: '',
-            name: '',
-            email: '',
-            role: '',
-            profileImage: null,
-            organizationId: '',
-            organizationName: '',
-            organizationPlan: '',
+            id: '', name: '', email: '', role: '',
+            profileImage: null, organizationId: '',
+            organizationName: '', organizationPlan: '',
             isActive: true,
           }, token);
+          navigate('/app/dashboard');
         }
-
-        navigate('/app/dashboard');
       } else {
         alert(response.message || 'Login failed');
       }

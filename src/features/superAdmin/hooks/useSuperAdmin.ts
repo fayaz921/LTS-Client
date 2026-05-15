@@ -5,13 +5,20 @@ export const useDashboardStats = () =>
   useQuery({
     queryKey: ['superadmin-stats'],
     queryFn: () => superAdminApi.getStats(),
-    select: (res) => res.data.data,
+    select: (res) => res.data.data, 
   });
 
 export const useOrganizations = () =>
   useQuery({
     queryKey: ['superadmin-orgs'],
     queryFn: () => superAdminApi.getOrganizations(),
+    select: (res) => res.data.data, 
+  });
+
+export const useTrialUsers = () =>
+  useQuery({
+    queryKey: ['superadmin-trial-users'],
+    queryFn: () => superAdminApi.getTrialUsers(),
     select: (res) => res.data.data,
   });
 
@@ -26,13 +33,5 @@ export const useActivity = () =>
   useQuery({
     queryKey: ['superadmin-activity'],
     queryFn: () => superAdminApi.getActivity(),
-    select: (res) => res.data.data,
-  });
-
-// ── Trial Users ──────────────────────────────────────
-export const useTrialUsers = () =>
-  useQuery({
-    queryKey: ['superadmin-trial-users'],
-    queryFn: () => superAdminApi.getTrialUsers(),
     select: (res) => res.data.data,
   });

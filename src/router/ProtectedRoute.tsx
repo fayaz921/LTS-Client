@@ -4,80 +4,86 @@ import { useAuthStore } from '../store/authStore'
 import { getMe, refreshToken } from '../features/auth/api/auth.api'
 import { Loader } from '../shared/components/Loader'
 
-export const ProtectedRoute = () => {
-    const { accessToken, setAuth, setAccessToken, clearAuth } = useAuthStore()
-    const [isChecking, setIsChecking] = useState(true)
-    const hasChecked = useRef(false)
+interface Props {
+  requiredRole?: string
+}
 
-    useEffect(() => {
-        if (hasChecked.current) return
-        hasChecked.current = true
+export const ProtectedRoute = ({ requiredRole }: Props) => {
+  const { accessToken, user, setAuth, setAccessToken, clearAuth } = useAuthStore()
+  const [isChecking, setIsChecking] = useState(true)
+  const hasChecked = useRef(false)
 
-        // Token already hai — /me se fresh data lo
-        if (accessToken) {
-            getMe()
-                .then((meResponse) => {
-                    if (meResponse.isSuccess && meResponse.data) {
-                        setAuth({
-                            id: meResponse.data.id,
-                            name: meResponse.data.name,
-                            email: meResponse.data.email,
-                            role: meResponse.data.role,
-                            profileImage: meResponse.data.profileImage,
-                            organizationId: meResponse.data.organizationId,
-                            organizationName: meResponse.data.organizationName,
-                            organizationPlan: meResponse.data.organizationPlan,
-                            isActive: true,
-                        }, accessToken)
-                    }
-                })
-                .catch(() => {
-                    // /me fail — token expire — clear karo
-                    clearAuth()
-                })
-                .finally(() => setIsChecking(false))
-            return
+  useEffect(() => {
+    if (hasChecked.current) return
+    hasChecked.current = true
+
+    if (accessToken) {
+      getMe()
+        .then((meResponse) => {
+          if (meResponse.isSuccess && meResponse.data) {
+            setAuth({
+              id: meResponse.data.id,
+              name: meResponse.data.name,
+              email: meResponse.data.email,
+              role: meResponse.data.role,
+              profileImage: meResponse.data.profileImage,
+              organizationId: meResponse.data.organizationId,
+              organizationName: meResponse.data.organizationName,
+              organizationPlan: meResponse.data.organizationPlan,
+              isActive: true,
+            }, accessToken)
+          }
+        })
+        .catch(() => clearAuth())
+        .finally(() => setIsChecking(false))
+      return
+    }
+
+    const tryRefresh = async () => {
+      try {
+        const response = await refreshToken()
+        if (response.isSuccess && response.data) {
+          const token = response.data
+          setAccessToken(token)
+          const meResponse = await getMe()
+          if (meResponse.isSuccess && meResponse.data) {
+            setAuth({
+              id: meResponse.data.id,
+              name: meResponse.data.name,
+              email: meResponse.data.email,
+              role: meResponse.data.role,
+              profileImage: meResponse.data.profileImage,
+              organizationId: meResponse.data.organizationId,
+              organizationName: meResponse.data.organizationName,
+              organizationPlan: meResponse.data.organizationPlan,
+              isActive: true,
+            }, token)
+          }
+        } else {
+          clearAuth()
         }
+      } catch {
+        clearAuth()
+      } finally {
+        setIsChecking(false)
+      }
+    }
 
-        // Token nahi — cookie se refresh try karo
-        const tryRefresh = async () => {
-            try {
-                const response = await refreshToken()
-                if (response.isSuccess && response.data) {
-                    const token = response.data
+    tryRefresh()
+  }, [])
 
-                    // pehle token store karo
-                    setAccessToken(token)
+  if (isChecking) return <Loader />
 
-                    // /me call karo fresh data ke liye
-                    const meResponse = await getMe()
-                    if (meResponse.isSuccess && meResponse.data) {
-                        setAuth({
-                            id: meResponse.data.id,
-                            name: meResponse.data.name,
-                            email: meResponse.data.email,
-                            role: meResponse.data.role,
-                            profileImage: meResponse.data.profileImage,
-                            organizationId: meResponse.data.organizationId,
-                            organizationName: meResponse.data.organizationName,
-                            organizationPlan: meResponse.data.organizationPlan,
-                            isActive: true,
-                        }, token)
-                    }
-                } else {
-                    clearAuth()
-                }
-            } catch {
-                clearAuth()
-            } finally {
-                setIsChecking(false)
-            }
-        }
+  if (!accessToken) return <Navigate to="/login" replace />
 
-        tryRefresh()
-    }, []) // ← empty — sirf ek baar
+ 
+  console.log('user role:', user?.role, 'required:', requiredRole)
 
-    if (isChecking) return <Loader />
+  if (requiredRole && user?.role !== requiredRole) {
+    return user?.role === 'SuperAdmin'
+      ? <Navigate to="/super-admin" replace />
+      : <Navigate to="/app/dashboard" replace />
+  }
 
-    return accessToken ? <Outlet /> : <Navigate to='/login' replace />
+  return <Outlet />
 }
