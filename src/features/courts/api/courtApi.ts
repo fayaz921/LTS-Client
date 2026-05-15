@@ -1,66 +1,41 @@
-import type {
-  CourtDto,
-  CreateCourtPayload,
-  UpdateCourtPayload,
-  ApiResponse,
-} from "../types/court.types";
-// ── Base URL — apna actual backend URL yahan lagao ────────────────────────────
-const BASE = "/api/Courts";
+import instance from '../../../lib/axios'
+import type { Court, CreateCourtDto, UpdateCourtDto } from '../types/court.types'
 
-const headers = { "Content-Type": "application/json" };
+// ─────────────────────────────────────────────────────────────
+// Court API — matches backend CourtsController endpoints
+// GET    /courts
+// GET    /courts/:id
+// POST   /courts
+// PUT    /courts/:id
+// DELETE /courts/:id
+// ─────────────────────────────────────────────────────────────
 
-// ─── GET all courts (optional isActive filter) ────────────────────────────────
-// isActive = true  → sirf active
-// isActive = false → sirf inactive
-// isActive = undefined → sab (active + inactive)
-export async function getAllCourts(
-  isActive?: boolean
-): Promise<ApiResponse<CourtDto[]>> {
-  const url =
-    isActive !== undefined ? `${BASE}?isActive=${isActive}` : BASE;
-  const res = await fetch(url);
-  // ✅ hamesha json parse karo — throw mat karo
-  // Backend ApiResponse<T> return karta hai, status field mein status hoti hai
-  return res.json();
-}
+export const courtApi = {
 
-// ─── GET court by id ──────────────────────────────────────────────────────────
-export async function getCourtById(
-  id: string
-): Promise<ApiResponse<CourtDto>> {
-  const res = await fetch(`${BASE}/${id}`);
-  return res.json();
-}
+    getAll: (isActive?: boolean) =>
+        instance
+            .get<{ status: number; message: string; data: Court[] }>(
+                isActive !== undefined ? `/courts?isActive=${isActive}` : '/courts'
+            )
+            .then(r => r.data.data),
 
-// ─── POST create court ────────────────────────────────────────────────────────
-export async function createCourt(
-  payload: CreateCourtPayload
-): Promise<ApiResponse<string>> {
-  const res = await fetch(BASE, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  });
-  return res.json();
-}
+    getById: (id: string) =>
+        instance
+            .get<{ status: number; message: string; data: Court }>(`/courts/${id}`)
+            .then(r => r.data.data),
 
-// ─── PUT update court  →  PUT /api/Courts/{id} ────────────────────────────────
-export async function updateCourt(
-  id: string,
-  payload: UpdateCourtPayload
-): Promise<ApiResponse<string>> {
-  const res = await fetch(`${BASE}/${id}`, {
-    method: "PUT",
-    headers,
-    body: JSON.stringify(payload),
-  });
-  return res.json();
-}
+    create: (data: CreateCourtDto) =>
+        instance
+            .post<{ status: number; message: string; data: string }>('/courts', data)
+            .then(r => r.data),
 
-// ─── DELETE (soft-delete) court ───────────────────────────────────────────────
-export async function deleteCourt(
-  id: string
-): Promise<ApiResponse<string>> {
-  const res = await fetch(`${BASE}/${id}`, { method: "DELETE" });
-  return res.json();
+    update: (data: UpdateCourtDto) =>
+        instance
+            .put<{ status: number; message: string; data: string }>(`/courts/${data.id}`, data)
+            .then(r => r.data),
+
+    delete: (id: string) =>
+        instance
+            .delete<{ status: number; message: string; data: string }>(`/courts/${id}`)
+            .then(r => r.data),
 }
