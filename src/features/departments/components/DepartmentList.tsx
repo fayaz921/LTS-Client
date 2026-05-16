@@ -38,7 +38,7 @@ const DepartmentList = ({ onEdit, onAdd }: Props) => {
                 fontSize: '14px'
             }}>
                 <span style={{ fontSize: '20px' }}>⚠️</span>
-                Departments load nahi ho sake. Please refresh karein.
+                Departments could not be loaded. Please refresh.
             </div>
         </div>
     )
@@ -85,7 +85,7 @@ const DepartmentList = ({ onEdit, onAdd }: Props) => {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '32px'
                     }}>🏢</div>
-                    <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>Koi department nahi mila</p>
+                    <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>No department found</p>
                     <button
                         onClick={onAdd}
                         className="add-btn"
@@ -96,7 +96,7 @@ const DepartmentList = ({ onEdit, onAdd }: Props) => {
                             transition: 'all 0.2s ease', boxShadow: '0 2px 8px rgba(212,168,67,0.25)'
                         }}
                     >
-                        + Pehla Department Add Karein
+                        + ADD THE FIRST Department
                     </button>
                 </div>
             ) : (
@@ -205,33 +205,33 @@ const DepartmentList = ({ onEdit, onAdd }: Props) => {
 
                                     <td style={{ padding: '14px 16px' }}>
                                         <div style={{ display: 'flex', gap: '6px' }}>
-                                            <button
-                                                className="action-btn edit-btn"
-                                                onClick={() => onEdit(dep)}
-                                                style={{
-                                                    background: '#EEF2FF', color: '#1B2A4A',
-                                                    border: '1px solid #C7D2FE',
-                                                    borderRadius: '8px', padding: '6px 14px',
-                                                    fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                                                    transition: 'all 0.2s ease'
-                                                }}
-                                            >
-                                                ✏️ Edit
-                                            </button>
-                                            <button
-                                                className="action-btn del-btn"
-                                                onClick={() => deleteDep(dep.id)}
-                                                disabled={isDeleting}
-                                                style={{
-                                                    background: '#FEF2F2', color: '#DC2626',
-                                                    border: '1px solid #FECACA',
-                                                    borderRadius: '8px', padding: '6px 14px',
-                                                    fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                                                    transition: 'all 0.2s ease'
-                                                }}
-                                            >
-                                                🗑️ Delete
-                                            </button>
+                                               <button
+                                                        className="action-btn edit-btn"
+                                                        onClick={() => onEdit(dep)}
+                                                        style={{
+                                                            background: '#EEF2FF', color: '#1B2A4A',
+                                                            border: '1px solid #C7D2FE', borderRadius: '8px',
+                                                            padding: '6px 14px', fontSize: '12px',
+                                                            fontWeight: 600, cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                        }}
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                <button
+                                                        className="action-btn del-btn"
+                                                        onClick={() => deleteDep(dep.id)}
+                                                        disabled={isDeleting}
+                                                        style={{
+                                                            background: '#FEF2F2', color: '#DC2626',
+                                                            border: '1px solid #FECACA', borderRadius: '8px',
+                                                            padding: '6px 14px', fontSize: '12px',
+                                                            fontWeight: 600, cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                        }}
+                                                    >
+                                                        🗑️
+                                                    </button>
                                         </div>
                                     </td>
                                 </tr>
