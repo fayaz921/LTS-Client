@@ -26,7 +26,7 @@ const CourtsPage = () => {
         <div style={{
             padding: '32px',
             minHeight: '100vh',
-            background: 'linear-gradient(160deg, #F8F6F0 0%, #F2EDE0 100%)',
+            background: '#ffffff',
         }}>
             <CourtList
                 onEdit={handleEdit}
