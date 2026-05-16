@@ -8,6 +8,10 @@ import type { Department } from '../../departments/types/department.types';
 import type { Court } from '../../courts/types/court.types';
 import type { CreateCaseDto } from "../types/case.types";
 
+const toUtcInstitutionDate = (date: string) => {
+    return new Date(`${date}T00:00:00.000Z`).toISOString();
+};
+
 interface CreateCaseModalProps {
     onClose: () => void;
 }
@@ -65,7 +69,7 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
 
     const petitioners: PetitionerDto[] = petData?.data ?? [];
     const departments: Department[] = deptData ?? [];
-    const courts: Court[] = courtData?.data ?? [];
+    const courts: Court[] = courtData ?? [];
 
     // ── Selected petitioner → info pill ─────────────────────
     const selected = petitioners.find((p) => p.id === selectedPetitionerId);
@@ -129,7 +133,7 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
             title,
             subject,
             detail,
-            dateInstitution: selectedDate,             // "2026-05-08" format
+            dateInstitution: toUtcInstitutionDate(selectedDate),
             emailList: emailTags.join(','),            // ["a@b.com","c@d.com"] → "a@b.com,c@d.com"
         }
 
