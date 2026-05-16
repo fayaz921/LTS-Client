@@ -67,9 +67,18 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
 
     const { mutate: createCase, isPending, isError: submitError } = HandleCreateCase()
 
-    const petitioners: PetitionerDto[] = petData?.data ?? [];
-    const departments: Department[] = deptData ?? [];
-    const courts: Court[] = courtData ?? [];
+// ─────────────────────────────────────────────────────────────
+// SAFE DROPDOWN DATA
+// ─────────────────────────────────────────────────────────────
+
+const petitioners: PetitionerDto[] = petData?.data ?? [];
+
+// Departments
+const departments: Department[] = deptData ?? [];
+
+// Courts
+const courts: Court[] = courtData?.items ?? [];
+
 
     // ── Selected petitioner → info pill ─────────────────────
     const selected = petitioners.find((p) => p.id === selectedPetitionerId);

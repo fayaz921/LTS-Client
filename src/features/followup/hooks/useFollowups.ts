@@ -1,19 +1,57 @@
-import { useQuery } from '@tanstack/react-query'
+// hooks/useFollowups.ts
 
-import { getFollowupsByCase }
-from '../api/followup.api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { followupApi } from '../api/followupApi'
+import type { CreateFollowUpDto, UpdateFollowUpDto, FollowUpPageParams } from '../types/followup.types'
 
-export const useFollowups = (
-  caseId: string
-) => {
+export const followupKeys = {
+    all: ['followups'] as const,
+    list: (params: FollowUpPageParams) => ['followups', 'list', params] as const,
+    byId: (id: string) => ['followups', id] as const,
+}
 
-  return useQuery({
+export const useGetFollowUps = (params: FollowUpPageParams, enabled = true) =>
+    useQuery({
+        queryKey: followupKeys.list(params),
+        queryFn: () => followupApi.getAll(params),
+        enabled,
+        placeholderData: (prev) => prev,
+        retry: 1,
+    })
 
-    queryKey: ['followups', caseId],
+export const useGetFollowUpById = (id: string) =>
+    useQuery({
+        queryKey: followupKeys.byId(id),
+        queryFn: () => followupApi.getById(id),
+        enabled: !!id,
+    })
 
-    queryFn: () =>
-      getFollowupsByCase(caseId),
+export const useCreateFollowUp = () => {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (data: CreateFollowUpDto) => followupApi.create(data),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: followupKeys.all })
+        },
+    })
+}
 
-    enabled: !!caseId
-  })
+export const useUpdateFollowUp = () => {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (data: UpdateFollowUpDto) => followupApi.update(data),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: followupKeys.all })
+        },
+    })
+}
+
+export const useDeleteFollowUp = () => {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (id: string) => followupApi.delete(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: followupKeys.all })
+        },
+    })
 }
