@@ -10,7 +10,6 @@ export interface LoginUserCommand {
   password: string;
 }
 
-
 export interface VerifyOtpCommand {
   email: string;
   otp: string;
@@ -26,10 +25,38 @@ export interface VerifyEmailCommand {
   newPassword: string;
 }
 
-
 export interface ApiResponse<T> {
   data: T;
   status: number;
   message: string;
   isSuccess: boolean;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  organizationId: string;
+  organizationName: string;
+  organizationPlan: string;
+  isActive: boolean;
+  profileImage: string | null;
+}
+
+// /me endpoint ka response
+export interface GetMeResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  profileImage: string | null;
+  organizationId: string;
+  organizationName: string;
+  organizationPlan: string;
 }

@@ -6,9 +6,16 @@ interface Props {
     caseId: string
 }
 
+const getInlineUrl = (url: string) => {
+    if (url.toLowerCase().includes('.pdf')) {
+        return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=false`
+    }
+    return url
+}
+
 const DocumentsList = ({ caseId }: Props) => {
     const [showModal, setShowModal] = useState(false)
-    const { data: documents, isLoading, isError } = useGetDocumentsByCase(caseId)
+    const { data: documents, isLoading, isError, error } = useGetDocumentsByCase(caseId)
     const { mutate: deleteDoc, isPending: isDeleting } = useDeleteDocument(caseId)
 
     if (isLoading) return (
@@ -17,39 +24,11 @@ const DocumentsList = ({ caseId }: Props) => {
         </div>
     )
 
-   if (isError) return (
-    <div>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 style={{ color: '#1B2A4A', fontWeight: 700 }}>
-                Documents
-            </h5>
-            <button
-                className="btn btn-sm"
-                style={{ backgroundColor: '#D4A843', color: '#0F172A', fontWeight: 600 }}
-                onClick={() => setShowModal(true)}
-            >
-                + Upload Document
-            </button>
-        </div>
-
-        <div className="alert alert-danger">
-            Documents load nahi ho sake!
-        </div>
-
-        {showModal && (
-            <UploadDocumentModal
-                caseId={caseId}
-                onClose={() => setShowModal(false)}
-            />
-        )}
-    </div>
-)
-
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h5 style={{ color: '#1B2A4A', fontWeight: 700 }}>
-                    Documents ({documents?.length ?? 0})
+                    Documents {!isError && `(${documents?.length ?? 0})`}
                 </h5>
                 <button
                     className="btn btn-sm"
@@ -60,14 +39,20 @@ const DocumentsList = ({ caseId }: Props) => {
                 </button>
             </div>
 
-            {documents?.length === 0 && (
+            {isError && (
+                <div className="alert alert-danger">
+                    {(error as Error)?.message || 'Documents load nahi ho sake!'}
+                </div>
+            )}
+
+            {!isError && documents?.length === 0 && (
                 <div className="text-center py-5" style={{ color: '#64748B' }}>
                     <div style={{ fontSize: '40px' }}>📄</div>
                     <p className="mt-2">Koi document nahi mila</p>
                 </div>
             )}
 
-            {documents && documents.length > 0 && (
+            {!isError && documents && documents.length > 0 && (
                 <div className="table-responsive">
                     <table className="table table-hover align-middle">
                         <thead style={{ backgroundColor: '#F8FAFC' }}>
@@ -89,10 +74,12 @@ const DocumentsList = ({ caseId }: Props) => {
                                                 {doc.fileType.includes('pdf') ? '📄' :
                                                  doc.fileType.includes('image') ? '🖼' : '📎'}
                                             </span>
-                                            <a href={doc.filePath}
+                                            <a
+                                                href={getInlineUrl(doc.filePath)}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                style={{ color: '#2563EB', fontSize: '13px', fontWeight: 500 }}>
+                                                style={{ color: '#2563EB', fontSize: '13px', fontWeight: 500 }}
+                                            >
                                                 {doc.fileName}
                                             </a>
                                         </div>
@@ -119,18 +106,21 @@ const DocumentsList = ({ caseId }: Props) => {
                                     </td>
                                     <td>
                                         <div className="d-flex gap-2">
-                                            <a href={doc.filePath}
+                                            
+                                            <a   href={getInlineUrl(doc.filePath)}
                                                 target="_blank"
                                                 rel="noreferrer"
                                                 className="btn btn-sm"
-                                                style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: '12px' }}>
+                                                style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: '12px' }}
+                                            >
                                                 View
                                             </a>
                                             <button
                                                 className="btn btn-sm"
                                                 style={{ backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: '12px' }}
                                                 onClick={() => deleteDoc(doc.id)}
-                                                disabled={isDeleting}>
+                                                disabled={isDeleting}
+                                            >
                                                 Delete
                                             </button>
                                         </div>
@@ -141,12 +131,13 @@ const DocumentsList = ({ caseId }: Props) => {
                     </table>
                 </div>
             )}
-{showModal && (
-    <UploadDocumentModal
-        caseId={caseId}
-        onClose={() => setShowModal(false)}
-    />
-)}
+
+            {showModal && (
+                <UploadDocumentModal
+                    caseId={caseId}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
         </div>
     )
 }

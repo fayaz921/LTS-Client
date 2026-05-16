@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useGetUpcomingHearings, useSendAlert } from '../hooks/useAlerts'
 
 const AlertsPage = () => {
-    const { data: hearings, isLoading, isError } = useGetUpcomingHearings()
-    const { mutate: sendAlert, isPending } = useSendAlert()
+    const { data: hearings, isLoading, isError, error } = useGetUpcomingHearings()
+    const { mutate: sendAlert, isPending, isSuccess, isError: isSendError, error: sendError } = useSendAlert()
+    const [sentCaseId, setSentCaseId] = useState<string | null>(null)
 
     if (isLoading) return (
         <div className="text-center py-5">
@@ -10,15 +12,9 @@ const AlertsPage = () => {
         </div>
     )
 
-    if (isError) return (
-        <div className="alert alert-danger">
-            Hearings load nahi ho sake!
-        </div>
-    )
-
     return (
         <div>
-            {/* Header */}
+            {/* Header - hamesha dikhega */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h4 style={{ color: '#1B2A4A', fontWeight: 700, margin: 0 }}>
@@ -28,19 +24,42 @@ const AlertsPage = () => {
                         Agle 3 din k hearings
                     </small>
                 </div>
-                <span className="badge" style={{
-                    backgroundColor: '#FEF2F2',
-                    color: '#DC2626',
-                    fontSize: '13px',
-                    padding: '8px 14px',
-                    borderRadius: '8px',
-                }}>
-                    🔔 {hearings?.length ?? 0} Upcoming
-                </span>
+                {!isError && (
+                    <span className="badge" style={{
+                        backgroundColor: '#FEF2F2',
+                        color: '#DC2626',
+                        fontSize: '13px',
+                        padding: '8px 14px',
+                        borderRadius: '8px',
+                    }}>
+                        🔔 {hearings?.length ?? 0} Upcoming
+                    </span>
+                )}
             </div>
 
+            {/* Fetch Error */}
+            {isError && (
+                <div className="alert alert-danger">
+                    {(error as Error)?.message || 'Hearings load nahi ho sake!'}
+                </div>
+            )}
+
+            {/* Send Alert Success */}
+            {isSuccess && (
+                <div className="alert alert-success">
+                    ✅ Alert successfully send ho gaya!
+                </div>
+            )}
+
+            {/* Send Alert Error */}
+            {isSendError && (
+                <div className="alert alert-danger">
+                    {(sendError as Error)?.message || 'Alert send nahi ho saka!'}
+                </div>
+            )}
+
             {/* Empty State */}
-            {hearings?.length === 0 && (
+            {!isError && hearings?.length === 0 && (
                 <div className="text-center py-5" style={{ color: '#64748B' }}>
                     <div style={{ fontSize: '40px' }}>📅</div>
                     <p className="mt-2">Koi upcoming hearing nahi hai</p>
@@ -48,7 +67,7 @@ const AlertsPage = () => {
             )}
 
             {/* Table */}
-            {hearings && hearings.length > 0 && (
+            {!isError && hearings && hearings.length > 0 && (
                 <div className="table-responsive">
                     <table className="table table-hover align-middle">
                         <thead style={{ backgroundColor: '#F8FAFC' }}>
@@ -63,7 +82,6 @@ const AlertsPage = () => {
                         <tbody>
                             {hearings.map(hearing => (
                                 <tr key={hearing.caseId}>
-                                    {/* Case No */}
                                     <td>
                                         <span style={{
                                             backgroundColor: '#EFF6FF',
@@ -77,12 +95,10 @@ const AlertsPage = () => {
                                         </span>
                                     </td>
 
-                                    {/* Title */}
                                     <td style={{ fontSize: '13px', color: '#0F172A', fontWeight: 500 }}>
                                         {hearing.title}
                                     </td>
 
-                                    {/* Date */}
                                     <td>
                                         <span style={{
                                             backgroundColor: '#FEF2F2',
@@ -98,12 +114,10 @@ const AlertsPage = () => {
                                         </span>
                                     </td>
 
-                                    {/* Emails */}
                                     <td style={{ fontSize: '12px', color: '#64748B' }}>
                                         {hearing.emailList}
                                     </td>
 
-                                    {/* Send Button */}
                                     <td>
                                         <button
                                             className="btn btn-sm"
@@ -113,10 +127,13 @@ const AlertsPage = () => {
                                                 fontWeight: 600,
                                                 fontSize: '12px',
                                             }}
-                                            onClick={() => sendAlert(hearing.caseId)}
-                                            disabled={isPending}
+                                            onClick={() => {
+                                                setSentCaseId(hearing.caseId)
+                                                sendAlert(hearing.caseId)
+                                            }}
+                                            disabled={isPending && sentCaseId === hearing.caseId}
                                         >
-                                            {isPending ? 'Sending...' : '📧 Send Alert'}
+                                            {isPending && sentCaseId === hearing.caseId ? 'Sending...' : '📧 Send Alert'}
                                         </button>
                                     </td>
                                 </tr>

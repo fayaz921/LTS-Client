@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { alertsApi } from '../api/AlertsApi'
+import { alertsApi } from '../api/alertsApi'
  
 
 const ALERT_KEYS = {
