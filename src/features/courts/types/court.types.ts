@@ -1,3 +1,7 @@
+// ─────────────────────────────────────────────────────────────
+// Court Domain Types
+// ─────────────────────────────────────────────────────────────
+
 export interface Court {
     id: string
     courtName: string
@@ -9,7 +13,6 @@ export interface Court {
 export interface CreateCourtDto {
     courtName: string
     addressContact?: string
-    isActive?: boolean
 }
 
 export interface UpdateCourtDto {
@@ -17,4 +20,24 @@ export interface UpdateCourtDto {
     courtName: string
     addressContact?: string
     isActive: boolean
+}
+
+// ─────────────────────────────────────────────────────────────
+// Pagination Types — matches backend PaginatedResponse<T>
+// ─────────────────────────────────────────────────────────────
+
+export interface PaginatedResponse<T> {
+    items:       T[]
+    totalCount:  number
+    pageNumber:  number
+    pageSize:    number
+    totalPages:  number
+    hasPrevious: boolean
+    hasNext:     boolean
+}
+
+export interface CourtPageParams {
+    pageNumber: number
+    pageSize:   number
+    isActive?:  boolean
 }

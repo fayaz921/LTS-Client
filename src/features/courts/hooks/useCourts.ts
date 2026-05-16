@@ -1,26 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { courtApi } from '../api/courtApi'
-import type { CreateCourtDto, UpdateCourtDto } from '../types/court.types'
+import type { CreateCourtDto, UpdateCourtDto, CourtPageParams } from '../types/court.types'
 
 // ─────────────────────────────────────────────────────────────
 // Query Keys
 // ─────────────────────────────────────────────────────────────
 
-const KEYS = {
-    all: ['courts'] as const,
-    filtered: (isActive?: boolean) => ['courts', { isActive }] as const,
-    byId: (id: string) => ['courts', id] as const,
+export const courtKeys = {
+    all:      ['courts']                          as const,
+    list:     (params: CourtPageParams) =>
+                  ['courts', 'list', params]      as const,
+    byId:     (id: string) =>
+                  ['courts', id]                  as const,
 }
 
 // ─────────────────────────────────────────────────────────────
-// GET ALL — optional isActive filter
+// GET ALL — paginated
 // ─────────────────────────────────────────────────────────────
 
-export const useGetCourts = (isActive?: boolean, enabled: boolean = true) =>
+export const useGetCourts = (params: CourtPageParams, enabled = true) =>
     useQuery({
-        queryKey: KEYS.filtered(isActive),
-        queryFn: () => courtApi.getAll(isActive),
+        queryKey: courtKeys.list(params),
+        queryFn:  () => courtApi.getAll(params),
         enabled,
+        placeholderData: (prev) => prev,   // keeps old data visible while fetching next page
     })
 
 // ─────────────────────────────────────────────────────────────
@@ -29,9 +32,9 @@ export const useGetCourts = (isActive?: boolean, enabled: boolean = true) =>
 
 export const useGetCourtById = (id: string) =>
     useQuery({
-        queryKey: KEYS.byId(id),
-        queryFn: () => courtApi.getById(id),
-        enabled: !!id,
+        queryKey: courtKeys.byId(id),
+        queryFn:  () => courtApi.getById(id),
+        enabled:  !!id,
     })
 
 // ─────────────────────────────────────────────────────────────
@@ -42,7 +45,7 @@ export const useCreateCourt = () => {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (data: CreateCourtDto) => courtApi.create(data),
-        onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.all }),
+        onSuccess:  () => qc.invalidateQueries({ queryKey: courtKeys.all }),
     })
 }
 
@@ -54,18 +57,18 @@ export const useUpdateCourt = () => {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (data: UpdateCourtDto) => courtApi.update(data),
-        onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.all }),
+        onSuccess:  () => qc.invalidateQueries({ queryKey: courtKeys.all }),
     })
 }
 
 // ─────────────────────────────────────────────────────────────
-// DELETE (soft delete — marks isActive = false)
+// DELETE (soft)
 // ─────────────────────────────────────────────────────────────
 
 export const useDeleteCourt = () => {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (id: string) => courtApi.delete(id),
-        onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.all }),
+        onSuccess:  () => qc.invalidateQueries({ queryKey: courtKeys.all }),
     })
 }

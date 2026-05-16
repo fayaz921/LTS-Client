@@ -1,23 +1,32 @@
 import instance from '../../../lib/axios'
-import type { Court, CreateCourtDto, UpdateCourtDto } from '../types/court.types'
+import type {
+    Court,
+    CreateCourtDto,
+    UpdateCourtDto,
+    PaginatedResponse,
+    CourtPageParams,
+} from '../types/court.types'
 
 // ─────────────────────────────────────────────────────────────
-// Court API — matches backend CourtsController endpoints
-// GET    /courts
-// GET    /courts/:id
-// POST   /courts
-// PUT    /courts/:id
-// DELETE /courts/:id
+// Court API
 // ─────────────────────────────────────────────────────────────
 
 export const courtApi = {
 
-    getAll: (isActive?: boolean) =>
-        instance
-            .get<{ status: number; message: string; data: Court[] }>(
-                isActive !== undefined ? `/courts?isActive=${isActive}` : '/courts'
+    // GET /api/courts?pageNumber=1&pageSize=10&isActive=true
+    getAll: ({ pageNumber, pageSize, isActive }: CourtPageParams) => {
+        const params = new URLSearchParams({
+            pageNumber: String(pageNumber),
+            pageSize:   String(pageSize),
+        })
+        if (isActive !== undefined) params.append('isActive', String(isActive))
+
+        return instance
+            .get<{ status: number; message: string; data: PaginatedResponse<Court> }>(
+                `/courts?${params.toString()}`
             )
-            .then(r => r.data.data),
+            .then(r => r.data.data)
+    },
 
     getById: (id: string) =>
         instance
