@@ -15,7 +15,7 @@ import { ProfilePage } from '../features/UserProfile/components/ProfilePage'
 import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdminDashboard'
 import AlertsPage from '../features/alerts/components/AlertsPage'
 import CourtsPage from '../features/courts/components/CourtsPage'
-import FollowupPage from '../features/followup/components/FollowupPage'
+import FollowupPage from '../features/followup/components/FollowUpsPage'
 
 export const router = createBrowserRouter([
     { path: '/', element: <LandingPage /> },

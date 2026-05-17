@@ -1,25 +1,25 @@
-import {
-  useMutation,
-  useQueryClient
-} from '@tanstack/react-query'
+// import {
+//   useMutation,
+//   useQueryClient
+// } from '@tanstack/react-query'
 
-import {
-  createFollowup
-} from '../api/followup.api'
+// //import {
+// //createFollowup
+// //} from '../api/followupApi'
 
-export const useCreateFollowup = () => {
+// export const useCreateFollowup = () => {
 
-  const queryClient = useQueryClient()
+//   const queryClient = useQueryClient()
 
-  return useMutation({
+//   return useMutation({
 
-    mutationFn: createFollowup,
+//     mutationFn: createFollowup,
 
-    onSuccess: () => {
+//     onSuccess: () => {
 
-      queryClient.invalidateQueries({
-        queryKey: ['followups']
-      })
-    }
-  })
-}
+//       queryClient.invalidateQueries({
+//         queryKey: ['followups']
+//       })
+//     }
+//   })
+// }
