@@ -24,7 +24,7 @@ const caseFlow = [
 const activities = [
     'Document bundle uploaded for LTS-2026-014',
     'Hearing alert queued for 12 petitioners',
-    'New court department assigned to 3 cases',
+    'New department assigned to 3 cases',
     'Weekly report draft is ready for review',
 ]
 

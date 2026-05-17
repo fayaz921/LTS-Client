@@ -96,9 +96,17 @@ const PetitionersPage = () => {
 
             {/* Page Header */}
             <div className="lts-page__header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '44px', height: '44px', borderRadius: '12px',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#2A3F70 100%)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '20px', flexShrink: 0,
+                    }}>👤</div>
                 <div>
                     <h1 className="lts-page__title">Petitioners</h1>
                     <p className="lts-page__subtitle">Manage all petitioners linked to your cases</p>
+                </div>
                 </div>
                 <motion.button
                     className="lts-btn lts-btn--primary"

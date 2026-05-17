@@ -1,383 +1,459 @@
-// ============================================================
-// BenchPage COMPONENT
-// Yeh woh actual page hai jo user browser mein dekhta hai.
-// Yahan se saari cheezein ek jagah milti hain:
-//   - hooks se data aata hai
-//   - table mein show hota hai
-//   - form se naya judge add hota hai
-//   - delete button se judge hata hota hai
-//
-// JSX = JavaScript + HTML milake likhne ka tarika
-// React mein HTML ko "JSX" kehte hain jo .tsx files mein hota hai
-// ============================================================
+import { useState } from 'react'
+import { useBench } from '../hooks/useBench'
+import { useCreateBench } from '../hooks/useCreateBench'
+import { useDeleteBench } from '../hooks/useDeleteBench'
+import type { CreateBenchDto } from '../types/bench.types'
 
-// React aur useState import karo
-// useState = component ka local data store — jab change ho toh page re-render hota hai
-import { useState } from 'react';
+// ─────────────────────────────────────────────────────────────
+// BenchPage — Bench / Judge Management
+// Design matches Courts / Departments / Follow-ups pattern
+// ─────────────────────────────────────────────────────────────
 
-// Apne banaye hooks import karo
-import { useBench } from '../hooks/useBench';
-import { useCreateBench } from '../hooks/useCreateBench';
-import { useDeleteBench } from '../hooks/useDeleteBench';
-
-// CreateBenchDto type import karo form ke liye
-import type { CreateBenchDto } from '../types/bench.types';
-
-// -------------------------------------------------------
-// Component function — yeh ek function hai jo HTML return karta hai
-// React mein har page/component ek function hota hai
-// -------------------------------------------------------
 const BenchPage = () => {
+    const [showForm, setShowForm] = useState(false)
+    const [searchCaseId, setSearchCaseId] = useState('')
+    const [activeCaseId, setActiveCaseId] = useState('')
+    const [formData, setFormData] = useState<CreateBenchDto>({
+        caseId: '',
+        judgeName: '',
+        judgeContactNo: '',
+        judgeEmail: '',
+    })
 
-  // -------------------------------------------------------
-  // STATE VARIABLES
-  // useState() hook local data store karta hai component mein
-  // Jab state change ho toh React automatically page update karta hai
-  // -------------------------------------------------------
+    const { data: benchList, isLoading, isError } = useBench(activeCaseId)
+    const { mutate: createBench, isPending: isCreating } = useCreateBench()
+    const { mutate: deleteBench, isPending: isDeleting } = useDeleteBench()
 
-  // showForm: true/false — form dikhana hai ya chhupana
-  // setShowForm: woh function jo showForm ki value change karta hai
-  const [showForm, setShowForm] = useState(false);
-
-  // searchCaseId: user ne search box mein jo Case ID likhi hai
-  const [searchCaseId, setSearchCaseId] = useState('');
-
-  // activeCaseId: jis case ke bench/judges dikhane hain
-  const [activeCaseId, setActiveCaseId] = useState('');
-
-  // formData: form ke saare fields ka data ek object mein
-  // Shuru mein saare fields empty string hain
-  const [formData, setFormData] = useState<CreateBenchDto>({
-    caseId: '',
-    judgeName: '',
-    judgeContactNo: '',
-    judgeEmail: '',
-  });
-
-  // -------------------------------------------------------
-  // HOOKS — Data aur mutations
-  // -------------------------------------------------------
-
-  // useBench hook call karo activeCaseId ke saath
-  // data = bench entries ki list
-  // isLoading = true jab data aa raha ho
-  // isError = true agar koi error aaya
-  const { data: benchList, isLoading, isError } = useBench(activeCaseId);
-
-  // Create mutation — naya judge add karne ke liye
-  // isPending = true jab request chal rahi ho
-  const { mutate: createBench, isPending: isCreating } = useCreateBench();
-
-  // Delete mutation — judge hatane ke liye
-  const { mutate: deleteBench, isPending: isDeleting } = useDeleteBench();
-
-  // -------------------------------------------------------
-  // HANDLER FUNCTIONS
-  // Yeh functions user ke actions pe kaam karte hain
-  // -------------------------------------------------------
-
-  // Jab user search kare — activeCaseId set karo
-  const handleSearch = () => {
-    setActiveCaseId(searchCaseId.trim()); // .trim() = extra spaces hata do
-  };
-
-  // Jab koi input field change ho — formData update karo
-  // "e" = event object — browser se milta hai, batata hai kya change hua
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target; // name = field ka naam, value = naya value
-    // "..." spread operator = purani values raho, sirf yeh ek field update karo
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Jab form submit ho — backend ko data bhejo
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Browser ka default behavior rok do (page reload nahi hona chahiye)
-
-    // createBench mutation call karo formData ke saath
-    createBench(formData, {
-      onSuccess: () => {
-        // Kaamyabi ke baad form close karo aur data saaf karo
-        setShowForm(false);
-        setFormData({ caseId: '', judgeName: '', judgeContactNo: '', judgeEmail: '' });
-        alert('Judge successfully add ho gaya!');
-      },
-      onError: () => {
-        alert('Kuch galat ho gaya! Dobara koshish karo.');
-      },
-    });
-  };
-
-  // Jab delete button dabao
-  const handleDelete = (id: string) => {
-    // window.confirm = browser ka built-in confirmation popup
-    const confirmed = window.confirm('Kya aap sach mein yeh judge delete karna chahte hain?');
-    if (confirmed) {
-      deleteBench(id);
+    const handleSearch = () => {
+        setActiveCaseId(searchCaseId.trim())
     }
-  };
 
-  // -------------------------------------------------------
-  // JSX RETURN — Yahan actual HTML-like code likhte hain
-  // className = HTML ka "class" attribute (Bootstrap classes use hoti hain)
-  // Bootstrap = ek CSS library jo ready-made design deti hai
-  // -------------------------------------------------------
-  return (
-    // "container-fluid" = poori width le lo, Bootstrap class hai
-    <div className="container-fluid py-4">
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
+    }
 
-      {/* PAGE HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        {/* d-flex = flexbox, justify-content-between = dono sides pe rakho */}
-        <div>
-          <h2 className="mb-1" style={{ color: '#1a1a2e', fontWeight: 700 }}>
-            ⚖️ Bench Management
-          </h2>
-          <p className="text-muted mb-0">Cases ke judges track karo</p>
-        </div>
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        createBench(formData, {
+            onSuccess: () => {
+                setShowForm(false)
+                setFormData({ caseId: '', judgeName: '', judgeContactNo: '', judgeEmail: '' })
+            },
+        })
+    }
 
-        {/* ADD JUDGE BUTTON */}
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowForm(!showForm)}
-          // showForm toggle karo — agar false tha toh true, agar true tha toh false
-        >
-          {showForm ? '✕ Cancel' : '+ Add Judge'}
-        </button>
-      </div>
+    const handleDelete = (id: string) => {
+        const confirmed = window.confirm('Are you sure you want to delete this judge?')
+        if (confirmed) deleteBench(id)
+    }
 
-      {/* SEARCH SECTION — Case ID se search karo */}
-      <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-          <h6 className="card-title mb-3">  Case ID se Judges Dekho</h6>
-          <div className="d-flex gap-2">
-            {/* gap-2 = items ke beech thoda space */}
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Case ID enter karo..."
-              value={searchCaseId}
-              // onChange = har keystroke pe yeh function chale
-              onChange={(e) => setSearchCaseId(e.target.value)}
-            />
-            <button
-              className="btn btn-outline-primary"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
+    return (
+        <div style={{ padding: '32px', minHeight: '100vh', background: '#ffffff' }}>
+            <style>{`
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .bench-row { animation: fadeInUp 0.3s ease forwards; transition: background 0.15s ease; }
+                .bench-row:hover { background: #F8F6F0 !important; }
+                .bench-row:hover .bench-action-btn { opacity: 1 !important; transform: translateY(0) !important; }
+                .bench-action-btn { opacity: 0; transform: translateY(4px); transition: all 0.2s ease; }
+                .bench-del-btn:hover { background: #DC2626 !important; color: #fff !important; }
+                .bench-add-btn:hover { background: #C49830 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212,168,67,0.35) !important; }
+                .bench-search:focus { border-color: #D4A843 !important; box-shadow: 0 0 0 3px rgba(212,168,67,0.1) !important; }
+                .bench-search-btn:hover { background: #1B2A4A !important; color: #fff !important; border-color: #1B2A4A !important; }
+                .bench-form-input:focus { border-color: #D4A843 !important; box-shadow: 0 0 0 3px rgba(212,168,67,0.1) !important; outline: none; }
+            `}</style>
 
-      {/* ADD JUDGE FORM — sirf tab dikhao jab showForm true ho */}
-      {showForm && (
-        // "&&" matlab: agar condition true hai toh jo baad mein hai woh render karo
-        <div className="card mb-4 shadow-sm border-primary">
-          <div className="card-header bg-primary text-white">
-            <h6 className="mb-0">       Naya Judge Add Karo</h6>
-          </div>
-          <div className="card-body">
-            {/* onSubmit = form submit hone pe handleSubmit function chale */}
-            <form onSubmit={handleSubmit}>
-
-              {/* ROW 1: Case ID aur Judge Name */}
-              <div className="row g-3 mb-3">
-                {/* g-3 = grid gap */}
-
-                <div className="col-md-6">
-                  {/* col-md-6 = medium screen pe aadhi width lo (12 mein se 6) */}
-                  <label className="form-label">
-                    Case ID <span className="text-danger">*</span>
-                    {/* text-danger = red color — required field hai */}
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="caseId"
-                    // name = handleInputChange mein e.target.name se milega
-                    value={formData.caseId}
-                    onChange={handleInputChange}
-                    placeholder="e.g. abc-123-def"
-                    required
-                    // required = HTML5 validation — empty submit nahi hoga
-                  />
+            {/* ── Page Header ── */}
+            <div style={{ marginBottom: '24px' }}>
+                <div style={{
+                    display: 'flex', justifyContent: 'space-between',
+                    alignItems: 'center', marginBottom: '20px',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            width: '44px', height: '44px', borderRadius: '12px',
+                            background: 'linear-gradient(135deg,#1B2A4A 0%,#2A3F70 100%)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '20px',
+                        }}>⚖️</div>
+                        <div>
+                            <h5 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#1B2A4A' }}>
+                                Bench Management
+                            </h5>
+                            <p style={{ margin: 0, fontSize: '13px', color: '#8A9BBE' }}>
+                                Search by Case ID to view and manage judges
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowForm(!showForm)}
+                        className="bench-add-btn"
+                        style={{
+                            background: showForm ? '#FEF2F2' : '#D4A843',
+                            color: showForm ? '#DC2626' : '#1B2A4A',
+                            border: showForm ? '1px solid #FECACA' : 'none',
+                            borderRadius: '10px', padding: '11px 22px', fontSize: '13px',
+                            fontWeight: 700, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            transition: 'all 0.2s ease',
+                            boxShadow: showForm ? 'none' : '0 2px 8px rgba(212,168,67,0.3)',
+                        }}
+                    >
+                        {showForm ? '✕ Cancel' : <><span style={{ fontSize: '16px' }}>+</span> Add Judge</>}
+                    </button>
                 </div>
 
-                <div className="col-md-6">
-                  <label className="form-label">
-                    Judge Ka Naam <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="judgeName"
-                    value={formData.judgeName}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Justice Muhammad Ali"
-                    required
-                  />
+                {/* ── Search Bar ── */}
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+                        <span style={{
+                            position: 'absolute', left: '12px', top: '50%',
+                            transform: 'translateY(-50%)', fontSize: '15px', pointerEvents: 'none',
+                        }}>🔍</span>
+                        <input
+                            className="bench-search"
+                            value={searchCaseId}
+                            onChange={e => setSearchCaseId(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                            placeholder="Enter Case ID to view judges..."
+                            style={{
+                                width: '100%', padding: '10px 12px 10px 36px',
+                                border: '1.5px solid #E2DECE', borderRadius: '10px',
+                                fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
+                                outline: 'none', transition: 'all 0.2s ease',
+                                boxSizing: 'border-box', fontFamily: 'inherit',
+                            }}
+                        />
+                    </div>
+                    <button
+                        onClick={handleSearch}
+                        className="bench-search-btn"
+                        style={{
+                            padding: '10px 24px', border: '1.5px solid #E2DECE',
+                            borderRadius: '10px', background: '#FDFCF9',
+                            color: '#1B2A4A', fontSize: '13px', fontWeight: 600,
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                            fontFamily: 'inherit',
+                        }}
+                    >
+                        Search
+                    </button>
                 </div>
-              </div>
-
-              {/* ROW 2: Contact No aur Email */}
-              <div className="row g-3 mb-4">
-                <div className="col-md-6">
-                  <label className="form-label">Contact Number (Optional)</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="judgeContactNo"
-                    value={formData.judgeContactNo || ''}
-                    // "|| ''" = agar null hai toh empty string dikhao
-                    onChange={handleInputChange}
-                    placeholder="e.g. 0300-1234567"
-                  />
-                </div>
-
-                <div className="col-md-6">
-                  <label className="form-label">Email (Optional)</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="judgeEmail"
-                    value={formData.judgeEmail || ''}
-                    onChange={handleInputChange}
-                    placeholder="judge@court.gov.pk"
-                  />
-                </div>
-              </div>
-
-              {/* SUBMIT BUTTON */}
-              <div className="d-flex gap-2">
-                <button
-                  type="submit"
-                  className="btn btn-success"
-                  disabled={isCreating}
-                  // disabled = jab isCreating true ho toh button click nahi hoga
-                >
-                  {isCreating ? ' Save ho raha hai...' : ' Judge Save Karo'}
-                  {/* Ternary operator: condition ? agar true : agar false */}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* BENCH TABLE — Judges ki list */}
-      <div className="card shadow-sm">
-        <div className="card-header d-flex justify-content-between align-items-center">
-          <h6 className="mb-0">📋 Judges Ki List</h6>
-          {activeCaseId && (
-            <span className="badge bg-secondary">Case: {activeCaseId}</span>
-          )}
-        </div>
-        <div className="card-body p-0">
-
-          {/* LOADING STATE */}
-          {isLoading && (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status">
-                {/* spinner-border = Bootstrap loading spinner */}
-              </div>
-              <p className="mt-2 text-muted">Data load ho raha hai...</p>
             </div>
-          )}
 
-          {/* ERROR STATE */}
-          {isError && (
-            <div className="alert alert-danger m-3">
-               Data load nahi hua. Check karo ke backend chal raha hai.
-            </div>
-          )}
+            {/* ── Add Judge Form ── */}
+            {showForm && (
+                <div style={{
+                    background: '#fff', borderRadius: '16px',
+                    border: '1px solid #EEE9DC', overflow: 'hidden',
+                    boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+                    marginBottom: '24px', animation: 'fadeInUp 0.3s ease forwards',
+                }}>
+                    <div style={{
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 100%)',
+                        borderBottom: '2px solid #D4A843',
+                    }}>
+                        <h6 style={{ margin: 0, color: '#D4A843', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                            Add New Judge
+                        </h6>
+                    </div>
+                    <form onSubmit={handleSubmit} style={{ padding: '24px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
+                                    Case ID <span style={{ color: '#DC2626' }}>*</span>
+                                </label>
+                                <input
+                                    className="bench-form-input"
+                                    name="caseId" value={formData.caseId} onChange={handleInputChange}
+                                    placeholder="e.g. abc-123-def" required
+                                    style={{
+                                        width: '100%', padding: '10px 13px',
+                                        border: '1.5px solid #E2DECE', borderRadius: '10px',
+                                        fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
+                                        outline: 'none', transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box', fontFamily: 'inherit',
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
+                                    Judge Name <span style={{ color: '#DC2626' }}>*</span>
+                                </label>
+                                <input
+                                    className="bench-form-input"
+                                    name="judgeName" value={formData.judgeName} onChange={handleInputChange}
+                                    placeholder="e.g. Justice Muhammad Ali" required
+                                    style={{
+                                        width: '100%', padding: '10px 13px',
+                                        border: '1.5px solid #E2DECE', borderRadius: '10px',
+                                        fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
+                                        outline: 'none', transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box', fontFamily: 'inherit',
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
+                                    Contact Number (Optional)
+                                </label>
+                                <input
+                                    className="bench-form-input"
+                                    name="judgeContactNo" value={formData.judgeContactNo || ''} onChange={handleInputChange}
+                                    placeholder="e.g. 0300-1234567"
+                                    style={{
+                                        width: '100%', padding: '10px 13px',
+                                        border: '1.5px solid #E2DECE', borderRadius: '10px',
+                                        fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
+                                        outline: 'none', transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box', fontFamily: 'inherit',
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
+                                    Email (Optional)
+                                </label>
+                                <input
+                                    className="bench-form-input"
+                                    name="judgeEmail" value={formData.judgeEmail || ''} onChange={handleInputChange}
+                                    placeholder="judge@court.gov.pk" type="email"
+                                    style={{
+                                        width: '100%', padding: '10px 13px',
+                                        border: '1.5px solid #E2DECE', borderRadius: '10px',
+                                        fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
+                                        outline: 'none', transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box', fontFamily: 'inherit',
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button type="submit" disabled={isCreating} className="bench-add-btn" style={{
+                                background: '#D4A843', color: '#1B2A4A', border: 'none',
+                                borderRadius: '10px', padding: '10px 24px', fontSize: '13px',
+                                fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s ease',
+                                boxShadow: '0 2px 8px rgba(212,168,67,0.25)',
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                            }}>
+                                {isCreating ? (
+                                    <><div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2px solid rgba(27,42,74,0.2)', borderTop: '2px solid #1B2A4A', animation: 'spin 0.6s linear infinite' }} /> Saving...</>
+                                ) : 'Save Judge'}
+                            </button>
+                            <button type="button" onClick={() => setShowForm(false)} style={{
+                                padding: '10px 20px', border: '1.5px solid #E2DECE',
+                                borderRadius: '10px', background: '#FDFCF9',
+                                color: '#64748B', fontSize: '13px', fontWeight: 600,
+                                cursor: 'pointer', transition: 'all 0.2s ease', fontFamily: 'inherit',
+                            }}>
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
 
-          {/* NO CASE ID STATE — agar abhi tak search nahi kiya */}
-          {!activeCaseId && !isLoading && (
-            <div className="text-center py-5 text-muted">
-              <p style={{ fontSize: '3rem' }}>⚖️</p>
-              <p>Upar Case ID enter karo judges dekhne ke liye</p>
-            </div>
-          )}
+            {/* ── Table Card ── */}
+            <div style={{
+                background: '#fff', borderRadius: '16px',
+                border: '1px solid #EEE9DC', overflow: 'hidden',
+                boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+                position: 'relative',
+            }}>
+                {/* Loading */}
+                {isLoading && activeCaseId && (
+                    <div style={{
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        padding: '80px 0', gap: '16px',
+                    }}>
+                        <div style={{
+                            width: '48px', height: '48px', borderRadius: '50%',
+                            border: '3px solid #F0E8D0', borderTop: '3px solid #D4A843',
+                            animation: 'spin 0.8s linear infinite',
+                        }} />
+                        <p style={{ color: '#8A9BBE', fontSize: '14px', margin: 0 }}>Loading judges...</p>
+                    </div>
+                )}
 
-          {/* DATA TABLE — sirf tab dikhao jab data ho */}
-          {benchList && benchList.length > 0 && (
-            <div className="table-responsive">
-              {/* table-responsive = chhoti screen pe scroll kar sako */}
-              <table className="table table-hover mb-0">
-                {/* table-hover = mouse hover pe row highlight ho */}
-                <thead className="table-dark">
-                  <tr>
-                    {/* th = table header cell */}
-                    <th>#</th>
-                    <th>Judge Ka Naam</th>
-                    <th>Contact Number</th>
-                    <th>Email</th>
-                    <th>Date Added</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* .map() = array ke har item ke liye ek table row banao */}
-                  {/* index = current item ka number (0 se start) */}
-                  {benchList.map((bench, index) => (
-                    <tr key={bench.id}>
-                      {/* key = React ko unique ID chahiye — list items ke liye zaroori */}
-                      <td>{index + 1}</td>
-                      {/* +1 kyunki array 0 se start hota hai, user ko 1 se dikhao */}
-                      <td>
-                        <strong>{bench.judgeName}</strong>
-                      </td>
-                      <td>{bench.judgeContactNo || '—'}</td>
-                      {/* "|| '—'" = agar null hai toh dash dikhao */}
-                      <td>{bench.judgeEmail || '—'}</td>
-                      <td>
-                        {/* Date format karna — string ko readable format mein */}
-                        {new Date(bench.createdAt).toLocaleDateString('en-PK')}
-                      </td>
-                      <td>
-                        {/* DELETE BUTTON */}
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDelete(bench.id)}
-                          disabled={isDeleting}
-                        >
-                          🗑️ Delete
+                {/* Error */}
+                {isError && activeCaseId && (
+                    <div style={{
+                        margin: '20px', background: 'linear-gradient(135deg,#FFF5F5 0%,#FFF0F0 100%)',
+                        border: '1px solid #FECACA', borderRadius: '12px',
+                        padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '12px',
+                        color: '#DC2626', fontSize: '14px',
+                    }}>
+                        <span style={{ fontSize: '20px' }}>⚠️</span>
+                        Data could not be loaded. Please check backend connection.
+                    </div>
+                )}
+
+                {/* No Case ID — Initial state */}
+                {!activeCaseId && !isLoading && (
+                    <div style={{
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        padding: '80px 0', gap: '16px',
+                    }}>
+                        <div style={{
+                            width: '72px', height: '72px', borderRadius: '20px',
+                            background: 'linear-gradient(135deg,#F5F0E8 0%,#EDE5D0 100%)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '32px',
+                        }}>⚖️</div>
+                        <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>
+                            Enter a Case ID above to view judges
+                        </p>
+                    </div>
+                )}
+
+                {/* Empty state with active case */}
+                {benchList && benchList.length === 0 && activeCaseId && !isLoading && (
+                    <div style={{
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        padding: '80px 0', gap: '16px',
+                    }}>
+                        <div style={{
+                            width: '72px', height: '72px', borderRadius: '20px',
+                            background: 'linear-gradient(135deg,#F5F0E8 0%,#EDE5D0 100%)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '32px',
+                        }}>📭</div>
+                        <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>
+                            No judges assigned to this case yet
+                        </p>
+                        <button onClick={() => setShowForm(true)} className="bench-add-btn" style={{
+                            background: '#D4A843', color: '#1B2A4A', border: 'none',
+                            borderRadius: '10px', padding: '10px 24px', fontSize: '13px',
+                            fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 8px rgba(212,168,67,0.25)',
+                        }}>
+                            + Add First Judge
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                    </div>
+                )}
 
-          {/* EMPTY STATE — data hai hi nahi is case mein */}
-          {benchList && benchList.length === 0 && activeCaseId && (
-            <div className="text-center py-5 text-muted">
-              <p style={{ fontSize: '2rem' }}>📭</p>
-              <p>Is case mein abhi koi judge nahi hai</p>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => setShowForm(true)}
-              >
-                + Pehla Judge Add Karo
-              </button>
-            </div>
-          )}
+                {/* Data Table */}
+                {benchList && benchList.length > 0 && (
+                    <>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 100%)' }}>
+                                        {['#', 'Judge Name', 'Contact Number', 'Email', 'Date Added', 'Actions'].map((h, i) => (
+                                            <th key={i} style={{
+                                                padding: i === 0 ? '14px 16px 14px 20px' : '14px 16px',
+                                                textAlign: 'left', fontSize: '11px', fontWeight: 700,
+                                                letterSpacing: '0.08em', color: '#D4A843',
+                                                textTransform: 'uppercase', whiteSpace: 'nowrap',
+                                                borderBottom: '2px solid #D4A843',
+                                            }}>
+                                                {h}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {benchList.map((bench, index) => (
+                                        <tr
+                                            key={bench.id}
+                                            className="bench-row"
+                                            style={{
+                                                background: index % 2 === 0 ? '#FDFCF9' : '#fff',
+                                                borderBottom: '1px solid #F0EBE0',
+                                                animationDelay: `${index * 0.04}s`,
+                                            }}
+                                        >
+                                            <td style={{ padding: '14px 16px 14px 20px' }}>
+                                                <div style={{
+                                                    width: '28px', height: '28px', borderRadius: '8px',
+                                                    background: 'linear-gradient(135deg,#EDE5CF 0%,#E0D4B8 100%)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: '12px', fontWeight: 700, color: '#8A7040',
+                                                }}>
+                                                    {index + 1}
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <div style={{
+                                                        width: '36px', height: '36px', borderRadius: '10px',
+                                                        background: 'linear-gradient(135deg,#1B2A4A 0%,#2A3F70 100%)',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '16px', flexShrink: 0,
+                                                    }}>👨‍⚖️</div>
+                                                    <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1B2A4A' }}>
+                                                        {bench.judgeName}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <span style={{ fontSize: '13px', color: bench.judgeContactNo ? '#4A5568' : '#C0CADB' }}>
+                                                    {bench.judgeContactNo || '— Not provided —'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <span style={{ fontSize: '13px', color: bench.judgeEmail ? '#4A5568' : '#C0CADB' }}>
+                                                    {bench.judgeEmail || '— Not provided —'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <span style={{ fontSize: '13px', color: '#64748B' }}>
+                                                    {new Date(bench.createdAt).toLocaleDateString('en-PK', {
+                                                        day: '2-digit', month: 'short', year: 'numeric',
+                                                    })}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <button
+                                                    className="bench-action-btn bench-del-btn"
+                                                    onClick={() => handleDelete(bench.id)}
+                                                    disabled={isDeleting}
+                                                    style={{
+                                                        background: '#FEF2F2', color: '#DC2626',
+                                                        border: '1px solid #FECACA', borderRadius: '8px',
+                                                        padding: '6px 14px', fontSize: '12px',
+                                                        fontWeight: 600, cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                    }}
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
 
+                        {/* Footer */}
+                        <div style={{
+                            padding: '12px 20px',
+                            background: 'linear-gradient(135deg,#FDFCF9 0%,#F8F4EC 100%)',
+                            borderTop: '1px solid #EEE9DC',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        }}>
+                            <span style={{ fontSize: '12px', color: '#A0ABBE' }}>
+                                Total <strong style={{ color: '#D4A843' }}>{benchList.length}</strong> judge{benchList.length !== 1 ? 's' : ''} assigned
+                            </span>
+                            {activeCaseId && (
+                                <span style={{ fontSize: '12px', color: '#A0ABBE' }}>
+                                    Case: <strong style={{ color: '#1B2A4A' }}>{activeCaseId.slice(0, 8)}...</strong>
+                                </span>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
-      </div>
-    </div>
-  );
-};
+    )
+}
 
-// Component ko export karo taake router/index.tsx mein import ho sake
-export default BenchPage;
+export default BenchPage

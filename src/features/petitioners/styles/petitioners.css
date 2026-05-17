@@ -17,28 +17,16 @@
 .lts-page__title {
     position: relative;
     margin: 0;
-    padding-left: 16px;
+    padding-left: 0;
     color: var(--navy);
-    font-size: clamp(28px, 3vw, 38px);
-    font-weight: 900;
-    line-height: 1.1;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
     letter-spacing: 0;
 }
 
-.lts-page__title::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 5px;
-    border-radius: var(--radius);
-    background: var(--gold);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 16%, transparent);
-}
-
 .lts-page__subtitle {
-    margin: 8px 0 0 16px;
+    margin: 4px 0 0 0;
     color: var(--text-gray);
     font-size: 14px;
 }
@@ -149,19 +137,20 @@
 }
 
 .lts-table thead tr {
-    background: color-mix(in srgb, var(--navy) 92%, var(--blue));
+    background: linear-gradient(135deg, #1B2A4A 0%, #243560 100%);
 }
 
 .lts-table th {
-    padding: 15px 18px;
-    color: var(--white);
+    padding: 14px 16px;
+    color: var(--gold);
     font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     line-height: 1.2;
     text-align: left;
     text-transform: uppercase;
     white-space: nowrap;
+    border-bottom: 2px solid var(--gold);
 }
 
 .lts-table th:first-child {
@@ -183,6 +172,7 @@
 
 .lts-table tbody tr {
     animation: lts-row-fade-up 0.42s ease both;
+    transition: background 0.15s ease;
 }
 
 .lts-table tbody tr:nth-child(odd) td {
@@ -190,11 +180,11 @@
 }
 
 .lts-table tbody tr:nth-child(even) td {
-    background: color-mix(in srgb, var(--bg) 72%, var(--white));
+    background: #FDFCF9;
 }
 
 .lts-table tbody tr:hover td {
-    background: color-mix(in srgb, var(--blue) 8%, var(--white));
+    background: #F8F6F0 !important;
 }
 
 .lts-table tbody tr:last-child td {
@@ -295,14 +285,14 @@
 }
 
 .lts-btn--primary {
-    background: var(--blue);
-    color: var(--white);
-    box-shadow: 0 12px 24px color-mix(in srgb, var(--blue) 20%, transparent);
+    background: var(--gold);
+    color: var(--navy);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--gold) 30%, transparent);
 }
 
 .lts-btn--primary:hover {
-    background: color-mix(in srgb, var(--blue) 88%, var(--navy));
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 20%, transparent), 0 16px 30px color-mix(in srgb, var(--blue) 24%, transparent);
+    background: color-mix(in srgb, var(--gold) 85%, #000);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--gold) 35%, transparent);
 }
 
 .lts-btn--ghost {
@@ -333,18 +323,25 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border: 1px solid transparent;
-    border-radius: var(--radius);
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     line-height: 1;
-    transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition), color var(--transition);
+    transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+.lts-table__actions:hover .lts-btn-icon {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .lts-btn-icon:hover {
-    transform: translateY(-3px) scale(1.04);
+    transform: translateY(0) scale(1.04);
 }
 
 .lts-btn-icon:active {
@@ -352,27 +349,25 @@
 }
 
 .lts-btn-icon--edit {
-    border-color: color-mix(in srgb, var(--blue) 22%, var(--border));
-    background: color-mix(in srgb, var(--blue) 10%, var(--white));
-    color: var(--blue);
+    background: #EEF2FF;
+    color: #1B2A4A;
+    border-color: #C7D2FE;
 }
 
 .lts-btn-icon--edit:hover {
-    background: var(--blue);
+    background: #1B2A4A;
     color: var(--white);
-    box-shadow: 0 12px 24px color-mix(in srgb, var(--blue) 22%, transparent);
 }
 
 .lts-btn-icon--delete {
-    border-color: color-mix(in srgb, var(--danger) 22%, var(--border));
-    background: color-mix(in srgb, var(--danger) 10%, var(--white));
-    color: var(--danger);
+    background: #FEF2F2;
+    color: #DC2626;
+    border-color: #FECACA;
 }
 
 .lts-btn-icon--delete:hover {
-    background: var(--danger);
+    background: #DC2626;
     color: var(--white);
-    box-shadow: 0 12px 24px color-mix(in srgb, var(--danger) 22%, transparent);
 }
 
 /* Modal */

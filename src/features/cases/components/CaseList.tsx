@@ -17,7 +17,7 @@ export default function CasesList() {
     return (
         <div className="cases-list-page" style={{ backgroundColor: 'var(--lts-bg)', minHeight: '100vh', fontFamily: 'var(--lts-font)' }}>
 
-            {/* PAGE TITLE ROW — same rakha */}
+            {/* PAGE TITLE ROW — with icon before heading */}
             <div style={{ background: 'var(--lts-white)', borderBottom: '1px solid var(--lts-border)', padding: '1.5rem 0' }}>
                 <div className="container-xl">
                     <div className="d-flex align-items-center justify-content-between">
@@ -30,17 +30,47 @@ export default function CasesList() {
                                     <li className="breadcrumb-item active text-muted">Cases</li>
                                 </ol>
                             </nav>
-                            <h1 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--lts-navy)', margin: '0' }}>
-                                Cases
-                            </h1>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    width: '44px', height: '44px', borderRadius: '12px',
+                                    background: 'linear-gradient(135deg,#1B2A4A 0%,#2A3F70 100%)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '24px'
+                                }}>📋</div>
+                                <h1 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--lts-navy)', margin: '0' }}>
+                                    Cases
+                                </h1>
+                            </div>
                         </div>
                         <button
                             onClick={() => setShowModal(true)}
-                            style={{ background: 'var(--lts-navy)', color: 'white', border: 'none', borderRadius: 'var(--lts-radius)', padding: '10px 24px', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--lts-gold)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'var(--lts-navy)')}
+                            style={{ 
+                                background: 'var(--lts-gold)', 
+                                color: 'var(--lts-navy)', 
+                                border: 'none', 
+                                borderRadius: '10px', 
+                                padding: '11px 22px', 
+                                fontSize: '13px', 
+                                fontWeight: '700', 
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                transition: 'all 0.2s ease',
+                                boxShadow: '0 2px 8px rgba(212,168,67,0.3)'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = '#C49830'
+                                e.currentTarget.style.transform = 'translateY(-1px)'
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(212,168,67,0.35)'
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'var(--lts-gold)'
+                                e.currentTarget.style.transform = 'translateY(0)'
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(212,168,67,0.3)'
+                            }}
                         >
-                            <i className="bi bi-plus-circle"></i> File New Case
+                            <span style={{ fontSize: '16px' }}>+</span> File New Case
                         </button>
                     </div>
                 </div>

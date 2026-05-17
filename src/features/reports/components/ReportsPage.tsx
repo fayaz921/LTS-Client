@@ -1,307 +1,363 @@
-// ============================================================
-// ReportsPage COMPONENT
-// Yeh Reports ka poora page hai. Ismein:
-//   1. Upar 4 stat cards hain (Total, Pending, Finalized, Upcoming)
-//   2. Neeche do tables side by side — Department aur Court wise
-//
-// NOTE: Yeh sirf READ page hai — koi form, koi create/delete button nahi
-// Sirf data dekhna hai management ke liye
-// ============================================================
+import { useSummaryReport } from '../hooks/useSummaryReport'
+import { useDepartmentReport } from '../hooks/useDepartmentReport'
+import { useCourtReport } from '../hooks/useCourtReport'
 
-import { useSummaryReport } from '../hooks/useSummaryReport';
-import { useDepartmentReport } from '../hooks/useDepartmentReport';
-import { useCourtReport } from '../hooks/useCourtReport';
+// ─────────────────────────────────────────────────────────────
+// ReportsPage — Reports & Analytics
+// Design matches Courts / Departments / Follow-ups pattern
+// ─────────────────────────────────────────────────────────────
 
 const ReportsPage = () => {
+    const { data: summary, isLoading: summaryLoading } = useSummaryReport()
+    const { data: deptReport, isLoading: deptLoading } = useDepartmentReport()
+    const { data: courtReport, isLoading: courtLoading } = useCourtReport()
 
-  // Teen hooks call karo — teen alag API calls hongi parallel mein
-  const { data: summary, isLoading: summaryLoading } = useSummaryReport();
-  const { data: deptReport, isLoading: deptLoading } = useDepartmentReport();
-  const { data: courtReport, isLoading: courtLoading } = useCourtReport();
+    const getPercentage = (pending: number, total: number) => {
+        if (total === 0) return 0
+        return Math.round((pending / total) * 100)
+    }
 
-  // -------------------------------------------------------
-  // HELPER COMPONENT — Stat Card
-  // Ek card dikhata hai ek number ke saath
-  // Yeh ek "inner component" hai — sirf is file mein use hoga
-  // Props = component ko bahar se jo data diya jata hai
-  // -------------------------------------------------------
-  const StatCard = ({
-    title,
-    value,
-    icon,
-    color,
-    isLoading,
-  }: {
-    title: string;
-    value: number | undefined;
-    icon: string;
-    color: string;
-    isLoading: boolean;
-  }) => (
-    // Inline style mein dynamic color use kiya — "color" prop se aata hai
-    <div className="col-md-3 col-sm-6">
-      <div
-        className="card shadow-sm h-100"
-        style={{ borderLeft: `5px solid ${color}` }}
-      >
-        <div className="card-body d-flex align-items-center gap-3">
-          {/* Icon */}
-          <span style={{ fontSize: '2.5rem' }}>{icon}</span>
+    const statCards = [
+        { title: 'Total Cases', value: summary?.totalCases, icon: '📁', tone: '#1B2A4A' },
+        { title: 'Pending Cases', value: summary?.pendingCases, icon: '⏳', tone: '#D97706' },
+        { title: 'Finalized Cases', value: summary?.finalizedCases, icon: '✅', tone: '#15803D' },
+        { title: 'Upcoming Hearings', value: summary?.upcomingHearings, icon: '📅', tone: '#DC2626' },
+    ]
 
-          {/* Text info */}
-          <div>
-            <p className="text-muted mb-1 small">{title}</p>
-            {isLoading ? (
-              // Agar load ho raha hai toh placeholder dikhao
-              <div
-                className="placeholder-glow"
-                style={{ width: '60px', height: '2rem', background: '#e0e0e0', borderRadius: 4 }}
-              />
-            ) : (
-              <h3 className="mb-0 fw-bold" style={{ color }}>
-                {/* value ?? 0 = agar value undefined ho toh 0 dikhao */}
-                {value ?? 0}
-              </h3>
-            )}
-          </div>
+    return (
+        <div style={{ padding: '32px', minHeight: '100vh', background: '#ffffff' }}>
+            <style>{`
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .report-row { animation: fadeInUp 0.3s ease forwards; transition: background 0.15s ease; }
+                .report-row:hover { background: #F8F6F0 !important; }
+                .stat-card { animation: fadeInUp 0.35s ease forwards; transition: all 0.25s ease; }
+                .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(27,42,74,0.12) !important; }
+            `}</style>
+
+            {/* ── Page Header ── */}
+            <div style={{ marginBottom: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '44px', height: '44px', borderRadius: '12px',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#2A3F70 100%)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '20px',
+                    }}>📊</div>
+                    <div>
+                        <h5 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#1B2A4A' }}>
+                            Reports & Analytics
+                        </h5>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#8A9BBE' }}>
+                            Overall system performance and statistics
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── Stat Cards ── */}
+            <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '16px', marginBottom: '28px',
+            }}>
+                {statCards.map((card, i) => (
+                    <div
+                        key={card.title}
+                        className="stat-card"
+                        style={{
+                            background: '#fff', borderRadius: '16px',
+                            border: '1px solid #EEE9DC', padding: '20px 24px',
+                            boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+                            display: 'flex', alignItems: 'center', gap: '16px',
+                            borderLeft: `4px solid ${card.tone}`,
+                            animationDelay: `${i * 0.08}s`,
+                        }}
+                    >
+                        <div style={{
+                            width: '48px', height: '48px', borderRadius: '14px',
+                            background: `linear-gradient(135deg,${card.tone}15 0%,${card.tone}08 100%)`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '24px', flexShrink: 0,
+                        }}>
+                            {card.icon}
+                        </div>
+                        <div>
+                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, color: '#8A9BBE', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {card.title}
+                            </p>
+                            {summaryLoading ? (
+                                <div style={{
+                                    width: '60px', height: '28px', borderRadius: '6px',
+                                    background: 'linear-gradient(90deg, #F0E8D0, #F8F4EC, #F0E8D0)',
+                                    backgroundSize: '200% 100%', animation: 'shimmer 1.2s infinite',
+                                    marginTop: '4px',
+                                }} />
+                            ) : (
+                                <h3 style={{ margin: '4px 0 0 0', fontSize: '28px', fontWeight: 800, color: card.tone, lineHeight: 1 }}>
+                                    {card.value ?? 0}
+                                </h3>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* ── Two Tables Side by Side ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+
+                {/* Department-wise Report */}
+                <div style={{
+                    background: '#fff', borderRadius: '16px',
+                    border: '1px solid #EEE9DC', overflow: 'hidden',
+                    boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+                }}>
+                    <div style={{
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 100%)',
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                    }}>
+                        <span style={{ fontSize: '16px' }}>🏢</span>
+                        <h6 style={{ margin: 0, color: '#D4A843', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                            Department-wise Cases
+                        </h6>
+                    </div>
+
+                    {deptLoading && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 0', gap: '12px' }}>
+                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid #F0E8D0', borderTop: '3px solid #D4A843', animation: 'spin 0.8s linear infinite' }} />
+                            <p style={{ color: '#8A9BBE', fontSize: '13px', margin: 0 }}>Loading...</p>
+                        </div>
+                    )}
+
+                    {!deptLoading && deptReport && deptReport.length === 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 0', gap: '12px' }}>
+                            <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg,#F5F0E8 0%,#EDE5D0 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>🏢</div>
+                            <p style={{ color: '#8A9BBE', fontSize: '14px', margin: 0 }}>No department data found</p>
+                        </div>
+                    )}
+
+                    {!deptLoading && deptReport && deptReport.length > 0 && (
+                        <>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ background: '#FDFCF9' }}>
+                                            {['Department', 'Total', 'Pending', 'Finalized', 'Pending %'].map((h, i) => (
+                                                <th key={i} style={{
+                                                    padding: '12px 16px', textAlign: i === 0 ? 'left' : 'center',
+                                                    fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em',
+                                                    color: '#8A9BBE', textTransform: 'uppercase',
+                                                    borderBottom: '1px solid #EEE9DC',
+                                                }}>
+                                                    {h}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {deptReport.map((dept, index) => {
+                                            const pct = getPercentage(dept.pendingCases, dept.totalCases)
+                                            return (
+                                                <tr key={index} className="report-row" style={{
+                                                    background: index % 2 === 0 ? '#fff' : '#FDFCF9',
+                                                    borderBottom: '1px solid #F0EBE0',
+                                                    animationDelay: `${index * 0.04}s`,
+                                                }}>
+                                                    <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600, color: '#1B2A4A' }}>
+                                                        {dept.departmentName}
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#EEF2FF', color: '#1B2A4A', border: '1px solid #C7D2FE',
+                                                        }}>{dept.totalCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A',
+                                                        }}>{dept.pendingCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0',
+                                                        }}>{dept.finalizedCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                                                            <div style={{
+                                                                flex: 1, maxWidth: '80px', height: '6px',
+                                                                borderRadius: '3px', background: '#F0EBE0',
+                                                                overflow: 'hidden',
+                                                            }}>
+                                                                <div style={{
+                                                                    width: `${pct}%`, height: '100%',
+                                                                    borderRadius: '3px',
+                                                                    background: pct > 60 ? '#DC2626' : pct > 30 ? '#D97706' : '#D4A843',
+                                                                    transition: 'width 0.6s ease',
+                                                                }} />
+                                                            </div>
+                                                            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748B', minWidth: '30px' }}>
+                                                                {pct}%
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style={{
+                                padding: '10px 16px',
+                                background: 'linear-gradient(135deg,#FDFCF9 0%,#F8F4EC 100%)',
+                                borderTop: '1px solid #EEE9DC',
+                            }}>
+                                <span style={{ fontSize: '11px', color: '#A0ABBE' }}>
+                                    {deptReport.length} department{deptReport.length !== 1 ? 's' : ''}
+                                </span>
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                {/* Court-wise Report */}
+                <div style={{
+                    background: '#fff', borderRadius: '16px',
+                    border: '1px solid #EEE9DC', overflow: 'hidden',
+                    boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+                }}>
+                    <div style={{
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 100%)',
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                    }}>
+                        <span style={{ fontSize: '16px' }}>⚖️</span>
+                        <h6 style={{ margin: 0, color: '#D4A843', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                            Court-wise Cases
+                        </h6>
+                    </div>
+
+                    {courtLoading && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 0', gap: '12px' }}>
+                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid #F0E8D0', borderTop: '3px solid #D4A843', animation: 'spin 0.8s linear infinite' }} />
+                            <p style={{ color: '#8A9BBE', fontSize: '13px', margin: 0 }}>Loading...</p>
+                        </div>
+                    )}
+
+                    {!courtLoading && courtReport && courtReport.length === 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 0', gap: '12px' }}>
+                            <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg,#F5F0E8 0%,#EDE5D0 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>⚖️</div>
+                            <p style={{ color: '#8A9BBE', fontSize: '14px', margin: 0 }}>No court data found</p>
+                        </div>
+                    )}
+
+                    {!courtLoading && courtReport && courtReport.length > 0 && (
+                        <>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr style={{ background: '#FDFCF9' }}>
+                                            {['Court', 'Total', 'Pending', 'Finalized', 'Pending %'].map((h, i) => (
+                                                <th key={i} style={{
+                                                    padding: '12px 16px', textAlign: i === 0 ? 'left' : 'center',
+                                                    fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em',
+                                                    color: '#8A9BBE', textTransform: 'uppercase',
+                                                    borderBottom: '1px solid #EEE9DC',
+                                                }}>
+                                                    {h}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {courtReport.map((court, index) => {
+                                            const pct = getPercentage(court.pendingCases, court.totalCases)
+                                            return (
+                                                <tr key={index} className="report-row" style={{
+                                                    background: index % 2 === 0 ? '#fff' : '#FDFCF9',
+                                                    borderBottom: '1px solid #F0EBE0',
+                                                    animationDelay: `${index * 0.04}s`,
+                                                }}>
+                                                    <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600, color: '#1B2A4A' }}>
+                                                        {court.courtName}
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#EEF2FF', color: '#1B2A4A', border: '1px solid #C7D2FE',
+                                                        }}>{court.totalCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A',
+                                                        }}>{court.pendingCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            display: 'inline-block', padding: '3px 10px',
+                                                            borderRadius: '12px', fontSize: '11px', fontWeight: 700,
+                                                            background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0',
+                                                        }}>{court.finalizedCases}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                                                            <div style={{
+                                                                flex: 1, maxWidth: '80px', height: '6px',
+                                                                borderRadius: '3px', background: '#F0EBE0',
+                                                                overflow: 'hidden',
+                                                            }}>
+                                                                <div style={{
+                                                                    width: `${pct}%`, height: '100%',
+                                                                    borderRadius: '3px',
+                                                                    background: pct > 60 ? '#DC2626' : pct > 30 ? '#D97706' : '#D4A843',
+                                                                    transition: 'width 0.6s ease',
+                                                                }} />
+                                                            </div>
+                                                            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748B', minWidth: '30px' }}>
+                                                                {pct}%
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style={{
+                                padding: '10px 16px',
+                                background: 'linear-gradient(135deg,#FDFCF9 0%,#F8F4EC 100%)',
+                                borderTop: '1px solid #EEE9DC',
+                            }}>
+                                <span style={{ fontSize: '11px', color: '#A0ABBE' }}>
+                                    {courtReport.length} court{courtReport.length !== 1 ? 's' : ''}
+                                </span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Footer Note */}
+            <div style={{
+                marginTop: '24px', textAlign: 'center',
+                fontSize: '12px', color: '#A0ABBE',
+            }}>
+                <p style={{ margin: 0 }}>Reports are read-only. Data is refreshed automatically.</p>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    )
+}
 
-  // -------------------------------------------------------
-  // HELPER FUNCTION — Pending % calculate karna
-  // Bar chart ki jagah ek simple colored bar banate hain
-  // -------------------------------------------------------
-  const getPercentage = (pending: number, total: number) => {
-    if (total === 0) return 0;
-    return Math.round((pending / total) * 100);
-  };
-
-  // -------------------------------------------------------
-  // MAIN RETURN — Page ka poora layout
-  // -------------------------------------------------------
-  return (
-    <div className="container-fluid py-4">
-
-      {/* PAGE HEADER */}
-      <div className="mb-4">
-        <h2 style={{ color: '#1a1a2e', fontWeight: 700 }}>
-          📊 Reports & Analytics
-        </h2>
-        <p className="text-muted">
-          System ki overall performance aur statistics
-        </p>
-      </div>
-
-      {/* ===================================================
-          SECTION 1: 4 SUMMARY STAT CARDS
-          row = Bootstrap grid row
-          g-3 = 3 units ka gap har card ke beech
-          mb-4 = neeche margin
-      =================================================== */}
-      <div className="row g-3 mb-4">
-        <StatCard
-          title="Total Cases"
-          value={summary?.totalCases}
-          // "?." = optional chaining — agar summary undefined hai toh crash mat ho
-          icon="📁"
-          color="#0d6efd" // Bootstrap blue
-          isLoading={summaryLoading}
-        />
-        <StatCard
-          title="Pending Cases"
-          value={summary?.pendingCases}
-          icon="⏳"
-          color="#fd7e14" // Orange
-          isLoading={summaryLoading}
-        />
-        <StatCard
-          title="Finalized Cases"
-          value={summary?.finalizedCases}
-          icon="✅"
-          color="#198754" // Green
-          isLoading={summaryLoading}
-        />
-        <StatCard
-          title="Upcoming Hearings"
-          value={summary?.upcomingHearings}
-          icon="📅"
-          color="#dc3545" // Red
-          isLoading={summaryLoading}
-        />
-      </div>
-
-      {/* ===================================================
-          SECTION 2: DO TABLES SIDE BY SIDE
-          col-md-6 = har table aadhi width lega medium screen pe
-          Chhoti screen pe automatically neeche aayega
-      =================================================== */}
-      <div className="row g-4">
-
-        {/* === LEFT TABLE: DEPARTMENT WISE REPORT === */}
-        <div className="col-md-6">
-          <div className="card shadow-sm h-100">
-            <div className="card-header bg-primary text-white">
-              <h6 className="mb-0">🏢 Department-wise Cases</h6>
-            </div>
-            <div className="card-body p-0">
-
-              {/* Loading state */}
-              {deptLoading && (
-                <div className="text-center py-4">
-                  <div className="spinner-border spinner-border-sm text-primary" />
-                  <p className="mt-2 text-muted small">Load ho raha hai...</p>
-                </div>
-              )}
-
-              {/* Table */}
-              {!deptLoading && deptReport && (
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Department</th>
-                        <th className="text-center">Total</th>
-                        <th className="text-center">Pending</th>
-                        <th className="text-center">Finalized</th>
-                        <th>Pending %</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {deptReport.map((dept, index) => {
-                        const pendingPct = getPercentage(dept.pendingCases, dept.totalCases);
-                        return (
-                          <tr key={index}>
-                            <td>
-                              <strong style={{ fontSize: '0.9rem' }}>
-                                {dept.departmentName}
-                              </strong>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-secondary">{dept.totalCases}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-warning text-dark">{dept.pendingCases}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-success">{dept.finalizedCases}</span>
-                            </td>
-                            <td style={{ width: '120px' }}>
-                              {/* Progress bar — pending percentage dikhata hai visually */}
-                              <div className="progress" style={{ height: '8px' }}>
-                                <div
-                                  className="progress-bar bg-warning"
-                                  style={{ width: `${pendingPct}%` }}
-                                  // Inline style se dynamic width set ki
-                                />
-                              </div>
-                              <small className="text-muted">{pendingPct}%</small>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Empty state */}
-              {!deptLoading && deptReport && deptReport.length === 0 && (
-                <div className="text-center py-4 text-muted">
-                  <p>Koi department data nahi mila</p>
-                </div>
-              )}
-
-            </div>
-          </div>
-        </div>
-
-        {/* === RIGHT TABLE: COURT WISE REPORT === */}
-        <div className="col-md-6">
-          <div className="card shadow-sm h-100">
-            <div className="card-header bg-success text-white">
-              <h6 className="mb-0">⚖️ Court-wise Cases</h6>
-            </div>
-            <div className="card-body p-0">
-
-              {/* Loading state */}
-              {courtLoading && (
-                <div className="text-center py-4">
-                  <div className="spinner-border spinner-border-sm text-success" />
-                  <p className="mt-2 text-muted small">Load ho raha hai...</p>
-                </div>
-              )}
-
-              {/* Table */}
-              {!courtLoading && courtReport && (
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Court</th>
-                        <th className="text-center">Total</th>
-                        <th className="text-center">Pending</th>
-                        <th className="text-center">Finalized</th>
-                        <th>Pending %</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {courtReport.map((court, index) => {
-                        const pendingPct = getPercentage(court.pendingCases, court.totalCases);
-                        return (
-                          <tr key={index}>
-                            <td>
-                              <strong style={{ fontSize: '0.9rem' }}>
-                                {court.courtName}
-                              </strong>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-secondary">{court.totalCases}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-warning text-dark">{court.pendingCases}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-success">{court.finalizedCases}</span>
-                            </td>
-                            <td style={{ width: '120px' }}>
-                              <div className="progress" style={{ height: '8px' }}>
-                                <div
-                                  className="progress-bar bg-warning"
-                                  style={{ width: `${pendingPct}%` }}
-                                />
-                              </div>
-                              <small className="text-muted">{pendingPct}%</small>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Empty state */}
-              {!courtLoading && courtReport && courtReport.length === 0 && (
-                <div className="text-center py-4 text-muted">
-                  <p>Koi court data nahi mila</p>
-                </div>
-              )}
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* FOOTER NOTE */}
-      <div className="mt-4 text-center text-muted small">
-        <p> Note: Yeh reports read-only hain. Koi edit/delete nahi hota yahan se.</p>
-      </div>
-
-    </div>
-  );
-};
-
-export default ReportsPage;
+export default ReportsPage
