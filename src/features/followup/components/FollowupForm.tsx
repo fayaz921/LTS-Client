@@ -1,4 +1,4 @@
-// components/FollowUpForm.tsx - Compact Size with Full Styling
+// components/FollowUpForm.tsx - Fully Responsive
 
 import { useState, useEffect } from 'react'
 import type { FollowUp } from '../types/followup.types'
@@ -6,12 +6,12 @@ import { useCreateFollowUp, useUpdateFollowUp } from '../hooks/useFollowups'
 
 interface Props {
     selected?: FollowUp
+    caseId: string
     onClose: () => void
 }
 
-const FollowUpForm = ({ selected, onClose }: Props) => {
+const FollowUpForm = ({ selected, caseId, onClose }: Props) => {
     const [form, setForm] = useState({
-        caseId: '',
         hearingDate: '',
         nextHearingDate: '',
         interimOrder: '',
@@ -27,7 +27,6 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
     useEffect(() => {
         if (selected) {
             setForm({
-                caseId: selected.caseId,
                 hearingDate: selected.hearingDate ? selected.hearingDate.split('T')[0] : '',
                 nextHearingDate: selected.nextHearingDate ? selected.nextHearingDate.split('T')[0] : '',
                 interimOrder: selected.interimOrder ?? '',
@@ -35,14 +34,7 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                 remarks: selected.remarks ?? '',
             })
         } else {
-            setForm({
-                caseId: '',
-                hearingDate: '',
-                nextHearingDate: '',
-                interimOrder: '',
-                decision: '',
-                remarks: '',
-            })
+            setForm({hearingDate: '',nextHearingDate: '',interimOrder: '',decision: '',remarks: ''})
             setError('')
         }
     }, [selected])
@@ -56,13 +48,13 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
         e.preventDefault()
         setError('')
 
-        if (!form.caseId || !form.hearingDate) {
-            setError('Case ID and Hearing Date are required')
+        if (!form.hearingDate) {
+            setError('Hearing Date is required')
             return
         }
 
         const payload = {
-            caseId: form.caseId,
+            caseId,
             hearingDate: form.hearingDate,
             nextHearingDate: form.nextHearingDate || null,
             interimOrder: form.interimOrder || null,
@@ -80,24 +72,18 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                 }
             )
         } else {
-            createFollowUp(
-                payload,
-                {
-                    onSuccess: () => onClose(),
-                    onError: (err: any) =>
-                        setError(err.response?.data?.message || 'Create failed'),
-                }
-            )
+            createFollowUp(payload,{
+                onSuccess: () => onClose(),
+                onError: (err: any) =>
+                    setError(err.response?.data?.message || 'Create failed'),
+            })
         }
     }
 
     return (
         <>
             <style>{`
-                @keyframes backdropIn {
-                    from { opacity: 0; }
-                    to   { opacity: 1; }
-                }
+                @keyframes backdropIn   { from { opacity: 0; } to { opacity: 1; } }
                 @keyframes modalSlideIn {
                     from { opacity: 0; transform: translateY(-20px) scale(0.97); }
                     to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -106,12 +92,10 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                     0%, 100% { transform: translateY(0px);  }
                     50%      { transform: translateY(-4px); }
                 }
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                .followup-input, .followup-textarea {
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .fu-input, .fu-textarea {
                     width: 100%;
-                    padding: 8px 12px;
+                    padding: 10px 12px;
                     border: 1.5px solid #E2DECE;
                     border-radius: 8px;
                     font-size: 13px;
@@ -122,62 +106,76 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                     box-sizing: border-box;
                     font-family: inherit;
                 }
-                .followup-input:focus, .followup-textarea:focus {
+                .fu-input:focus, .fu-textarea:focus {
                     border-color: #D4A843;
                     background: #fff;
                     box-shadow: 0 0 0 3px rgba(212,168,67,0.12);
                 }
-                .followup-input::placeholder, .followup-textarea::placeholder { color: #B0BBCA; }
-                .followup-textarea {
-                    resize: vertical;
-                    min-height: 60px;
+                .fu-input::placeholder, .fu-textarea::placeholder { color: #B0BBCA; }
+                .fu-textarea { resize: vertical; min-height: 60px; }
+                .fu-input[type="date"]::-webkit-calendar-picker-indicator {
+                    opacity: 0.5; cursor: pointer;
                 }
-                .followup-cancel-btn:hover {
-                    background: #E8EDF5 !important;
-                    color: #1B2A4A !important;
-                }
-                .followup-submit-btn:hover:not(:disabled) {
+                .fu-cancel:hover  { background: #E8EDF5 !important; color: #1B2A4A !important; }
+                .fu-submit:hover:not(:disabled) {
                     background: #C49830 !important;
                     transform: translateY(-1px);
                     box-shadow: 0 4px 12px rgba(212,168,67,0.3) !important;
                 }
-                .followup-submit-btn:active:not(:disabled) { transform: translateY(0); }
-                .followup-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-                .followup-close-btn:hover { background: #F0EBE0 !important; color: #1B2A4A !important; }
+                .fu-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+                .fu-close:hover { background: #F0EBE0 !important; color: #1B2A4A !important; }
+
+                /* ── Responsive date grid ── */
+                .fu-date-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                    margin-bottom: 14px;
+                }
+                @media (max-width: 480px) {
+                    .fu-date-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
             `}</style>
 
+            {/* Backdrop */}
             <div
                 style={{
                     position: 'fixed', inset: 0,
-                    background: 'rgba(15, 25, 50, 0.6)',
+                    background: 'rgba(15,25,50,0.6)',
                     backdropFilter: 'blur(4px)',
                     zIndex: 999,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     animation: 'backdropIn 0.2s ease',
-                }}
+                    padding: '12px',
+                                }}
                 onClick={onClose}
             >
+                {/* Modal */}
                 <div
                     style={{
                         background: '#fff',
                         borderRadius: '16px',
-                        width: '100%', maxWidth: '460px',
-                        margin: '16px',
+                        width: '100%', maxWidth: '480px',
                         overflow: 'hidden',
                         animation: 'modalSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
                         boxShadow: '0 20px 60px rgba(15,25,50,0.25)',
+                        maxHeight: '92vh',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                     onClick={e => e.stopPropagation()}
                 >
-
-                    {/* Compact Top Banner */}
+                    {/* Top Banner */}
                     <div style={{
-                        background: 'linear-gradient(135deg, #1B2A4A 0%, #243560 50%, #1B2A4A 100%)',
+                        background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 50%,#1B2A4A 100%)',
                         padding: '20px 20px 0',
                         position: 'relative',
                         overflow: 'hidden',
+                        flexShrink: 0,
                     }}>
-                        {/* Decorative circles - smaller */}
+                        {/* Deco circles */}
                         <div style={{
                             position: 'absolute', top: '-15px', right: '-15px',
                             width: '80px', height: '80px', borderRadius: '50%',
@@ -189,36 +187,28 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                             border: '1px solid rgba(212,168,67,0.10)',
                         }} />
 
-                        {/* Close button - smaller */}
-                        <button
-                            onClick={onClose}
-                            className="followup-close-btn"
-                            style={{
-                                position: 'absolute', top: '12px', right: '12px',
-                                width: '28px', height: '28px', borderRadius: '6px',
-                                background: 'rgba(255,255,255,0.1)',
-                                border: '1px solid rgba(255,255,255,0.15)',
-                                color: 'rgba(255,255,255,0.7)',
-                                fontSize: '16px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.2s ease', zIndex: 1,
-                            }}
-                        >
-                            ×
-                        </button>
+                        {/* Close */}
+                        <button onClick={onClose} className="fu-close" style={{
+                            position: 'absolute', top: '12px', right: '12px',
+                            width: '28px', height: '28px', borderRadius: '6px',
+                            background: 'rgba(255,255,255,0.1)',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            color: 'rgba(255,255,255,0.7)',
+                            fontSize: '16px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'all 0.2s ease', zIndex: 1,
+                        }}>×</button>
 
-                        {/* Icon + Title - compact */}
+                        {/* Icon + Title */}
                         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px', paddingBottom: '16px' }}>
                             <div style={{
                                 width: '48px', height: '48px', borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #D4A843 0%, #E8C05A 100%)',
+                                background: 'linear-gradient(135deg,#D4A843 0%,#E8C05A 100%)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '22px',
+                                fontSize: '22px', flexShrink: 0,
                                 boxShadow: '0 6px 16px rgba(212,168,67,0.3)',
                                 animation: 'iconFloat 3s ease-in-out infinite',
-                            }}>
-                                📋
-                            </div>
+                            }}>📋</div>
                             <div>
                                 <p style={{
                                     margin: '0 0 2px', fontSize: '10px', fontWeight: 700,
@@ -232,199 +222,106 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                             </div>
                         </div>
 
-                        {/* Wave divider - compact */}
-                        <svg viewBox="0 0 460 12" style={{ display: 'block', marginBottom: '-1px' }} preserveAspectRatio="none">
-                            <path d="M0,0 C115,12 345,12 460,0 L460,12 L0,12 Z" fill="#fff" />
+                        <svg viewBox="0 0 480 12" style={{ display: 'block', marginBottom: '-1px' }} preserveAspectRatio="none">
+                            <path d="M0,0 C120,12 360,12 480,0 L480,12 L0,12 Z" fill="#fff" />
                         </svg>
                     </div>
 
-                    {/* Compact Body */}
-                    <div style={{ padding: '20px' }}>
+                    {/* Body — scrollable on small screens */}
+                    <div style={{ padding: '18px 20px 20px', overflowY: 'auto', flex: 1 }}>
+
+                        {/* Error */}
                         {error && (
                             <div style={{
                                 background: '#FEF2F2', border: '1px solid #FECACA',
-                                borderRadius: '8px', padding: '8px 12px',
-                                marginBottom: '16px',
+                                borderRadius: '8px', padding: '10px 12px', marginBottom: '14px',
                                 display: 'flex', alignItems: 'center', gap: '8px',
                                 fontSize: '12px', color: '#DC2626',
                             }}>
-                                <span style={{ fontSize: '14px' }}>⚠️</span>
+                                <span style={{ fontSize: '14px', flexShrink: 0 }}>⚠️</span>
                                 {error}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit}>
 
-                            {/* Case ID */}
-                            <div style={{ marginBottom: '14px' }}>
-                                <label style={{
-                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                    fontSize: '11px', fontWeight: 700,
-                                    color: '#4A5568', letterSpacing: '0.05em',
-                                    textTransform: 'uppercase', marginBottom: '6px',
-                                }}>
-                                    <span style={{
-                                        width: '16px', height: '16px', borderRadius: '4px',
-                                        background: '#1B2A4A', color: '#D4A843',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '9px', fontWeight: 800,
-                                    }}>1</span>
-                                    Case ID
-                                    <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
-                                </label>
-                                <input
-                                    name="caseId"
-                                    value={form.caseId}
-                                    onChange={handleChange}
-                                    placeholder="Enter Case ID"
-                                    required
-                                    className="followup-input"
-                                />
-                            </div>
-
-                            {/* Hearing Date & Next Hearing Date */}
-                            <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                        fontSize: '11px', fontWeight: 700,
-                                        color: '#4A5568', letterSpacing: '0.05em',
-                                        textTransform: 'uppercase', marginBottom: '6px',
-                                    }}>
-                                        <span style={{
-                                            width: '16px', height: '16px', borderRadius: '4px',
-                                            background: '#1B2A4A', color: '#D4A843',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '9px', fontWeight: 800,
-                                        }}>2</span>
-                                        Hearing Date
-                                        <span style={{ color: '#DC2626' }}>*</span>
-                                    </label>
+                            {/* Hearing Date + Next Hearing Date — side by side on desktop, stacked on mobile */}
+                            <div className="fu-date-grid">
+                                <FuField num={1} label="Hearing Date" required>
                                     <input
                                         type="date"
                                         name="hearingDate"
                                         value={form.hearingDate}
                                         onChange={handleChange}
                                         required
-                                        className="followup-input"
+                                        className="fu-input"
                                     />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{
-                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                        fontSize: '11px', fontWeight: 700,
-                                        color: '#4A5568', letterSpacing: '0.05em',
-                                        textTransform: 'uppercase', marginBottom: '6px',
-                                    }}>
-                                        <span style={{
-                                            width: '16px', height: '16px', borderRadius: '4px',
-                                            background: '#1B2A4A', color: '#D4A843',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '9px', fontWeight: 800,
-                                        }}>3</span>
-                                        Next Date
-                                    </label>
+                                </FuField>
+                                <FuField num={2} label="Next Date" optional>
                                     <input
                                         type="date"
                                         name="nextHearingDate"
                                         value={form.nextHearingDate}
                                         onChange={handleChange}
-                                        className="followup-input"
+                                        className="fu-input"
                                     />
-                                </div>
+                                </FuField>
                             </div>
 
                             {/* Interim Order */}
                             <div style={{ marginBottom: '14px' }}>
-                                <label style={{
-                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                    fontSize: '11px', fontWeight: 700,
-                                    color: '#4A5568', letterSpacing: '0.05em',
-                                    textTransform: 'uppercase', marginBottom: '6px',
-                                }}>
-                                    <span style={{
-                                        width: '16px', height: '16px', borderRadius: '4px',
-                                        background: '#1B2A4A', color: '#D4A843',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '9px', fontWeight: 800,
-                                    }}>4</span>
-                                    Interim Order
-                                </label>
-                                <textarea
-                                    name="interimOrder"
-                                    value={form.interimOrder}
-                                    onChange={handleChange}
-                                    placeholder="Interim order..."
-                                    rows={2}
-                                    className="followup-textarea"
-                                />
+                                <FuField num={3} label="Interim Order" optional>
+                                    <textarea
+                                        name="interimOrder"
+                                        value={form.interimOrder}
+                                        onChange={handleChange}
+                                        placeholder="e.g. Stay granted, Notice issued..."
+                                        rows={2}
+                                        className="fu-textarea"
+                                    />
+                                </FuField>
                             </div>
 
                             {/* Decision */}
                             <div style={{ marginBottom: '14px' }}>
-                                <label style={{
-                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                    fontSize: '11px', fontWeight: 700,
-                                    color: '#4A5568', letterSpacing: '0.05em',
-                                    textTransform: 'uppercase', marginBottom: '6px',
-                                }}>
-                                    <span style={{
-                                        width: '16px', height: '16px', borderRadius: '4px',
-                                        background: '#1B2A4A', color: '#D4A843',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '9px', fontWeight: 800,
-                                    }}>5</span>
-                                    Decision
-                                </label>
-                                <textarea
-                                    name="decision"
-                                    value={form.decision}
-                                    onChange={handleChange}
-                                    placeholder="Decision..."
-                                    rows={2}
-                                    className="followup-textarea"
-                                />
+                                <FuField num={4} label="Decision" optional>
+                                    <textarea
+                                        name="decision"
+                                        value={form.decision}
+                                        onChange={handleChange}
+                                        placeholder="e.g. Case decided in favour..."
+                                        rows={2}
+                                        className="fu-textarea"
+                                    />
+                                </FuField>
                             </div>
 
                             {/* Remarks */}
                             <div style={{ marginBottom: '20px' }}>
-                                <label style={{
-                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                    fontSize: '11px', fontWeight: 700,
-                                    color: '#4A5568', letterSpacing: '0.05em',
-                                    textTransform: 'uppercase', marginBottom: '6px',
-                                }}>
-                                    <span style={{
-                                        width: '16px', height: '16px', borderRadius: '4px',
-                                        background: '#1B2A4A', color: '#D4A843',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '9px', fontWeight: 800,
-                                    }}>6</span>
-                                    Remarks
-                                </label>
-                                <textarea
-                                    name="remarks"
-                                    value={form.remarks}
-                                    onChange={handleChange}
-                                    placeholder="Remarks..."
-                                    rows={2}
-                                    className="followup-textarea"
-                                />
+                                <FuField num={5} label="Remarks" optional>
+                                    <textarea
+                                        name="remarks"
+                                        value={form.remarks}
+                                        onChange={handleChange}
+                                        placeholder="Additional notes..."
+                                        rows={2}
+                                        className="fu-textarea"
+                                    />
+                                </FuField>
                             </div>
 
-                            {/* Buttons - Compact */}
+                            {/* Buttons */}
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button
                                     type="button"
-                                    className="followup-cancel-btn"
+                                    className="fu-cancel"
                                     onClick={onClose}
                                     disabled={isPending}
                                     style={{
-                                        flex: 1, padding: '8px 12px',
+                                        flex: 1, padding: '10px 12px',
                                         background: '#F8F6F0', color: '#64748B',
-                                        border: '1px solid #E2DECE',
-                                        borderRadius: '8px', fontSize: '12px',
-                                        fontWeight: 600, cursor: 'pointer',
+                                        border: '1px solid #E2DECE', borderRadius: '8px',
+                                        fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                                         transition: 'all 0.2s ease',
                                     }}
                                 >
@@ -432,14 +329,13 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="followup-submit-btn"
+                                    className="fu-submit"
                                     disabled={isPending}
                                     style={{
-                                        flex: 2, padding: '8px 12px',
+                                        flex: 2, padding: '10px 12px',
                                         background: '#D4A843', color: '#1B2A4A',
-                                        border: 'none',
-                                        borderRadius: '8px', fontSize: '12px',
-                                        fontWeight: 700, cursor: 'pointer',
+                                        border: 'none', borderRadius: '8px',
+                                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
                                         transition: 'all 0.2s ease',
                                         boxShadow: '0 2px 8px rgba(212,168,67,0.3)',
                                         display: 'flex', alignItems: 'center',
@@ -469,5 +365,41 @@ const FollowUpForm = ({ selected, onClose }: Props) => {
         </>
     )
 }
+
+// ── Numbered field label helper ──────────────────────────────
+const FuField = ({
+    num, label, required, optional, children,
+}: {
+    num: number
+    label: string
+    required?: boolean
+    optional?: boolean
+    children: React.ReactNode
+}) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '11px', fontWeight: 700, color: '#4A5568',
+            letterSpacing: '0.05em', textTransform: 'uppercase',
+        }}>
+            <span style={{
+                width: '16px', height: '16px', borderRadius: '4px',
+                background: '#1B2A4A', color: '#D4A843',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '9px', fontWeight: 800, flexShrink: 0,
+            }}>{num}</span>
+            {label}
+            {required && <span style={{ color: '#DC2626' }}>*</span>}
+            {optional && (
+                <span style={{
+                    fontSize: '9px', color: '#A0ABBE', background: '#F1F5F9',
+                    borderRadius: '4px', padding: '1px 5px', fontWeight: 600,
+                    textTransform: 'none', letterSpacing: 0,
+                }}>Optional</span>
+            )}
+        </label>
+        {children}
+    </div>
+)
 
 export default FollowUpForm
