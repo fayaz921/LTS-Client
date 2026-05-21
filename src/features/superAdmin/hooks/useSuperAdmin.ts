@@ -8,18 +8,18 @@ export const useDashboardStats = () =>
     select: (res) => res.data.data, 
   });
 
-export const useOrganizations = () =>
+// useSuperAdmin.ts
+export const useOrganizations = (page: number = 1, pageSize: number = 8) =>
   useQuery({
-    queryKey: ['superadmin-orgs'],
-    queryFn: () => superAdminApi.getOrganizations(),
-    select: (res) => res.data.data, 
+    queryKey: ['superadmin-orgs', page, pageSize],
+    queryFn: () => superAdminApi.getOrganizations(page, pageSize),
+    select: (res) => res.data.data,
   });
-
 export const useTrialUsers = () =>
   useQuery({
     queryKey: ['superadmin-trial-users'],
     queryFn: () => superAdminApi.getTrialUsers(),
-    select: (res) => res.data.data,
+    select: (res) => res.data.data.items,
   });
 
 export const usePayments = () =>

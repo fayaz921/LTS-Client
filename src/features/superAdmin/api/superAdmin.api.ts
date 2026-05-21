@@ -1,5 +1,6 @@
 import axios from '../../../lib/axios';
-import type { ApiResponse } from '../../courts/types/court.types';
+import type { ApiResponse } from '../../auth/types/auth.types';
+import type {  PaginatedResponse } from '../../courts/types/court.types';
 import type { 
   Organization, 
   Payment, 
@@ -20,8 +21,10 @@ export const superAdminApi = {
   getActivity: () =>
     axios.get<{ data: ActivityItem[] }>('/super-admin/activity'),
 
-   getOrganizations: () =>
-    axios.get<ApiResponse<Organization[]>>('/SuperAdmin/all'),
-     getTrialUsers: () =>
-    axios.get<ApiResponse<TrailUser[]>>('/SuperAdmin/trial'),
+  // superAdmin.api.ts
+getOrganizations: (page = 1, pageSize = 8) =>
+  axios.get<ApiResponse<PaginatedResponse<Organization>>>(`/SuperAdmin/all?page=${page}&pageSize=${pageSize}`),
+
+getTrialUsers: () =>
+  axios.get<ApiResponse<PaginatedResponse<TrailUser>>>('/SuperAdmin/trial'),
 };
