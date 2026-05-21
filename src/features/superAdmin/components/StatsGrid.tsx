@@ -9,7 +9,7 @@ export const StatsGrid = ({ stats }: Props) => {
     { label: 'Total Organizations', value: stats.totalOrganizations,                        sub: '+3 this month',               color: '#3b5bdb' },
     { label: 'Active Trials',       value: stats.activeTrials,                               sub: `Expiring soon: ${stats.expiringIn3Days}`, color: '#c89b2a' },
     { label: 'Paid Subscriptions',  value: stats.paidSubscriptions,                          sub: '+5 renewed this month',       color: '#2f9e44' },
-    { label: 'Total Revenue',       value: `PKR ${stats.totalRevenue.toLocaleString()}`,     sub: '+18.2% vs last month',        color: '#e53e3e' },
+    { label: 'Total Revenue', value: `PKR ${(stats.totalRevenue ?? 0).toLocaleString()}`,     sub: '+18.2% vs last month',        color: '#e53e3e' },
   ];
 
   return (
