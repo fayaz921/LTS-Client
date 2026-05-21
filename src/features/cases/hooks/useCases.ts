@@ -37,8 +37,10 @@ export const DropDownPetitioners = (enabled: boolean = false) =>
     usePetitioners(enabled);
 
 export const DropDownDepartments = (enabled: boolean = false) =>
-    useGetDepartments(enabled);
-
+    useGetDepartments(
+        { pageNumber: 1, pageSize: 100 },
+        enabled
+    );
 export const DropDownCourts = (enabled: boolean = false) =>
     useGetCourts(
         {

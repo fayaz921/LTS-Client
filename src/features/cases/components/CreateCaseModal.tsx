@@ -74,8 +74,7 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
 const petitioners: PetitionerDto[] = petData?.data ?? [];
 
 // Departments
-const departments: Department[] = deptData ?? [];
-
+const departments: Department[] = deptData?.items ?? [];
 // Courts
 const courts: Court[] = courtData?.items ?? [];
 
