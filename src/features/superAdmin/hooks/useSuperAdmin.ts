@@ -15,11 +15,11 @@ export const useOrganizations = (page: number = 1, pageSize: number = 8) =>
     queryFn: () => superAdminApi.getOrganizations(page, pageSize),
     select: (res) => res.data.data,
   });
-export const useTrialUsers = () =>
+export const useTrialUsers = (page: number = 1, pageSize: number = 8) =>
   useQuery({
-    queryKey: ['superadmin-trial-users'],
-    queryFn: () => superAdminApi.getTrialUsers(),
-    select: (res) => res.data.data.items,
+    queryKey: ['superadmin-trial-users', page, pageSize],
+    queryFn: () => superAdminApi.getTrialUsers(page, pageSize),
+    select: (res) => res.data.data, // poora PaginatedResponse return karo
   });
 
 export const usePayments = () =>
