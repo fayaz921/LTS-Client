@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateCaseDto } from "../types/case.types";
-import { createCase, getCases } from "../api/case-api";
+import { createCase, deleteCase, getCases } from "../api/case-api";
 import { usePetitioners } from "../../petitioners/hooks/usePetitioners";
 import { useGetDepartments } from "../../departments/hooks/useDepartments";
 import { useGetCourts } from '../../courts/hooks/useCourts';
@@ -31,6 +31,18 @@ export const HandleCreateCase = () => {
         },
     });
 };
+
+export const useDeleteCase = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => deleteCase(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["cases"]
+            });
+        },
+    });
+}
 
 // ── Dropdowns ────────────────────────────────────────────────────
 export const DropDownPetitioners = (enabled: boolean = false) =>
