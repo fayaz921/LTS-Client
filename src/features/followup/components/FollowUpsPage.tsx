@@ -4,19 +4,18 @@ import { useState } from 'react'
 import FollowUpList from '../components/FollowUpList'
 import FollowUpForm from '../components/FollowupForm'
 import type { FollowUp } from '../types/followup.types'
+import { useParams } from 'react-router-dom'
 
 // ─────────────────────────────────────────────────────────────
 // Props — caseId parent (CaseDetailPage) se aata hai
 // Ya useParams() se URL se liya ja sakta hai
 // ─────────────────────────────────────────────────────────────
 
-interface Props {
-    caseId: string
-}
 
-const FollowUpsPage = ({ caseId }: Props) => {
+const FollowUpsPage = () => {
     const [showModal, setShowModal] = useState(false)
-    const [selected,  setSelected]  = useState<FollowUp | undefined>()
+    const [selected, setSelected] = useState<FollowUp | undefined>()
+    const { caseId = '' } = useParams<{ caseId: string }>()
 
     const handleEdit = (followup: FollowUp) => {
         setSelected(followup)

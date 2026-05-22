@@ -1,0 +1,158 @@
+@keyframes backdropIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes iconFloat {
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 25, 50, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    animation: backdropIn 0.2s ease;
+}
+
+.fu-modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: 92vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(15, 25, 50, 0.25);
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fu-body {
+    padding: 18px 20px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.fu-date-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 480px) {
+    .fu-date-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fu-input,
+.fu-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #E2DECE;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1B2A4A;
+    background: #FDFCF9;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.fu-input:focus,
+.fu-textarea:focus {
+    border-color: #D4A843;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.12);
+}
+
+.fu-textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.fu-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.fu-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.fu-btn-cancel {
+    flex: 1;
+    background: #F8F6F0;
+    color: #64748B;
+    border: 1px solid #E2DECE;
+}
+
+.fu-btn-submit {
+    flex: 2;
+    background: #D4A843;
+    color: #1B2A4A;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(212, 168, 67, 0.3);
+}
+
+.fu-btn-submit:hover:not(:disabled) {
+    background: #C49830;
+    transform: translateY(-1px);
+}
+
+.fu-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fu-error {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    color: #DC2626;
+    font-size: 12px;
+}

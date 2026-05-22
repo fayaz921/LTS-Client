@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import '../styles/case-list.css';
-import '../styles/create-case.css';
-import { HandleCreateCase, DropDownPetitioners, DropDownDepartments, DropDownCourts } from '../hooks/useCases';
-import type { PetitionerDto } from '../../petitioners/types/petitioner.types';
-import type { Department } from '../../departments/types/department.types';
-import type { Court } from '../../courts/types/court.types';
-import type { CreateCaseDto } from "../types/case.types";
+import '../../styles/case-list.css';
+import '../../styles/create-case.css';
+import { HandleCreateCase, DropDownPetitioners, DropDownDepartments, DropDownCourts } from '../../hooks/useCases';
+import type { PetitionerDto } from '../../../petitioners/types/petitioner.types';
+import type { Department } from '../../../departments/types/department.types';
+import type { Court } from '../../../courts/types/court.types';
+import type { CreateCaseDto } from "../../types/case.types";
 
 const toUtcInstitutionDate = (date: string) => {
     return new Date(`${date}T00:00:00.000Z`).toISOString();
@@ -67,16 +67,17 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
 
     const { mutate: createCase, isPending, isError: submitError } = HandleCreateCase()
 
-// ─────────────────────────────────────────────────────────────
-// SAFE DROPDOWN DATA
-// ─────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // SAFE DROPDOWN DATA
+    // ─────────────────────────────────────────────────────────────
 
-const petitioners: PetitionerDto[] = petData?.data ?? [];
+    const petitioners: PetitionerDto[] = petData?.data ?? [];
 
-// Departments
-const departments: Department[] = deptData?.items ?? [];
-// Courts
-const courts: Court[] = courtData?.items ?? [];
+    // Departments
+    const departments: Department[] = deptData?.items ?? [];
+
+    // Courts
+    const courts: Court[] = courtData?.items ?? [];
 
 
     // ── Selected petitioner → info pill ─────────────────────
@@ -181,7 +182,7 @@ const courts: Court[] = courtData?.items ?? [];
                 {isLoading ? (
                     <option>Loading…</option>
                 ) : isError ? (
-                    <option>Error — refresh karo</option>
+                    <option>Error — refresh it</option>
                 ) : items.length === 0 && enabled ? (
                     <option disabled value="">{emptyMsg}</option>
                 ) : (

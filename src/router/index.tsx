@@ -5,7 +5,7 @@ import { LoginForm } from '../features/auth/components/Login'
 import { SignUp } from '../features/auth/components/SignUp'
 import DocumentsPage from '../features/documents/components/DocumentPage'
 import DashboardPage from '../features/dashboard/components/DashboardPage'
-import CaseList from '../features/cases/components/CaseList'
+import CaseList from '../features/cases/components/case-list/CaseList'
 import DepartmentsPage from '../features/departments/components/DepartmentsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import PetitionersPage from '../features/petitioners/components/PetitionersPage'
@@ -47,11 +47,11 @@ export const router = createBrowserRouter([
                     { path: 'documents', element: <DocumentsPage /> },
                     { path: 'documents/:caseId', element: <DocumentsPage /> },
                     { path: 'petitioners', element: <PetitionersPage /> },
-                    { path: 'courts',         element: <CourtsPage /> },
-                    { path: 'followup',       element: <FollowupPage caseId={''} /> },
-                    { path: 'followup/:caseId', element: <FollowupPage caseId={''} /> },
-                     { path: 'alerts',         element: <AlertsPage /> },
-                    {path: 'profile', element: <ProfilePage />},
+                    { path: 'courts', element: <CourtsPage /> },
+                    { path: 'followup', element: <FollowupPage /> },
+                    { path: 'followup/:caseId', element: <FollowupPage /> },
+                    { path: 'alerts', element: <AlertsPage /> },
+                    { path: 'profile', element: <ProfilePage /> },
                     { path: 'Benches', element: <BenchPage /> },
                     { path: 'reports', element: <ReportsPage /> },
                 ]

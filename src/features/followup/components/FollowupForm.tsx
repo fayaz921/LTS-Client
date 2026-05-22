@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import type { FollowUp } from '../types/followup.types'
 import { useCreateFollowUp, useUpdateFollowUp } from '../hooks/useFollowups'
+// import type { AxiosError } from 'axios'
 
 interface Props {
     selected?: FollowUp
@@ -10,34 +11,42 @@ interface Props {
     onClose: () => void
 }
 
+const getInitialForm = (selected?: FollowUp) => ({
+    hearingDate: selected?.hearingDate
+        ? selected.hearingDate.split('T')[0]
+        : '',
+
+    nextHearingDate: selected?.nextHearingDate
+        ? selected.nextHearingDate.split('T')[0]
+        : '',
+
+    interimOrder: selected?.interimOrder ?? '',
+    decision: selected?.decision ?? '',
+    remarks: selected?.remarks ?? '',
+})
+
 const FollowUpForm = ({ selected, caseId, onClose }: Props) => {
-    const [form, setForm] = useState({
-        hearingDate: '',
-        nextHearingDate: '',
-        interimOrder: '',
-        decision: '',
-        remarks: '',
-    })
+
     const [error, setError] = useState('')
 
-    const { mutate: createFollowUp, isPending: creating } = useCreateFollowUp()
-    const { mutate: updateFollowUp, isPending: updating } = useUpdateFollowUp()
+    const [form, setForm] = useState(() =>
+        getInitialForm(selected)
+    )
+
+    // useEffect(() => {
+    //     setForm(getInitialForm(selected))
+    //     setError('')
+    // }, [selected])
+
+    const { mutate: createFollowUp, isPending: creating } =
+        useCreateFollowUp()
+
+    const { mutate: updateFollowUp, isPending: updating } =
+        useUpdateFollowUp()
+
     const isPending = creating || updating
 
-    useEffect(() => {
-        if (selected) {
-            setForm({
-                hearingDate: selected.hearingDate ? selected.hearingDate.split('T')[0] : '',
-                nextHearingDate: selected.nextHearingDate ? selected.nextHearingDate.split('T')[0] : '',
-                interimOrder: selected.interimOrder ?? '',
-                decision: selected.decision ?? '',
-                remarks: selected.remarks ?? '',
-            })
-        } else {
-            setForm({hearingDate: '',nextHearingDate: '',interimOrder: '',decision: '',remarks: ''})
-            setError('')
-        }
-    }, [selected])
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -72,7 +81,7 @@ const FollowUpForm = ({ selected, caseId, onClose }: Props) => {
                 }
             )
         } else {
-            createFollowUp(payload,{
+            createFollowUp(payload, {
                 onSuccess: () => onClose(),
                 onError: (err: any) =>
                     setError(err.response?.data?.message || 'Create failed'),
@@ -149,7 +158,7 @@ const FollowUpForm = ({ selected, caseId, onClose }: Props) => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     animation: 'backdropIn 0.2s ease',
                     padding: '12px',
-                                }}
+                }}
                 onClick={onClose}
             >
                 {/* Modal */}

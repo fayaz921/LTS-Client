@@ -1,0 +1,254 @@
+.cdm__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.cdm__dialog {
+    background: var(--lts-white);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+/* ── Header ── */
+.cdm__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--lts-border);
+    flex-shrink: 0;
+}
+
+.cdm__header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cdm__header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #E6F1FB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #185FA5;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.cdm__header-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--lts-navy);
+    line-height: 1.3;
+}
+
+.cdm__header-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.cdm__close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--lts-border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.cdm__close-btn:hover {
+    background: var(--lts-bg);
+    color: var(--lts-navy);
+}
+
+/* ── Body ── */
+.cdm__body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* ── Section ── */
+.cdm__section {
+    margin-bottom: 24px;
+}
+
+.cdm__section:last-child {
+    margin-bottom: 0;
+}
+
+.cdm__section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.cdm__section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--lts-border);
+}
+
+.cdm__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ── Detail Item ── */
+.cdm__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cdm__item--full {
+    grid-column: 1 / -1;
+}
+
+.cdm__item-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.cdm__item-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--lts-navy);
+    line-height: 1.5;
+}
+
+.cdm__item-value--muted {
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* ── Status Badge ── */
+.cdm__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cdm__status--pending {
+    background: #FAEEDA;
+    color: #854F0B;
+}
+
+.cdm__status--finalized {
+    background: #EAF3DE;
+    color: #3B6D11;
+}
+
+.cdm__status--active {
+    background: #E6F1FB;
+    color: #185FA5;
+}
+
+/* ── Petitioner Tags ── */
+.cdm__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.cdm__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--lts-bg);
+    border: 1px solid var(--lts-border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--lts-navy);
+}
+
+/* ── Footer ── */
+.cdm__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-top: 1px solid var(--lts-border);
+    background: #f8fafc;
+    flex-shrink: 0;
+}
+
+.cdm__btn-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--lts-border);
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cdm__btn-close:hover {
+    background: var(--lts-bg);
+    color: var(--lts-navy);
+}
+
+.cdm__btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--lts-navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cdm__btn-edit:hover {
+    background: #2A3F70;
+    transform: translateY(-1px);
+}
