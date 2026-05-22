@@ -70,3 +70,4 @@ export interface ActivityItem {
   text: string;
   time: string;
 }
+

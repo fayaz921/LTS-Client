@@ -8,11 +8,13 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> {
+    pageSize: number
     items: T[];
     totalCount: number
-    page: number
-    pageSize: number
-    totalPages: number
+    pageNumber: number; 
+  totalPages: number;
+  hasPrevious: boolean; 
+  hasNext: boolean;  
     // isSuccess: boolean
     // message: string
     // status: HttpStatusCode

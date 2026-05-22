@@ -1,8 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { TrailUser } from '../types/superAdmin.types';
+import type { PaginatedResponse } from '../../courts/types/court.types';
 
 interface Props {
-  trialUsers: TrailUser[];
+  data: PaginatedResponse<TrailUser>;
+  page: number;
+  onPageChange: (page: number) => void;
 }
 
 const DaysRemaining = ({ endDate }: { endDate: string }) => {
@@ -31,19 +34,16 @@ const StatusPill = ({ isActive }: { isActive: boolean }) =>
     </span>
   );
 
-export const TrialUsersTable = ({ trialUsers }: Props) => {
-  const [page, setPage] = useState(1);
-  const pageSize = 7;
-  const totalPages = Math.ceil(trialUsers.length / pageSize);
-  const paginated = trialUsers.slice((page - 1) * pageSize, page * pageSize);
+export const TrialUsersTable = ({ data, page, onPageChange }: Props) => {
+  const { items, totalPages, totalCount, hasNext, hasPrevious } = data;
 
   const expiringSoon = useMemo(() => {
     const now = new Date().setHours(0, 0, 0, 0);
-    return trialUsers.filter((u) => {
+    return items.filter((u) => {
       const days = Math.ceil((new Date(u.trialEndDate).getTime() - now) / (1000 * 60 * 60 * 24));
       return days >= 0 && days <= 3;
     }).length;
-  }, [trialUsers]);
+  }, [items]);
 
   return (
     <div className="card border-0 shadow-sm">
@@ -57,7 +57,7 @@ export const TrialUsersTable = ({ trialUsers }: Props) => {
               style={{ width: 8, height: 8, background: '#c89b2a' }} />
             Trial Users
             <span style={{ color: '#7a8599', fontWeight: 400, fontSize: '0.78rem' }}>
-              ({trialUsers.length} total)
+              ({totalCount} total)
             </span>
           </h6>
           <div className="d-flex align-items-center gap-3">
@@ -82,7 +82,7 @@ export const TrialUsersTable = ({ trialUsers }: Props) => {
               </tr>
             </thead>
             <tbody>
-              {paginated.map((user) => (
+              {items.map((user) => (
                 <tr key={user.id} style={{ borderBottom: '1px solid #f0f2f5', verticalAlign: 'middle' }}>
                   <td style={{ padding: '12px' }}>
                     <div className="fw-semibold">{user.organizationName}</div>
@@ -113,7 +113,7 @@ export const TrialUsersTable = ({ trialUsers }: Props) => {
         </div>
 
         {/* Empty State */}
-        {trialUsers.length === 0 && (
+        {totalCount === 0 && (
           <div className="text-center py-5 text-muted" style={{ fontSize: '0.85rem' }}>
             ⏳ No trial users found
           </div>
@@ -124,24 +124,24 @@ export const TrialUsersTable = ({ trialUsers }: Props) => {
           <div className="d-flex justify-content-center align-items-center gap-2 py-3">
             <button
               className="btn btn-sm"
-              style={{ background: page === 1 ? '#e2e8f0' : '#1e2d45', color: page === 1 ? '#94a3b8' : 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: page === 1 ? 'not-allowed' : 'pointer' }}
-              onClick={() => setPage(p => p - 1)}
-              disabled={page === 1}
+              style={{ background: !hasPrevious ? '#e2e8f0' : '#1e2d45', color: !hasPrevious ? '#94a3b8' : 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: !hasPrevious ? 'not-allowed' : 'pointer' }}
+              onClick={() => onPageChange(page - 1)}
+              disabled={!hasPrevious}
             >← Prev</button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
               <button key={p}
                 className="btn btn-sm"
                 style={{ background: page === p ? '#c89b2a' : 'white', color: page === p ? '#1e2d45' : '#64748b', border: '1px solid #e2e8f0', borderRadius: 6, padding: '6px 12px', fontWeight: page === p ? 700 : 400, cursor: 'pointer' }}
-                onClick={() => setPage(p)}
+                onClick={() => onPageChange(p)}
               >{p}</button>
             ))}
 
             <button
               className="btn btn-sm"
-              style={{ background: page === totalPages ? '#e2e8f0' : '#1e2d45', color: page === totalPages ? '#94a3b8' : 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: page === totalPages ? 'not-allowed' : 'pointer' }}
-              onClick={() => setPage(p => p + 1)}
-              disabled={page === totalPages}
+              style={{ background: !hasNext ? '#e2e8f0' : '#1e2d45', color: !hasNext ? '#94a3b8' : 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: !hasNext ? 'not-allowed' : 'pointer' }}
+              onClick={() => onPageChange(page + 1)}
+              disabled={!hasNext}
             >Next →</button>
           </div>
         )}

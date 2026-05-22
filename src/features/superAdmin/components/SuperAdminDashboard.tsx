@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { DashboardStats, Organization, Payment, TrailUser } from '../types/superAdmin.types'
+import type { DashboardStats } from '../types/superAdmin.types'
 import { useDashboardStats, useOrganizations, usePayments, useTrialUsers } from '../hooks/useSuperAdmin'
 import { StatsGrid } from './StatsGrid'
 import { InfoCards } from './InfoCards'
@@ -10,39 +10,6 @@ import { SuperAdminLayout } from '../../../shared/components/SuperAdminLayout'
 
 type SidebarSection = 'overview' | 'organizations' | 'trials' | 'subscriptions' | 'payments' | 'revenue'
 
-// ── Dummy Data ─────────────────────────────────────────────
-const dummyStats: DashboardStats = {
-  totalOrganizations: 47, activeTrials: 12, paidSubscriptions: 28,
-  totalRevenue: 240000, totalActiveUsers: 312, expiringIn3Days: 4,
-  expiredNotConverted: 7, convertedToPaid: 18, trialConversionRate: 72,
-  basicCount: 14, professionalCount: 20, enterpriseCount: 8, inactiveCount: 5,
-  activeRate: 89, totalMaxUsers: 1240, totalMaxClients: 8600, orgsNearLimit: 3,
-  userCapacityUsed: 25, thisMonthRevenue: 85000, pendingRevenue: 10000,
-  overdueRevenue: 0, refundedRevenue: 5000, collectionRate: 89,
-}
-
-const dummyOrgs: Organization[] = [
-  { id: '1', organizationName: 'Al-Noor Law Associates', slug: 'al-noor-law', plan: 'Enterprise', isTrialActive: false, isSubscriptionActive: true, isActive: true, maxUsers: 50, maxClients: 500, activeUserCount: 18, subscriptionEndDate: '2025-12-31', createdAt: '2024-01-01' },
-  { id: '2', organizationName: 'Justice First Chambers', slug: 'justice-first', plan: 'Professional', isTrialActive: true, isSubscriptionActive: false, isActive: true, maxUsers: 20, maxClients: 200, activeUserCount: 6, trialStartDate: '2026-04-15', trialEndDate: '2026-05-15', createdAt: '2024-02-01' },
-  { id: '3', organizationName: 'Rehman & Partners', slug: 'rehman-partners', plan: 'Professional', isTrialActive: false, isSubscriptionActive: true, isActive: true, maxUsers: 20, maxClients: 200, activeUserCount: 12, subscriptionEndDate: '2026-06-30', createdAt: '2024-03-01' },
-  { id: '4', organizationName: 'Qadir Legal Services', slug: 'qadir-legal', plan: 'Basic', isTrialActive: false, isSubscriptionActive: false, isActive: false, maxUsers: 5, maxClients: 50, activeUserCount: 3, subscriptionEndDate: '2026-04-01', createdAt: '2024-04-01' },
-]
-
-const dummyPayments: Payment[] = [
-  { id: '1', invoiceNo: 'INV-2026-041', organizationName: 'Al-Noor Law', plan: 'Enterprise', amount: 15000, date: '2026-05-05', status: 'Paid' },
-  { id: '2', invoiceNo: 'INV-2026-040', organizationName: 'Punjab Bar', plan: 'Enterprise', amount: 15000, date: '2026-05-01', status: 'Paid' },
-  { id: '3', invoiceNo: 'INV-2026-039', organizationName: 'Rehman & Co', plan: 'Professional', amount: 5000, date: '2026-04-28', status: 'Paid' },
-  { id: '4', invoiceNo: 'INV-2026-038', organizationName: 'Qadir Legal', plan: 'Basic', amount: 0, date: '2026-04-01', status: 'Overdue' },
-  { id: '5', invoiceNo: 'INV-2026-037', organizationName: 'Justice First', plan: 'Professional', amount: 5000, date: '2026-04-20', status: 'Pending' },
-]
-
-const dummyTrialUsers: TrailUser[] = [
-  { id: '1', organizationName: 'Justice First Chambers', email: 'admin@justicefirst.pk', trialStartDate: '2026-04-15', trialEndDate: '2026-05-15', isTrialActive: true },
-  { id: '2', organizationName: 'Siddiqui Advocates', email: 'info@siddiqui.pk', trialStartDate: '2026-04-18', trialEndDate: '2026-05-10', isTrialActive: true },
-  { id: '3', organizationName: 'City Law Firm', email: 'hello@citylaw.pk', trialStartDate: '2026-03-01', trialEndDate: '2026-04-01', isTrialActive: false },
-]
-
-// ── Subscriptions Section ──────────────────────────────────
 const SubscriptionsSection = ({ stats }: { stats: DashboardStats }) => (
   <div>
     <div className="row g-3 mb-4">
@@ -77,7 +44,6 @@ const SubscriptionsSection = ({ stats }: { stats: DashboardStats }) => (
   </div>
 )
 
-// ── Revenue Section ────────────────────────────────────────
 const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
   <div>
     <div className="row g-3 mb-4">
@@ -116,56 +82,68 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
   </div>
 )
 
-// ── Main Dashboard ─────────────────────────────────────────
 export const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState<SidebarSection>('overview')
+  const [orgsPage, setOrgsPage]     = useState(1)
+  const [trialPage, setTrialPage]   = useState(1)  // ← NEW
 
-  const { data: stats }         = useDashboardStats()
-  const { data: organizations } = useOrganizations()
-  const { data: payments }      = usePayments()
-  const { data: trialUsers }    = useTrialUsers()
+  const { data: stats }     = useDashboardStats()
+  const { data: orgsData }  = useOrganizations(orgsPage, 8)
+  const { data: trialData } = useTrialUsers(trialPage, 8)   // ← FIXED
+  const { data: payments }  = usePayments()
 
-  const finalStats: DashboardStats = { ...dummyStats, ...(stats ?? {}) }
-  const finalOrgs       = organizations ?? dummyOrgs
-  const finalPayments   = payments      ?? dummyPayments
-  const finalTrialUsers = trialUsers    ?? dummyTrialUsers
+  const finalPayments = payments ?? []
 
   return (
     <SuperAdminLayout
       activeSection={activeSection}
       onSectionChange={setActiveSection}
       stats={{
-        totalOrganizations: finalStats.totalOrganizations,
-        totalActiveUsers:   finalStats.totalActiveUsers,
-        activeTrials:       finalStats.activeTrials,
-        totalRevenue:       finalStats.totalRevenue,
+        totalOrganizations: stats?.totalOrganizations ?? 0,
+        totalActiveUsers:   stats?.totalActiveUsers   ?? 0,
+        activeTrials:       stats?.activeTrials       ?? 0,
+        totalRevenue:       stats?.totalRevenue       ?? 0,
       }}
     >
       {activeSection === 'overview' && (
-        <>
-          <StatsGrid stats={finalStats} />
-          <InfoCards stats={finalStats} />
-        </>
+        stats ? (
+          <>
+            <StatsGrid stats={stats} />
+            <InfoCards stats={stats} />
+          </>
+        ) : (
+          <div className="text-center py-5 text-muted" style={{ fontSize: '0.85rem' }}>
+            Loading...
+          </div>
+        )
       )}
 
       {activeSection === 'organizations' && (
-        <OrganizationsTable organizations={finalOrgs} />
+        <OrganizationsTable
+          data={orgsData}
+          page={orgsPage}
+          onPageChange={setOrgsPage}
+        />
       )}
 
-      {activeSection === 'trials' && (
-        <TrialUsersTable trialUsers={finalTrialUsers} />
+      {activeSection === 'trials' && trialData && (   // ← FIXED
+        <TrialUsersTable
+          data={trialData}
+          page={trialPage}
+          onPageChange={setTrialPage}
+        />
       )}
 
-      {activeSection === 'subscriptions' && (
-        <SubscriptionsSection stats={finalStats} />
+      {activeSection === 'subscriptions' && stats && (
+        <SubscriptionsSection stats={stats} />
       )}
 
       {activeSection === 'payments' && (
         <PaymentsTable payments={finalPayments} />
       )}
 
-      {activeSection === 'revenue' && (
-        <RevenueSection stats={finalStats} />
+      {activeSection === 'revenue' && stats && (
+        <RevenueSection stats={stats} />
       )}
     </SuperAdminLayout>
   )

@@ -16,6 +16,7 @@ import { SuperAdminDashboard } from '../features/superAdmin/components/SuperAdmi
 import AlertsPage from '../features/alerts/components/AlertsPage'
 import CourtsPage from '../features/courts/components/CourtsPage'
 import FollowupPage from '../features/followup/components/FollowUpsPage'
+import { SuperAdminProfilePage } from '../features/superAdmin/components/SuperAdminProfilePage'
 
 export const router = createBrowserRouter([
     { path: '/', element: <LandingPage /> },
@@ -25,7 +26,8 @@ export const router = createBrowserRouter([
         path: '/super-admin',
         element: <ProtectedRoute requiredRole="SuperAdmin" />,
         children: [
-            { index: true, element: <SuperAdminDashboard /> }
+            { index: true, element: <SuperAdminDashboard /> },
+            { path: 'profile', element: <SuperAdminProfilePage /> }
         ]
     },
 
