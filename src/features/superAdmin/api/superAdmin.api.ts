@@ -20,11 +20,18 @@ export const superAdminApi = {
 
   getActivity: () =>
     axios.get<{ data: ActivityItem[] }>('/super-admin/activity'),
+ 
+getSubscriptions: (page = 1, pageSize = 8) =>
+  axios.get<ApiResponse<PaginatedResponse<Organization>>>(
+    `/SuperAdmin/subscription?page=${page}&pageSize=${pageSize}`
+  ),
 
   // superAdmin.api.ts
 getOrganizations: (page = 1, pageSize = 8) =>
   axios.get<ApiResponse<PaginatedResponse<Organization>>>(`/SuperAdmin/all?page=${page}&pageSize=${pageSize}`),
 
-getTrialUsers: () =>
-  axios.get<ApiResponse<PaginatedResponse<TrailUser>>>('/SuperAdmin/trial'),
+getTrialUsers: (page = 1, pageSize = 8) =>
+  axios.get<ApiResponse<PaginatedResponse<TrailUser>>>(
+    `/SuperAdmin/trial?page=${page}&pageSize=${pageSize}`
+  ),
 };

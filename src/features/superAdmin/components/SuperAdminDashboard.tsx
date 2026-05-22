@@ -84,15 +84,15 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
 
 export const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState<SidebarSection>('overview')
-  const [orgsPage, setOrgsPage] = useState(1)  // ← naya
+  const [orgsPage, setOrgsPage]     = useState(1)
+  const [trialPage, setTrialPage]   = useState(1)  // ← NEW
 
-  const { data: stats }    = useDashboardStats()
-  const { data: orgsData } = useOrganizations(orgsPage, 8)  // ← updated
-  const { data: payments } = usePayments()
-  const { data: trialUsers } = useTrialUsers()
+  const { data: stats }     = useDashboardStats()
+  const { data: orgsData }  = useOrganizations(orgsPage, 8)
+  const { data: trialData } = useTrialUsers(trialPage, 8)   // ← FIXED
+  const { data: payments }  = usePayments()
 
-  const finalPayments   = payments    ?? []
-  const finalTrialUsers = trialUsers  ?? []
+  const finalPayments = payments ?? []
 
   return (
     <SuperAdminLayout
@@ -126,8 +126,12 @@ export const SuperAdminDashboard = () => {
         />
       )}
 
-      {activeSection === 'trials' && (
-        <TrialUsersTable trialUsers={finalTrialUsers} />
+      {activeSection === 'trials' && trialData && (   // ← FIXED
+        <TrialUsersTable
+          data={trialData}
+          page={trialPage}
+          onPageChange={setTrialPage}
+        />
       )}
 
       {activeSection === 'subscriptions' && stats && (
