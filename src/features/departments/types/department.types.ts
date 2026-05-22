@@ -1,3 +1,7 @@
+// ─────────────────────────────────────────────────────────────
+// Department Domain Types
+// ─────────────────────────────────────────────────────────────
+
 export interface Department {
     id: string
     departmentName: string
@@ -17,4 +21,24 @@ export interface UpdateDepartmentDto {
     departmentName: string
     addressContact?: string
     isActive: boolean
+}
+
+// ─────────────────────────────────────────────────────────────
+// Pagination Types
+// ─────────────────────────────────────────────────────────────
+
+export interface PaginatedResponse<T> {
+    items:       T[]
+    totalCount:  number
+    pageNumber:  number
+    pageSize:    number
+    totalPages:  number
+    hasPrevious: boolean
+    hasNext:     boolean
+}
+
+export interface DepartmentPageParams {
+    pageNumber: number
+    pageSize:   number
+    isActive?:  boolean
 }
