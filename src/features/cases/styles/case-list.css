@@ -178,6 +178,7 @@ body {
 }
 
 /* ===== FILTER TABS ===== */
+/* ===== FILTER TABS ===== */
 .cl__filter-tabs {
     display: flex;
     gap: 10px;
@@ -185,6 +186,7 @@ body {
 }
 
 .cl__filter-tab {
+    position: relative;
     background: var(--lts-white);
     color: var(--lts-text-gray);
     border: 1.5px solid var(--lts-border);
@@ -193,22 +195,109 @@ body {
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.cl__filter-tab:hover {
+/* ── All tab hover ── */
+.cl__filter-tab:nth-child(1):hover {
     border-color: var(--lts-gold);
     color: #8A6020;
     background: #FDF6E3;
 }
+.cl__filter-tab:nth-child(1):hover .cl__tab-badge {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
+}
 
-.cl__filter-tab--active {
+/* ── Pending tab hover ── */
+.cl__filter-tab:nth-child(2):hover {
+    border-color: #D97706;
+    color: #92400E;
+    background: #FFFBEB;
+}
+.cl__filter-tab:nth-child(2):hover .cl__tab-badge {
+    background: #D97706;
+    color: #fff;
+}
+
+/* ── Finalized tab hover ── */
+.cl__filter-tab:nth-child(3):hover {
+    border-color: #16A34A;
+    color: #14532D;
+    background: #F0FDF4;
+}
+.cl__filter-tab:nth-child(3):hover .cl__tab-badge {
+    background: #16A34A;
+    color: #fff;
+}
+
+/* ── Active states ── */
+.cl__filter-tab--active:nth-child(1) {
     background: #FDF6E3;
     color: #8A6020;
     border-color: var(--lts-gold);
     font-weight: 700;
 }
+.cl__filter-tab--active:nth-child(1) .cl__tab-badge {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
+    font-weight: 800;
+}
 
+.cl__filter-tab--active:nth-child(2) {
+    background: #FFFBEB;
+    color: #92400E;
+    border-color: #D97706;
+    font-weight: 700;
+}
+.cl__filter-tab--active:nth-child(2) .cl__tab-badge {
+    background: #D97706;
+    color: #fff;
+    font-weight: 800;
+}
+
+.cl__filter-tab--active:nth-child(3) {
+    background: #F0FDF4;
+    color: #14532D;
+    border-color: #16A34A;
+    font-weight: 700;
+}
+.cl__filter-tab--active:nth-child(3) .cl__tab-badge {
+    background: #16A34A;
+    color: #fff;
+    font-weight: 800;
+}
+
+/* ── Badge — default (inactive) ── */
+.cl__tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cl__filter-tab:nth-child(1) .cl__tab-badge {
+    background: var(--lts-gold-light);
+    color: #8A6020;
+}
+.cl__filter-tab:nth-child(2) .cl__tab-badge {
+    background: rgba(217, 119, 6, 0.12);
+    color: #D97706;
+}
+.cl__filter-tab:nth-child(3) .cl__tab-badge {
+    background: rgba(22, 163, 74, 0.12);
+    color: #16A34A;
+}
 /* ===== SEARCH CARD ===== */
 .cl__search-card {
     background: var(--lts-white);
@@ -692,3 +781,44 @@ body {
 .cl__modal-btn--delete:hover {
   background: #b91c1c;
 }
+
+/* ── ADD THESE TO THE BOTTOM OF case-list.css ── */
+
+/* Petitioner cell */
+.cl__petitioner-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cl__cnic {
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+}
+
+.cl__petitioner-more {
+    display: inline-block;
+    margin-top: 4px;
+    background: var(--lts-gold-light);
+    color: #8A6020;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    cursor: default;
+}
+
+/* DAG cell */
+.cl__cell-dag {
+    font-size: 13px;
+    color: var(--lts-text-dark);
+    font-weight: 500;
+    max-width: 120px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Active tabs */

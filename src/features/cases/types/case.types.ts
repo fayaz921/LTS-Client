@@ -1,44 +1,7 @@
-export interface GetCaseDto {
-    id: string
-    caseNo: string
-    title: string
-    subject: string
-    dag: string
-    status: string
-    dateInstitution: string
-    courtName: string
-    departmentName: string
-    petitioners: string[]
-}
+// ── Shared Enums ─────────────────────────────────────────────────
+export type CaseStatus = 'Pending' | 'Finalized' | 'Active';
 
-export type CaseDto = GetCaseDto
-
-export interface CreateCaseDto {
-    courtId: string
-    departmentId: string
-    petitionerId: string
-    dag: string
-    title: string
-    subject: string
-    detail: string
-    dateInstitution: string
-    emailList: string
-    organizationId?: string
-}
-
-export interface UpdateCaseDto {
-    id: string
-    courtId: string
-    departmentId: string
-    petitionerId: string
-    dag: string
-    title: string
-    subject: string
-    detail: string
-    status: string
-    dateInstitution: string
-}
-
+// ── Petitioner ───────────────────────────────────────────────────
 export interface PetitionerDetail {
     id: string;
     name: string;
@@ -47,34 +10,66 @@ export interface PetitionerDetail {
     phone?: string;
 }
 
-export interface Case {
+
+export interface CaseDto {
     id: string;
     caseNo: string;
     title: string;
     subject: string;
     dag: string;
-    status: "Pending" | "Finalized";
+    status: CaseStatus;
     dateInstitution: string;
     courtName: string;
     departmentName: string;
     petitioners: PetitionerDetail[];
 }
 
-export interface SearchCaseResponse {
-    data: Case[];
+// ── Commands ─────────────────────────────────────────────────────
+export interface CreateCaseDto {
+    courtId: string;
+    departmentId: string;
+    petitionerId: string;
+    dag: string;
+    title: string;
+    subject: string;
+    detail: string;
+    dateInstitution: string;
+    emailList: string;
+    organizationId?: string;
+}
+
+export interface UpdateCaseDto {
+    id: string;
+    courtId: string;
+    departmentId: string;
+    petitionerId: string;
+    dag: string;
+    title: string;
+    subject: string;
+    detail: string;
+    status: CaseStatus;
+    dateInstitution: string;
+    emailList: string;
+}
+
+// ── API Response Shapes ──────────────────────────────────────────
+export interface PaginatedCaseResponse {
+    items: CaseDto[];
     pageNumber: number;
     pageSize: number;
     totalCount: number;
     totalPages: number;
 }
 
-// Search query parameters
+// Search uses the same paged shape — no separate SearchCaseResponse needed
+export type SearchCaseResponse = PaginatedCaseResponse;
+
+// ── Search / Filter Params ───────────────────────────────────────
 export interface SearchParams {
     query?: string;
     pageNumber?: number;
     pageSize?: number;
-    status?: "Pending" | "Finalized";
+    status?: CaseStatus;
     fromDate?: string;
     toDate?: string;
 }
-
