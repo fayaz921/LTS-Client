@@ -9,69 +9,126 @@ import CaseDrawer from './CaseDrawer';
 import CreateCaseModal from '../create-case/CreateCaseModal';
 import CaseDetailsModal from '../CaseDetailsModal';
 
-import { HandleGetAllCases, useDeleteCase } from '../../hooks/useCases';
+import { useGetAllCases, useSearchCases, useDeleteCase } from '../../hooks/useCases';
 import { useCaseModal } from '../../hooks/useCaseModal';
-import type { GetCaseDto } from '../../types/case.types';
+import type { CaseDto, SearchParams } from '../../types/case.types';  // ✅ CaseDto only, no GetCaseDto
 
 import '../../styles/case-list.css';
 
+// ── DrawerState — discriminated union ─────────────────────────────
 type DrawerState =
     | { open: false }
-    | { open: true; caseItem: GetCaseDto; tab: 'followups' | 'documents' };
+    | { open: true; caseItem: CaseDto; tab: 'followups' | 'documents' };
+
+// ── Component ─────────────────────────────────────────────────────
 
 export default function CasesList() {
-    const [showCreateModal, setShowCreateModal] = useState(false);
+
+    // ── Pagination & tab state ────────────────────────────────
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState<CaseFilterTab>('All');
+
+    // ── Search field state ────────────────────────────────────
+    // Single query field — user types here, hits Search, triggers API call
+    const [searchInput, setSearchInput] = useState('');
+    const [activeSearch, setActiveSearch] = useState<SearchParams>({});  // committed params
+    const isSearching = !!activeSearch.query || !!activeSearch.status;
+
+    // ── Drawer / modal state ──────────────────────────────────
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [drawer, setDrawer] = useState<DrawerState>({ open: false });
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+
+    const pageSize = 10;
     const deleteCaseMutation = useDeleteCase();
 
-    const handleDeleteClick = (caseItem: string) => {
-        setSelectedCaseId(caseItem);
-        setDeleteModalOpen(true);
-    };
+    // ── Data fetching ─────────────────────────────────────────
+    // Uses search endpoint when any filter is active, list endpoint otherwise
+    const {
+        data: listResponse,
+        isLoading: listLoading,
+        isError: listError,
+    } = useGetAllCases(currentPage, pageSize);      // ✅ renamed from HandleGetAllCases
 
-    const handleCloseDeleteModal = () => {
-        if (deleteCaseMutation.isPending) return;
+    const {
+        data: searchResponse,
+        isLoading: searchLoading,
+        isError: searchError,
+        isFetching: searchFetching,
+    } = useSearchCases({                            // ✅ server-side filter — no more client filter
+        ...activeSearch,
+        status: activeTab !== 'All' ? activeTab : undefined,  // tab drives status filter
+        pageNumber: currentPage,
+        pageSize,
+    });
 
-        setDeleteModalOpen(false);
-        setSelectedCaseId(null);
-    };
-    const handleConfirmDelete = async () => {
-        if (!selectedCaseId) return;
+    // Pick the right data source
+    const response = isSearching || activeTab !== 'All' ? searchResponse : listResponse;
+    const isLoading = isSearching || activeTab !== 'All' ? searchLoading : listLoading;
+    const isError = isSearching || activeTab !== 'All' ? searchError : listError;
+    const isFetching = searchFetching;
 
-        try {
-            await deleteCaseMutation.mutateAsync(selectedCaseId);
-
-            setDeleteModalOpen(false);
-            setSelectedCaseId(null);
-        } catch {
-            alert("Failed to delete case");
-        }
-    };
-    const pageSize = 10;
-
-    const { data: response, isLoading, isError } = HandleGetAllCases(currentPage, pageSize);
-    const cases = response?.data?.items ?? [];
+    const cases = (response?.data?.items ?? []) as CaseDto[];
     const totalCasesCount = response?.data?.totalCount ?? 0;
     const totalPages = response?.data?.totalPages ?? 0;
 
+    // ── Modal helpers ─────────────────────────────────────────
     const { modal, openDetails, switchToEdit, close } = useCaseModal();
     const handleCloseCreate = useCallback(() => setShowCreateModal(false), []);
 
-    // ── Filter (client-side) ─────────────────────────────────
-    const filteredCases = activeTab === 'All'
-        ? cases
-        : cases.filter(c => c.status === activeTab);
+    const selectedCase = cases.find(
+        c => modal.mode !== 'closed' && c.id === modal.caseId
+    ) ?? null;
 
+    // ── Search handlers ───────────────────────────────────────
+    const handleSearch = () => {
+        const trimmed = searchInput.trim();
+        setActiveSearch(trimmed ? { query: trimmed } : {});
+        setCurrentPage(1);  // reset to page 1 on new search
+    };
+
+    const handleClear = () => {
+        setSearchInput('');
+        setActiveSearch({});
+        setCurrentPage(1);
+    };
+
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSearch();
+    };
+
+    // ── Tab handler ───────────────────────────────────────────
+    // Tab now drives server-side status filter, not client-side filter
     const handleTabChange = (tab: CaseFilterTab) => {
         setActiveTab(tab);
         setCurrentPage(1);
     };
 
-    // ── Drawer handlers ──────────────────────────────────────
+    // ── Delete handlers ───────────────────────────────────────
+    const handleDeleteClick = (id: string) => {
+        setSelectedCaseId(id);
+        setDeleteModalOpen(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        if (deleteCaseMutation.isPending) return;
+        setDeleteModalOpen(false);
+        setSelectedCaseId(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedCaseId) return;
+        try {
+            await deleteCaseMutation.mutateAsync(selectedCaseId);
+            setDeleteModalOpen(false);
+            setSelectedCaseId(null);
+        } catch {
+            alert('Failed to delete case');
+        }
+    };
+
+    // ── Drawer handlers ───────────────────────────────────────
     const handleDocuments = (caseId: string) => {
         const caseItem = cases.find(c => c.id === caseId);
         if (!caseItem) return;
@@ -84,10 +141,14 @@ export default function CasesList() {
         setDrawer({ open: true, caseItem, tab: 'followups' });
     };
 
-    const closeDrawer = () => setDrawer({ open: false });
+    // ---- Active Tab -----------------
+    const counts: Record<CaseFilterTab, number> = {
+        All: cases.length,
+        Pending: cases.filter(c => c.status === 'Pending').length,
+        Finalized: cases.filter(c => c.status === 'Finalized').length,
+    };
 
-    const selectedCase =
-        cases.find(c => modal.mode !== 'closed' && c.id === modal.caseId) ?? null;
+    // ── Render ────────────────────────────────────────────────
 
     return (
         <div className="cl__page">
@@ -101,43 +162,51 @@ export default function CasesList() {
                 <CaseStatsBar totalCount={totalCasesCount} cases={cases} />
 
                 {/* ── FILTER TABS ── */}
-                <CaseFilterTabs activeTab={activeTab} onChange={handleTabChange} />
+                <CaseFilterTabs activeTab={activeTab} onChange={handleTabChange} counts={counts} />
 
-                {/* ── SEARCH ── */}
+                {/* ── SEARCH — now fully wired ── */}
                 <div className="cl__search-card">
                     <div className="row g-3 align-items-end">
-                        <div className="col-lg-3">
-                            <label className="cl__search-label">Case No.</label>
+
+                        {/* Single search field — CaseNo, Title, or CNIC */}
+                        <div className="col-lg-9">
+                            <label className="cl__search-label">
+                                Search by Case No., Title, or Petitioner CNIC
+                            </label>
                             <input
                                 type="text"
                                 className="cl__search-input"
-                                placeholder="e.g. LTS-2024-0001"
+                                placeholder="e.g.  LTS-2024-0001  |  Land Dispute  |  35202-1234567-9"
+                                value={searchInput}
+                                onChange={e => setSearchInput(e.target.value)}
+                                onKeyDown={handleSearchKeyDown}
                             />
                         </div>
-                        <div className="col-lg-3">
-                            <label className="cl__search-label">Petitioner</label>
-                            <input
-                                type="text"
-                                className="cl__search-input"
-                                placeholder="e.g. Muhammad Ali"
-                            />
-                        </div>
-                        <div className="col-lg-3">
-                            <label className="cl__search-label">CNIC</label>
-                            <input
-                                type="text"
-                                className="cl__search-input"
-                                placeholder="e.g. 12345-1234567-1"
-                            />
-                        </div>
+
                         <div className="col-lg-3 d-flex gap-2">
-                            <button className="cl__btn-search">
-                                <i className="bi bi-search" /> Search
+                            <button
+                                className="cl__btn-search"
+                                onClick={handleSearch}
+                                disabled={isFetching}
+                            >
+                                {isFetching
+                                    ? <><i className="bi bi-hourglass-split" /> Searching…</>
+                                    : <><i className="bi bi-search" /> Search</>
+                                }
                             </button>
-                            <button className="cl__btn-clear">Clear</button>
+                            <button
+                                className="cl__btn-clear"
+                                onClick={handleClear}
+                                disabled={!isSearching && !searchInput}
+                            >
+                                Clear
+                            </button>
                         </div>
                     </div>
-                    <small className="cl__search-hint">Search by one field at a time.</small>
+                    <small className="cl__search-hint">
+                        Searches case number, title, and petitioner CNIC simultaneously.
+                        Press Enter to search.
+                    </small>
                 </div>
 
                 {/* ── TABLE CARD ── */}
@@ -146,7 +215,7 @@ export default function CasesList() {
                     {isLoading && (
                         <div className="cl__loading">
                             <div className="spinner-border cl__spinner" />
-                            <p className="cl__loading-text">Loading cases...</p>
+                            <p className="cl__loading-text">Loading cases…</p>
                         </div>
                     )}
 
@@ -161,14 +230,16 @@ export default function CasesList() {
                             <div className="cl__table-header">
                                 <span className="cl__table-title">📋 Case Registry</span>
                                 <span className="cl__table-count">
-                                    {activeTab === 'All'
-                                        ? `${cases.length} cases`
-                                        : `${filteredCases.length} ${activeTab}`}
+                                    {isSearching
+                                        ? `${totalCasesCount} result${totalCasesCount !== 1 ? 's' : ''}`
+                                        : activeTab === 'All'
+                                            ? `${totalCasesCount} cases`
+                                            : `${totalCasesCount} ${activeTab}`}
                                 </span>
                             </div>
 
                             <CaseTable
-                                cases={filteredCases}
+                                cases={cases}
                                 onDetails={openDetails}
                                 onEdit={switchToEdit}
                                 onDocuments={handleDocuments}
@@ -230,11 +301,11 @@ export default function CasesList() {
                 <CaseDrawer
                     caseItem={drawer.caseItem}
                     defaultTab={drawer.tab}
-                    onClose={closeDrawer}
+                    onClose={() => setDrawer({ open: false })}
                 />
             )}
 
-            {/* DELETE CONFIRM MODAL */}
+            {/* ── DELETE CONFIRM MODAL ── */}
             {deleteModalOpen && (
                 <div className="cl__modal-overlay">
                     <div className="cl__modal">
@@ -244,7 +315,7 @@ export default function CasesList() {
 
                         <div className="cl__modal-body">
                             <p>
-                                Case <strong>{selectedCase?.caseNo}</strong> will be
+                                Case <strong>{selectedCase?.caseNo ?? '—'}</strong> will be
                                 permanently deleted. This cannot be undone.
                             </p>
                         </div>
@@ -257,15 +328,12 @@ export default function CasesList() {
                             >
                                 Cancel
                             </button>
-
                             <button
                                 className="cl__modal-btn cl__modal-btn--delete"
                                 onClick={handleConfirmDelete}
                                 disabled={deleteCaseMutation.isPending}
                             >
-                                {deleteCaseMutation.isPending
-                                    ? "Deleting..."
-                                    : "Delete"}
+                                {deleteCaseMutation.isPending ? 'Deleting…' : 'Delete'}
                             </button>
                         </div>
                     </div>

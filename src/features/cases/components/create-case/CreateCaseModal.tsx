@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import '../../styles/case-list.css';
 import '../../styles/create-case.css';
-import { HandleCreateCase, DropDownPetitioners, DropDownDepartments, DropDownCourts } from '../../hooks/useCases';
+import { useCreateCase, useDropDownPetitioners, useDropDownDepartments, useDropDownCourts } from '../../hooks/useCases';
 import type { PetitionerDto } from '../../../petitioners/types/petitioner.types';
 import type { Department } from '../../../departments/types/department.types';
 import type { Court } from '../../../courts/types/court.types';
@@ -49,23 +49,23 @@ export default function CreateCaseModal({ onClose }: CreateCaseModalProps) {
         isLoading: petLoading,
         isError: petError,
         refetch: refetchPetitioners,
-    } = DropDownPetitioners(petitionerEnabled);
+    } = useDropDownPetitioners(petitionerEnabled);
 
     const {
         data: deptData,
         isLoading: deptLoading,
         isError: deptError,
         refetch: refetchDepts,
-    } = DropDownDepartments(deptEnabled);
+    } = useDropDownDepartments(deptEnabled);
 
     const {
         data: courtData,
         isLoading: courtLoading,
         isError: courtError,
         refetch: refetchCourts,
-    } = DropDownCourts(courtEnabled);
+    } = useDropDownCourts(courtEnabled);
 
-    const { mutate: createCase, isPending, isError: submitError } = HandleCreateCase()
+    const { mutate: createCase, isPending, isError: submitError } = useCreateCase()
 
     // ─────────────────────────────────────────────────────────────
     // SAFE DROPDOWN DATA
