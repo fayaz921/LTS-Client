@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useBench } from '../hooks/useBench'
 import { useCreateBench } from '../hooks/useCreateBench'
 import { useDeleteBench } from '../hooks/useDeleteBench'
 import type { CreateBenchDto } from '../types/bench.types'
+import { CaseList } from '../hooks/CaseList';
+import { useBenchList } from '../hooks/useBenchList'
 
 // ─────────────────────────────────────────────────────────────
 // BenchPage — Bench / Judge Management
@@ -11,8 +12,6 @@ import type { CreateBenchDto } from '../types/bench.types'
 
 const BenchPage = () => {
     const [showForm, setShowForm] = useState(false)
-    const [searchCaseId, setSearchCaseId] = useState('')
-    const [activeCaseId, setActiveCaseId] = useState('')
     const [formData, setFormData] = useState<CreateBenchDto>({
         caseId: '',
         judgeName: '',
@@ -20,12 +19,24 @@ const BenchPage = () => {
         judgeEmail: '',
     })
 
-    const { data: benchList, isLoading, isError } = useBench(activeCaseId)
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [search, setSearch] = useState('');
+
+    const { data, isLoading, isError } = useBenchList(
+        page,
+        pageSize,
+        search
+    );
+
+    const benchList = data?.items || [];
+    const total = data?.total || 0;
     const { mutate: createBench, isPending: isCreating } = useCreateBench()
     const { mutate: deleteBench, isPending: isDeleting } = useDeleteBench()
+    const { data: casesList } = CaseList();
 
     const handleSearch = () => {
-        setActiveCaseId(searchCaseId.trim())
+        setPage(1)
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +96,7 @@ const BenchPage = () => {
                                 Bench Management
                             </h5>
                             <p style={{ margin: 0, fontSize: '13px', color: '#8A9BBE' }}>
-                                Search by Case ID to view and manage judges
+                                Search by Case No to view and manage judges
                             </p>
                         </div>
                     </div>
@@ -116,10 +127,10 @@ const BenchPage = () => {
                         }}>🔍</span>
                         <input
                             className="bench-search"
-                            value={searchCaseId}
-                            onChange={e => setSearchCaseId(e.target.value)}
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                            placeholder="Enter Case ID to view judges..."
+                            placeholder=""
                             style={{
                                 width: '100%', padding: '10px 12px 10px 36px',
                                 border: '1.5px solid #E2DECE', borderRadius: '10px',
@@ -168,18 +179,26 @@ const BenchPage = () => {
                                 <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
                                     Case ID <span style={{ color: '#DC2626' }}>*</span>
                                 </label>
-                                <input
-                                    className="bench-form-input"
-                                    name="caseId" value={formData.caseId} onChange={handleInputChange}
-                                    placeholder="e.g. abc-123-def" required
-                                    style={{
-                                        width: '100%', padding: '10px 13px',
-                                        border: '1.5px solid #E2DECE', borderRadius: '10px',
-                                        fontSize: '13px', color: '#1B2A4A', background: '#FDFCF9',
-                                        outline: 'none', transition: 'all 0.2s ease',
-                                        boxSizing: 'border-box', fontFamily: 'inherit',
-                                    }}
-                                />
+                                
+                                <select
+                                    className="form-select"
+                                    name="caseId"
+                                    value={formData.caseId}
+                                    onChange={(e) =>
+                                        setFormData(prev => ({ ...prev, caseId: e.target.value }))
+                                    }
+                                    required
+                                >
+                                    <option value="">-- Case Select Karo --</option>
+                                    {casesList?.map((c: any) => (
+                                        <option key={c.id} value={c.id}>
+                                            {c.caseNo} — {c.title}
+                                        </option>
+                                    ))}
+                                </select>
+
+
+
                             </div>
                             <div>
                                 <label style={{ fontSize: '12px', fontWeight: 700, color: '#1B2A4A', marginBottom: '6px', display: 'block' }}>
@@ -266,7 +285,7 @@ const BenchPage = () => {
                 position: 'relative',
             }}>
                 {/* Loading */}
-                {isLoading && activeCaseId && (
+                {isLoading && (
                     <div style={{
                         display: 'flex', flexDirection: 'column',
                         alignItems: 'center', justifyContent: 'center',
@@ -282,7 +301,7 @@ const BenchPage = () => {
                 )}
 
                 {/* Error */}
-                {isError && activeCaseId && (
+                {isError && (
                     <div style={{
                         margin: '20px', background: 'linear-gradient(135deg,#FFF5F5 0%,#FFF0F0 100%)',
                         border: '1px solid #FECACA', borderRadius: '12px',
@@ -294,27 +313,10 @@ const BenchPage = () => {
                     </div>
                 )}
 
-                {/* No Case ID — Initial state */}
-                {!activeCaseId && !isLoading && (
-                    <div style={{
-                        display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center',
-                        padding: '80px 0', gap: '16px',
-                    }}>
-                        <div style={{
-                            width: '72px', height: '72px', borderRadius: '20px',
-                            background: 'linear-gradient(135deg,#F5F0E8 0%,#EDE5D0 100%)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '32px',
-                        }}>⚖️</div>
-                        <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>
-                            Enter a Case ID above to view judges
-                        </p>
-                    </div>
-                )}
+              
 
                 {/* Empty state with active case */}
-                {benchList && benchList.length === 0 && activeCaseId && !isLoading && (
+                {benchList && benchList.length === 0 && !isLoading && (
                     <div style={{
                         display: 'flex', flexDirection: 'column',
                         alignItems: 'center', justifyContent: 'center',
@@ -329,14 +331,14 @@ const BenchPage = () => {
                         <p style={{ color: '#8A9BBE', fontSize: '15px', margin: 0 }}>
                             No judges assigned to this case yet
                         </p>
-                        <button onClick={() => setShowForm(true)} className="bench-add-btn" style={{
+                        {/* <button onClick={() => setShowForm(true)} className="bench-add-btn" style={{
                             background: '#D4A843', color: '#1B2A4A', border: 'none',
                             borderRadius: '10px', padding: '10px 24px', fontSize: '13px',
                             fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s ease',
                             boxShadow: '0 2px 8px rgba(212,168,67,0.25)',
                         }}>
-                            + Add First Judge
-                        </button>
+                            + Add First Judge 
+                        </button>*/}
                     </div>
                 )}
 
@@ -347,7 +349,7 @@ const BenchPage = () => {
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ background: 'linear-gradient(135deg,#1B2A4A 0%,#243560 100%)' }}>
-                                        {['#', 'Judge Name', 'Contact Number', 'Email', 'Date Added', 'Actions'].map((h, i) => (
+                                        {['#', 'Case No', 'Judge Name', 'Contact Number', 'Email', 'Date Added', 'Actions'].map((h, i) => (
                                             <th key={i} style={{
                                                 padding: i === 0 ? '14px 16px 14px 20px' : '14px 16px',
                                                 textAlign: 'left', fontSize: '11px', fontWeight: 700,
@@ -361,7 +363,7 @@ const BenchPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {benchList.map((bench, index) => (
+                                    {benchList.map((bench: any, index: number) => (
                                         <tr
                                             key={bench.id}
                                             className="bench-row"
@@ -380,6 +382,11 @@ const BenchPage = () => {
                                                 }}>
                                                     {index + 1}
                                                 </div>
+                                            </td>
+                                            <td style={{ padding: '14px 16px' }}>
+                                                <span style={{ fontSize: '13px', fontWeight: 600 }}>
+                                                    {bench.caseNo}
+                                                </span>
                                             </td>
                                             <td style={{ padding: '14px 16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -433,6 +440,53 @@ const BenchPage = () => {
                             </table>
                         </div>
 
+                        <div
+                            style={{
+                                padding: '16px 20px',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                borderTop: '1px solid #EEE9DC',
+                            }}
+                        >
+                            <div>
+                                Showing {(page - 1) * pageSize + 1} –
+                                {Math.min(page * pageSize, total)} of {total}
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <button
+                                    disabled={page === 1}
+                                    onClick={() => setPage(prev => prev - 1)}
+                                >
+                                    Prev
+                                </button>
+
+                                <button>{page}</button>
+
+                                <button
+                                    disabled={page * pageSize >= total}
+                                    onClick={() => setPage(prev => prev + 1)}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+
+                        <select
+                            value={pageSize}
+                            onChange={(e) => {
+                                setPageSize(Number(e.target.value));
+                                setPage(1);
+                            }}
+                        >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                        </select>
+
+
+
                         {/* Footer */}
                         <div style={{
                             padding: '12px 20px',
@@ -443,11 +497,6 @@ const BenchPage = () => {
                             <span style={{ fontSize: '12px', color: '#A0ABBE' }}>
                                 Total <strong style={{ color: '#D4A843' }}>{benchList.length}</strong> judge{benchList.length !== 1 ? 's' : ''} assigned
                             </span>
-                            {activeCaseId && (
-                                <span style={{ fontSize: '12px', color: '#A0ABBE' }}>
-                                    Case: <strong style={{ color: '#1B2A4A' }}>{activeCaseId.slice(0, 8)}...</strong>
-                                </span>
-                            )}
                         </div>
                     </>
                 )}

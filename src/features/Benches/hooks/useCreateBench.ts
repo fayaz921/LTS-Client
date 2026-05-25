@@ -26,7 +26,8 @@ export const useCreateBench = () => {
       // invalidateQueries = bench ki purani cache hata do
       // Taake React Query dobara fresh data fetch kare server se
       // Warna table mein naya judge show nahi hoga!
-      queryClient.invalidateQueries({ queryKey: ['bench'] });
+      queryClient.invalidateQueries({ queryKey: ['bench-list'] });
+      queryClient.invalidateQueries({ queryKey: ['bench-by-case'] });
     },
   });
 };

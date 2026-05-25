@@ -16,6 +16,7 @@ export interface BenchDto {
   judgeContactNo: string | null;  // Phone number — "| null" matlab optional hai, ho bhi sakta hai nahi bhi
   judgeEmail: string | null;      // Email — bhi optional hai
   createdAt: string;       // Kab add kiya gaya (date string format mein)
+  caseNo?: string;         // Case number from joined Case entity
 }
 
 // CreateBenchDto = Jab hum naya judge add karte hain toh backend ko yeh data bhejna hota hai
@@ -26,4 +27,10 @@ export interface CreateBenchDto {
   judgeName: string;       // Judge ka naam (required — "?" nahi hai)
   judgeContactNo?: string; // "?" matlab OPTIONAL hai — dena zaruri nahi
   judgeEmail?: string;     // Yeh bhi optional hai
+}
+
+// Paginated response for bench list
+export interface PaginatedBenchResponse {
+  items: BenchDto[];
+  total: number;
 }

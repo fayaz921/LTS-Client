@@ -14,7 +14,8 @@ export const useDeleteBench = () => {
     mutationFn: deleteBench, // deleteBench(id) call karega
     onSuccess: () => {
       // Delete ke baad bhi cache refresh karo
-      queryClient.invalidateQueries({ queryKey: ['bench'] });
+      queryClient.invalidateQueries({ queryKey: ['bench-list'] });
+      queryClient.invalidateQueries({ queryKey: ['bench-by-case'] });
     },
   });
 };
