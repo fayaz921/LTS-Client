@@ -5,8 +5,8 @@ import { StatsGrid } from './StatsGrid'
 import { InfoCards } from './InfoCards'
 import { OrganizationsTable } from './OrganizationsTable'
 import { TrialUsersTable } from './TrialUsersTable'
-import { PaymentsTable } from './PaymentsTable'
 import { SuperAdminLayout } from '../../../shared/components/SuperAdminLayout'
+import { PaymentsPage } from './PaymentsTable'
 
 type SidebarSection = 'overview' | 'organizations' | 'trials' | 'subscriptions' | 'payments' | 'revenue'
 
@@ -14,10 +14,10 @@ const SubscriptionsSection = ({ stats }: { stats: DashboardStats }) => (
   <div>
     <div className="row g-3 mb-4">
       {[
-        { plan: 'Basic',        count: stats.basicCount,        price: 'Free',       bg: '#f1f3f5', color: '#7a8599' },
-        { plan: 'Professional', count: stats.professionalCount, price: 'PKR 5k/mo',  bg: '#eef2ff', color: '#3b5bdb' },
-        { plan: 'Enterprise',   count: stats.enterpriseCount,   price: 'PKR 15k/mo', bg: '#f3f0ff', color: '#7048e8' },
-        { plan: 'Inactive',     count: stats.inactiveCount,     price: 'Expired',    bg: '#fff5f5', color: '#e53e3e' },
+        { plan: 'Starter',      count: stats.basicCount,        price: 'PKR 2.5k/mo', bg: '#f1f3f5', color: '#7a8599' },
+        { plan: 'Professional', count: stats.professionalCount, price: 'PKR 5k/mo',   bg: '#eef2ff', color: '#3b5bdb' },
+        { plan: 'Enterprise',   count: stats.enterpriseCount,   price: 'PKR 10k/mo',  bg: '#f3f0ff', color: '#7048e8' },
+        { plan: 'Inactive',     count: stats.inactiveCount,     price: 'Expired',     bg: '#fff5f5', color: '#e53e3e' },
       ].map(item => (
         <div className="col-6 col-lg-3" key={item.plan}>
           <div className="card border-0 shadow-sm h-100">
@@ -48,10 +48,10 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
   <div>
     <div className="row g-3 mb-4">
       {[
-        { label: 'Total Collected', value: `PKR ${(stats.totalRevenue ?? 0).toLocaleString()}`,     color: '#3b5bdb' },
-        { label: 'This Month',      value: `PKR ${(stats.thisMonthRevenue ?? 0).toLocaleString()}`, color: '#2f9e44' },
-        { label: 'Pending',         value: `PKR ${(stats.pendingRevenue ?? 0).toLocaleString()}`,   color: '#f76707' },
-        { label: 'Refunded',        value: `PKR ${(stats.refundedRevenue ?? 0).toLocaleString()}`,  color: '#7a8599' },
+        { label: 'Total Collected', value: `PKR ${(stats.totalRevenue ?? 0).toLocaleString()}`,        color: '#3b5bdb' },
+        { label: 'This Month',      value: `PKR ${(stats.thisMonthRevenue ?? 0).toLocaleString()}`,    color: '#2f9e44' },
+        { label: 'Pending',         value: `PKR ${(stats.pendingRevenue ?? 0).toLocaleString()}`,      color: '#f76707' },
+        { label: 'Refunded',        value: `PKR ${(stats.refundedRevenue ?? 0).toLocaleString()}`,     color: '#7a8599' },
       ].map(item => (
         <div className="col-6 col-lg-3" key={item.label}>
           <div className="card border-0 shadow-sm h-100">
@@ -65,7 +65,8 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
     </div>
     <div className="card border-0 shadow-sm">
       <div className="card-body">
-        <div className="rounded-3 p-4 text-white mb-4" style={{ background: 'linear-gradient(135deg, #1e2d45 0%, #3b5bdb 100%)' }}>
+        <div className="rounded-3 p-4 text-white mb-4"
+          style={{ background: 'linear-gradient(135deg, #1e2d45 0%, #3b5bdb 100%)' }}>
           <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)' }}>Total Collected</div>
           <div className="fw-bold" style={{ fontSize: '2.5rem' }}>PKR {(stats.totalRevenue ?? 0).toLocaleString()}</div>
           <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>Across all active organizations</div>
@@ -75,7 +76,8 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
           <span className="fw-bold" style={{ color: '#2f9e44' }}>{stats.collectionRate ?? 0}%</span>
         </div>
         <div className="rounded-pill overflow-hidden" style={{ background: '#e9ecef', height: 8 }}>
-          <div className="h-100 rounded-pill" style={{ width: `${stats.collectionRate ?? 0}%`, background: 'linear-gradient(90deg,#3b5bdb,#2f9e44)' }} />
+          <div className="h-100 rounded-pill"
+            style={{ width: `${stats.collectionRate ?? 0}%`, background: 'linear-gradient(90deg,#3b5bdb,#2f9e44)' }} />
         </div>
       </div>
     </div>
@@ -84,15 +86,14 @@ const RevenueSection = ({ stats }: { stats: DashboardStats }) => (
 
 export const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState<SidebarSection>('overview')
-  const [orgsPage, setOrgsPage]     = useState(1)
-  const [trialPage, setTrialPage]   = useState(1)  // ← NEW
+  const [orgsPage,  setOrgsPage]  = useState(1)
+  const [trialPage, setTrialPage] = useState(1)
+  const [paymentsPage] = useState(1)
 
-  const { data: stats }     = useDashboardStats()
-  const { data: orgsData }  = useOrganizations(orgsPage, 8)
-  const { data: trialData } = useTrialUsers(trialPage, 8)   // ← FIXED
-  const { data: payments }  = usePayments()
-
-  const finalPayments = payments ?? []
+  const { data: stats }        = useDashboardStats()
+  const { data: orgsData }     = useOrganizations(orgsPage, 8)
+  const { data: trialData }    = useTrialUsers(trialPage, 8)
+  usePayments(paymentsPage, 10)
 
   return (
     <SuperAdminLayout
@@ -112,9 +113,7 @@ export const SuperAdminDashboard = () => {
             <InfoCards stats={stats} />
           </>
         ) : (
-          <div className="text-center py-5 text-muted" style={{ fontSize: '0.85rem' }}>
-            Loading...
-          </div>
+          <div className="text-center py-5 text-muted" style={{ fontSize: '0.85rem' }}>Loading...</div>
         )
       )}
 
@@ -126,7 +125,7 @@ export const SuperAdminDashboard = () => {
         />
       )}
 
-      {activeSection === 'trials' && trialData && (   // ← FIXED
+      {activeSection === 'trials' && trialData && (
         <TrialUsersTable
           data={trialData}
           page={trialPage}
@@ -139,7 +138,7 @@ export const SuperAdminDashboard = () => {
       )}
 
       {activeSection === 'payments' && (
-        <PaymentsTable payments={finalPayments} />
+        <PaymentsPage />
       )}
 
       {activeSection === 'revenue' && stats && (
