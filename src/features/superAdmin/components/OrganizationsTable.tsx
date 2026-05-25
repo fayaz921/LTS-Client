@@ -10,10 +10,12 @@ interface Props {
 
 const PlanPill = ({ plan }: { plan: SubscriptionPlan }) => {
   const config = {
-    Basic:        { bg: '#f1f3f5', color: '#7a8599' },
+    Trial:        { bg: '#fef9e7', color: '#c89b2a' },
+    Starter:      { bg: '#f1f3f5', color: '#7a8599' },
     Professional: { bg: '#eef2ff', color: '#3b5bdb' },
     Enterprise:   { bg: '#f3f0ff', color: '#7048e8' },
   }[plan] ?? { bg: '#f1f3f5', color: '#7a8599' }
+
   return (
     <span className="px-2 py-1 rounded-pill fw-bold"
       style={{ background: config.bg, color: config.color, fontSize: '0.62rem' }}>
@@ -23,6 +25,8 @@ const PlanPill = ({ plan }: { plan: SubscriptionPlan }) => {
 }
 
 const StatusPill = ({ org }: { org: Organization }) => {
+  if (org.isBlocked)
+    return <span className="px-2 py-1 rounded-pill fw-bold" style={{ background: '#fff5f5', color: '#e53e3e', fontSize: '0.62rem' }}>🚫 Blocked</span>
   if (org.isTrialActive)
     return <span className="px-2 py-1 rounded-pill fw-bold" style={{ background: '#fef9e7', color: '#c89b2a', fontSize: '0.62rem' }}>⏳ Trial</span>
   if (org.isSubscriptionActive && org.isActive)
@@ -45,12 +49,12 @@ const EndDate = ({ org }: { org: Organization }) => {
 }
 
 const UserCount = ({ org }: { org: Organization }) => {
-  const pct = (org.activeUserCount / org.maxUsers) * 100
+  const pct = (org.currentUserCount / org.maxUsers) * 100
   const isNearLimit = pct >= 80
   return (
     <div>
       <span className="fw-semibold" style={{ fontSize: '0.82rem', color: isNearLimit ? '#e53e3e' : 'inherit' }}>
-        {org.activeUserCount} / {org.maxUsers}
+        {org.currentUserCount} / {org.maxUsers}
       </span>
       {isNearLimit && <div style={{ fontSize: '0.62rem', color: '#e53e3e' }}>Near limit!</div>}
     </div>
@@ -59,7 +63,7 @@ const UserCount = ({ org }: { org: Organization }) => {
 
 export const OrganizationsTable = ({ data, page, onPageChange }: Props) => {
   const organizations = data?.items ?? []
-  const totalPages    = data?.totalPages ?? 1
+  const totalPages = data?.totalPages ?? 1
 
   return (
     <div className="card border-0 shadow-sm">
@@ -82,7 +86,7 @@ export const OrganizationsTable = ({ data, page, onPageChange }: Props) => {
           <table className="table table-hover mb-0" style={{ fontSize: '0.82rem' }}>
             <thead>
               <tr>
-                {['Organization', 'Plan', 'Status', 'Trial / Sub Ends', 'Users', 'Clients'].map(h => (
+                {['Organization', 'Plan', 'Status', 'Trial / Sub Ends', 'Users', 'Petitioners'].map(h => (
                   <th key={h} className="fw-bold text-uppercase text-muted"
                     style={{ fontSize: '0.62rem', letterSpacing: '0.06em', padding: '8px 12px', background: 'transparent', borderBottom: '1px solid #e8ecf0' }}>
                     {h}
@@ -102,7 +106,7 @@ export const OrganizationsTable = ({ data, page, onPageChange }: Props) => {
                   <td style={{ padding: '12px' }}><EndDate org={org} /></td>
                   <td style={{ padding: '12px' }}><UserCount org={org} /></td>
                   <td style={{ padding: '12px' }}>
-                    <span className="fw-semibold">{org.maxClients.toLocaleString()}</span>
+                    <span className="fw-semibold">{org.maxPetitioners.toLocaleString()}</span>
                   </td>
                 </tr>
               ))}
@@ -126,7 +130,6 @@ export const OrganizationsTable = ({ data, page, onPageChange }: Props) => {
               style={{ background: !data?.hasPrevious ? '#e2e8f0' : '#1e2d45', color: !data?.hasPrevious ? '#94a3b8' : 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: !data?.hasPrevious ? 'not-allowed' : 'pointer' }}>
               ← Prev
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
               <button key={p}
                 onClick={() => onPageChange(p)}
@@ -134,7 +137,6 @@ export const OrganizationsTable = ({ data, page, onPageChange }: Props) => {
                 {p}
               </button>
             ))}
-
             <button
               disabled={!data?.hasNext}
               onClick={() => onPageChange(page + 1)}
