@@ -28,12 +28,18 @@ export function useUploadDocument(caseId: string) {
 
     return useMutation({
         mutationFn: (dto: UploadDocumentDto) => documentsApi.upload(dto),
-        onSuccess: () => {
+        onSuccess: (response) => {
+            alert(response?.message);
+
             queryClient.invalidateQueries({
                 queryKey: DOCUMENT_KEYS.byCase(caseId),
-            })
+            });
         },
-    })
+
+        onError: (error: any) => {
+            alert(error.message);
+        },
+    });
 }
 
 export function useDeleteDocument(caseId: string) {

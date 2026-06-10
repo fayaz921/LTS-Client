@@ -178,100 +178,38 @@ body {
 }
 
 /* ===== FILTER TABS ===== */
-/* ===== FILTER TABS ===== */
 .cl__filter-tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
+/* ── Base tab style ── */
 .cl__filter-tab {
     position: relative;
     background: var(--lts-white);
     color: var(--lts-text-gray);
     border: 1.5px solid var(--lts-border);
     border-radius: 10px;
-    padding: 8px 18px;
+    padding: 9px 18px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-/* ── All tab hover ── */
-.cl__filter-tab:nth-child(1):hover {
-    border-color: var(--lts-gold);
-    color: #8A6020;
-    background: #FDF6E3;
-}
-.cl__filter-tab:nth-child(1):hover .cl__tab-badge {
-    background: var(--lts-gold);
-    color: var(--lts-navy);
+.cl__tab-icon {
+    font-size: 13px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
 }
 
-/* ── Pending tab hover ── */
-.cl__filter-tab:nth-child(2):hover {
-    border-color: #D97706;
-    color: #92400E;
-    background: #FFFBEB;
-}
-.cl__filter-tab:nth-child(2):hover .cl__tab-badge {
-    background: #D97706;
-    color: #fff;
-}
-
-/* ── Finalized tab hover ── */
-.cl__filter-tab:nth-child(3):hover {
-    border-color: #16A34A;
-    color: #14532D;
-    background: #F0FDF4;
-}
-.cl__filter-tab:nth-child(3):hover .cl__tab-badge {
-    background: #16A34A;
-    color: #fff;
-}
-
-/* ── Active states ── */
-.cl__filter-tab--active:nth-child(1) {
-    background: #FDF6E3;
-    color: #8A6020;
-    border-color: var(--lts-gold);
-    font-weight: 700;
-}
-.cl__filter-tab--active:nth-child(1) .cl__tab-badge {
-    background: var(--lts-gold);
-    color: var(--lts-navy);
-    font-weight: 800;
-}
-
-.cl__filter-tab--active:nth-child(2) {
-    background: #FFFBEB;
-    color: #92400E;
-    border-color: #D97706;
-    font-weight: 700;
-}
-.cl__filter-tab--active:nth-child(2) .cl__tab-badge {
-    background: #D97706;
-    color: #fff;
-    font-weight: 800;
-}
-
-.cl__filter-tab--active:nth-child(3) {
-    background: #F0FDF4;
-    color: #14532D;
-    border-color: #16A34A;
-    font-weight: 700;
-}
-.cl__filter-tab--active:nth-child(3) .cl__tab-badge {
-    background: #16A34A;
-    color: #fff;
-    font-weight: 800;
-}
-
-/* ── Badge — default (inactive) ── */
+/* ── Badge base ── */
 .cl__tab-badge {
     display: inline-flex;
     align-items: center;
@@ -283,20 +221,111 @@ body {
     font-size: 11px;
     font-weight: 700;
     line-height: 1;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: all 0.2s ease;
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--lts-text-gray);
 }
 
-.cl__filter-tab:nth-child(1) .cl__tab-badge {
-    background: var(--lts-gold-light);
+/* ══════════════════════════════════════
+   ALL TAB  (gold)
+══════════════════════════════════════ */
+.cl__filter-tab--all:hover {
+    border-color: var(--lts-gold);
     color: #8A6020;
+    background: #FDF6E3;
+    box-shadow: 0 2px 8px rgba(212, 168, 67, 0.15);
 }
-.cl__filter-tab:nth-child(2) .cl__tab-badge {
-    background: rgba(217, 119, 6, 0.12);
-    color: #D97706;
+.cl__filter-tab--all:hover .cl__tab-badge {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
 }
-.cl__filter-tab:nth-child(3) .cl__tab-badge {
-    background: rgba(22, 163, 74, 0.12);
-    color: #16A34A;
+.cl__filter-tab--all:hover .cl__tab-icon {
+    opacity: 1;
+}
+
+.cl__filter-tab--all.cl__filter-tab--active {
+    background: linear-gradient(135deg, #FDF6E3 0%, #FEF3C7 100%);
+    color: #8A6020;
+    border-color: var(--lts-gold);
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(212, 168, 67, 0.2);
+}
+.cl__filter-tab--all.cl__filter-tab--active .cl__tab-badge {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(212, 168, 67, 0.4);
+}
+.cl__filter-tab--all.cl__filter-tab--active .cl__tab-icon {
+    opacity: 1;
+}
+
+/* ══════════════════════════════════════
+   PENDING TAB  (amber/orange)
+══════════════════════════════════════ */
+.cl__filter-tab--pending:hover {
+    border-color: #D97706;
+    color: #92400E;
+    background: #FFFBEB;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.12);
+}
+.cl__filter-tab--pending:hover .cl__tab-badge {
+    background: #D97706;
+    color: #fff;
+}
+.cl__filter-tab--pending:hover .cl__tab-icon {
+    opacity: 1;
+}
+
+.cl__filter-tab--pending.cl__filter-tab--active {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+    color: #92400E;
+    border-color: #D97706;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(217, 119, 6, 0.18);
+}
+.cl__filter-tab--pending.cl__filter-tab--active .cl__tab-badge {
+    background: #D97706;
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(217, 119, 6, 0.35);
+}
+.cl__filter-tab--pending.cl__filter-tab--active .cl__tab-icon {
+    opacity: 1;
+}
+
+/* ══════════════════════════════════════
+   FINALIZED TAB  (green)
+══════════════════════════════════════ */
+.cl__filter-tab--finalized:hover {
+    border-color: #16A34A;
+    color: #14532D;
+    background: #F0FDF4;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
+}
+.cl__filter-tab--finalized:hover .cl__tab-badge {
+    background: #16A34A;
+    color: #fff;
+}
+.cl__filter-tab--finalized:hover .cl__tab-icon {
+    opacity: 1;
+}
+
+.cl__filter-tab--finalized.cl__filter-tab--active {
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    color: #14532D;
+    border-color: #16A34A;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(22, 163, 74, 0.18);
+}
+.cl__filter-tab--finalized.cl__filter-tab--active .cl__tab-badge {
+    background: #16A34A;
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(22, 163, 74, 0.35);
+}
+.cl__filter-tab--finalized.cl__filter-tab--active .cl__tab-icon {
+    opacity: 1;
 }
 /* ===== SEARCH CARD ===== */
 .cl__search-card {

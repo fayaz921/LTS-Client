@@ -4,7 +4,7 @@ import { useGetFollowUps, useDeleteFollowUp } from '../../../followup/hooks/useF
 import { useGetDocumentsByCase, useDeleteDocument } from '../../../documents/hooks/useDocuments'
 import UploadDocumentModal from '../../../documents/components/uploadDocument'
 import FollowUpForm from '../../../followup/components/FollowupForm'
-import type { GetCaseDto } from '../../types/case.types'
+import type { CaseDto } from '../../types/case.types'
 import type { FollowUp } from '../../../followup/types/followup.types'
 import '../../styles/case-drawer.css'
 
@@ -13,7 +13,7 @@ import '../../styles/case-drawer.css'
 type DrawerTab = 'followups' | 'documents'
 
 interface Props {
-    caseItem: GetCaseDto
+    caseItem: CaseDto
     defaultTab?: DrawerTab
     onClose: () => void
 }
@@ -305,6 +305,7 @@ function DocumentsTab({ caseId }: { caseId: string }) {
                 />
             ) : (
                 <div className="cdr__list">
+
                     {filtered.map((doc, i) => (
                         <div key={doc.id} className="cdr__doc-card" style={{ animationDelay: `${i * 0.05}s` }}>
                             <div className="cdr__doc-icon">{getFileIcon(doc.fileType)}</div>
@@ -331,11 +332,21 @@ function DocumentsTab({ caseId }: { caseId: string }) {
                                 </a>
                                 <button
                                     className="cdr__doc-btn cdr__doc-btn--del"
-                                    onClick={() => deleteDoc(doc.id)}
+                                    onClick={() => { deleteDoc(doc.id); console.log("File Path:", doc.filePath); }}
                                     disabled={isDeleting}
                                     title="Delete"
                                 >
                                     <i className="bi bi-trash" />
+                                </button>
+                                <button
+                                    className="cdr__doc-btn"
+                                    title="Debug"
+                                    onClick={() => {
+                                        console.table(doc);
+                                        console.log(doc);
+                                    }}
+                                >
+                                    <i className="bi bi-bug" />
                                 </button>
                             </div>
                         </div>
