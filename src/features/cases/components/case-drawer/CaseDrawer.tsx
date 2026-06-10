@@ -338,16 +338,6 @@ function DocumentsTab({ caseId }: { caseId: string }) {
                                 >
                                     <i className="bi bi-trash" />
                                 </button>
-                                <button
-                                    className="cdr__doc-btn"
-                                    title="Debug"
-                                    onClick={() => {
-                                        console.table(doc);
-                                        console.log(doc);
-                                    }}
-                                >
-                                    <i className="bi bi-bug" />
-                                </button>
                             </div>
                         </div>
                     ))}
