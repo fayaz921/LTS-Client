@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-
 import CasePageHeader from './CasePageHeader';
 import CaseStatsBar from './CaseStatsBar';
 import CaseFilterTabs from './CaseFilterTabs';
@@ -8,7 +7,6 @@ import CaseTable from './CaseTable';
 import CaseDrawer from './CaseDrawer';
 import CreateCaseModal from '../create-case/CreateCaseModal';
 import CaseDetailsModal from '../CaseDetailsModal';
-
 import { useGetAllCases, useSearchCases, useDeleteCase } from '../../hooks/useCases';
 import { useCaseModal } from '../../hooks/useCaseModal';
 import type { CaseDto, SearchParams } from '../../types/case.types';  // ✅ CaseDto only, no GetCaseDto
