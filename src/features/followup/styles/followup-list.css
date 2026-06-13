@@ -1,5 +1,5 @@
 /* ── Animations ─────────────────────────────────────────── */
-@keyframes fadeInUp {
+/* @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
@@ -11,10 +11,10 @@
 @keyframes shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
-}
+} */
 
 /* ── Row ─────────────────────────────────────────────────── */
-.fu-row {
+/* .fu-row {
     animation: fadeInUp 0.3s ease forwards;
     transition: background 0.15s;
 }
@@ -24,9 +24,9 @@
 .fu-row:hover .fu-act {
     opacity: 1 !important;
     transform: translateY(0) !important;
-}
-
-/* ── Action buttons ──────────────────────────────────────── */
+} */
+/*
+ ── Action buttons ──────────────────────────────────────── 
 .fu-act {
     opacity: 0;
     transform: translateY(4px);
@@ -37,13 +37,13 @@
 .fu-add:hover  { background: #C49830 !important; transform: translateY(-1px); }
 
 /* ── Search input ────────────────────────────────────────── */
-.fu-srch:focus {
+/* .fu-srch:focus {
     border-color: #D4A843 !important;
     box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1) !important;
-}
+} */
 
 /* ── Pagination buttons ──────────────────────────────────── */
-.pg-btn:hover:not(:disabled) {
+/* .pg-btn:hover:not(:disabled) {
     background: #1B2A4A !important;
     color: #fff !important;
     border-color: #1B2A4A !important;
@@ -62,35 +62,35 @@
     color: #1B2A4A !important;
     border-color: #D4A843 !important;
     font-weight: 700 !important;
-}
+} */
 
 /* ── Page size select ────────────────────────────────────── */
-.sz-sel:focus {
+/* .sz-sel:focus {
     border-color: #D4A843 !important;
     outline: none;
-}
+} */
 
 /* ── Fetching top bar ────────────────────────────────────── */
-.fetching-bar {
+/* .fetching-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, #D4A843, #E8C05A, #D4A843);
     background-size: 200% 100%;
     animation: shimmer 1.2s infinite;
-}
+} */
 
-/* ── Responsive: table vs cards ──────────────────────────── */
+/* ── Responsive: table vs cards ────────────────────────────
 .fu-table-wrap { display: block; }
 .fu-cards-wrap { display: none; }
 
 @media (max-width: 768px) {
     .fu-table-wrap { display: none; }
     .fu-cards-wrap { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
-}
+} */
 
 /* ── Pagination footer ───────────────────────────────────── */
-.pg-footer {
+/* .pg-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -100,10 +100,10 @@
 }
 @media (max-width: 600px) {
     .pg-footer { justify-content: center; }
-}
+} */
 
 /* ── Hide middle page numbers on very small screens ─────── */
-.pg-num-hide-sm { display: inline-flex; }
+/* .pg-num-hide-sm { display: inline-flex; }
 @media (max-width: 400px) {
     .pg-num-hide-sm { display: none; }
-}
+}  */

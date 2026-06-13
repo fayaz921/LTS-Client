@@ -1,4 +1,4 @@
-import type { CaseDto, CaseStatus } from '../../types/case.types';
+import type { CaseDto, CaseStatus } from '../../../types/case.types';
 
 // ── Types ─────────────────────────────────────────────────────────
 

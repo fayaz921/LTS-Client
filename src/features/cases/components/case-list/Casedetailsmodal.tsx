@@ -1,5 +1,5 @@
-import '../styles/case-details-modal.css';
-import type { CaseDto } from '../types/case.types';
+import '../../styles/case-details-modal.css';
+import type { CaseDto } from '../../types/case.types';
 
 interface Props {
     caseItem: CaseDto;

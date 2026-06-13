@@ -1,6 +1,6 @@
 import instance from '../../../lib/axios'
 import type { ApiResponse } from '../../auth/types/auth.types';
-import type { GetCaseDocument, UploadDocumentDto } from '../types'
+import type { GetCaseDocument, UploadDocumentDto } from '../types/document.types'
 
 export const documentsApi = {
     getByCase: (caseId: string) =>
