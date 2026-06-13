@@ -5,7 +5,7 @@ import CaseStatsBar from './CaseStatsBar';
 import CaseFilterTabs from './CaseFilterTabs';
 import type { CaseFilterTab } from './CaseFilterTabs';
 import CaseTable from './CaseTable';
-import CaseDrawer from './CaseDrawer';
+import CaseDrawer from '../case-drawer/CaseDrawer';
 import CreateCaseModal from '../create-case/CreateCaseModal';
 import CaseDetailsModal from '../CaseDetailsModal';
 
@@ -143,7 +143,7 @@ export default function CasesList() {
 
     // ---- Active Tab -----------------
     const counts: Record<CaseFilterTab, number> = {
-        All: cases.length,
+        All: totalCasesCount,
         Pending: cases.filter(c => c.status === 'Pending').length,
         Finalized: cases.filter(c => c.status === 'Finalized').length,
     };
