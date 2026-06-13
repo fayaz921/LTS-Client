@@ -57,6 +57,7 @@ export default function CaseTable({
                                 onFollowups={() => onFollowups(caseItem.id)}
                                 onDelete={() => onDelete(caseItem.id)}
                             />
+
                         ))
                     ) : (
                         <tr>
@@ -74,6 +75,7 @@ export default function CaseTable({
 // ── CaseRow ───────────────────────────────────────────────────────
 
 function CaseRow({ caseItem, onDetails, onEdit, onDocuments, onFollowups, onDelete }: RowProps) {
+    console.log("Case Row:", caseItem.id);
     return (
         <tr>
             {/* 1. Case No. */}

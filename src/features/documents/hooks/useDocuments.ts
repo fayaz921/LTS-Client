@@ -33,7 +33,7 @@ export function useUploadDocument(caseId: string) {
             toastService.success(response.message);
             queryClient.invalidateQueries({
                 queryKey: DOCUMENT_KEYS.byCase(caseId),
-            })
+            });
         },
         onError: (error: unknown) => {
             toastService.error(error);
