@@ -22,13 +22,12 @@ const withTotalPages = (
 
 // ── Get All Cases (paginated) ─────────────────────────────────────
 export const getCases = async (
-    organizationId: string,
     page: number = 1,
     pageSize: number = 10
 ): Promise<ApiResponse<PaginatedResponse<CaseDto>>> => {
     const response = await AxiosInstance.get<ApiResponse<PaginatedResponse<CaseDto>>>(
         '/Case/getAll',
-        { params: { organizationId, page, pageSize } }
+        { params: { page, pageSize } }
     );
     return withTotalPages(response.data);
 };
