@@ -1,8 +1,8 @@
-import '../styles/case-details-modal.css';
-import type { GetCaseDto } from '../types/case.types';
+import '../../styles/case-details-modal.css';
+import type { CaseDto } from '../../types/case.types';
 
 interface Props {
-    caseItem: GetCaseDto;
+    caseItem: CaseDto;
     onEdit: () => void;
     onClose: () => void;
 }
@@ -86,10 +86,10 @@ export default function CaseDetailsModal({ caseItem, onEdit, onClose }: Props) {
                         <div className="cdm__section-title">Petitioners</div>
                         {caseItem.petitioners?.length > 0 ? (
                             <div className="cdm__tags">
-                                {caseItem.petitioners.map((name) => (
-                                    <span key={name} className="cdm__tag">
+                                {caseItem.petitioners.map(p => (
+                                    <span key={p.name} className="cdm__tag">
                                         <i className="bi bi-person" />
-                                        {name}
+                                        {p.name}
                                     </span>
                                 ))}
                             </div>

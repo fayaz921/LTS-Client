@@ -4,25 +4,22 @@ import { createCase, deleteCase, getCases, searchCases } from '../api/case-api';
 import { usePetitioners } from '../../petitioners/hooks/usePetitioners';
 import { useGetDepartments } from '../../departments/hooks/useDepartments';
 import { useGetCourts } from '../../courts/hooks/useCourts';
-import { useAuthStore } from '../../../store/authStore';
+import { toastService } from '../../../lib/toast.service'
+
 
 // ── Query Key Factory ─────────────────────────────────────────────
 export const caseKeys = {
     all: () => ['cases'] as const,
-    list: (orgId: string, page: number, size: number) => ['cases', 'list', orgId, page, size] as const,
+    list: (page: number, size: number) => ['cases', 'list', page, size] as const,
     search: (params: SearchParams) => ['cases', 'search', params] as const,
 };
 
 // ── Cases ─────────────────────────────────────────────────────────
 
-export const useGetAllCases = (page: number = 1, pageSize: number = 10) => {
-    const { user } = useAuthStore();
-    const orgId = user?.organizationId ?? '';
-
+export const useGetAllCases = (page: number = 1, pageSize: number = 5) => {
     return useQuery({
-        queryKey: caseKeys.list(orgId, page, pageSize),
-        queryFn: () => getCases(orgId, page, pageSize),
-        enabled: !!orgId,
+        queryKey: caseKeys.list(page, pageSize),
+        queryFn: () => getCases(page, pageSize),
     });
 };
 
@@ -37,14 +34,19 @@ export const useSearchCases = (params: SearchParams) => {
 
 export const useCreateCase = () => {
     const qc = useQueryClient();
-    const { user } = useAuthStore();
+    // const { user } = useAuthStore();
 
     return useMutation({
         mutationFn: (data: CreateCaseDto) => createCase({
             ...data,
-            organizationId: user?.organizationId ?? data.organizationId,
         }),
-        onSuccess: () => qc.invalidateQueries({ queryKey: caseKeys.all() }),
+        onSuccess: (response) => {
+            toastService.success(response.message);
+            qc.invalidateQueries({ queryKey: caseKeys.all() });
+        },
+        onError: (error: unknown) => {
+            toastService.error(error);
+        }
     });
 };
 

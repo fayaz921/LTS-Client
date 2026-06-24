@@ -850,4 +850,338 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Active tabs */
+/* ── Stats collapse ─────────────────────── */
+.cl__stats-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+.cl__collapse-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cl__collapse-btn:hover { background: #e2e8f0; color: #1B2A4A; }
+
+/* ── Table controls ─────────────────────── */
+.cl__table-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cl__page-size-select {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #1B2A4A;
+    cursor: pointer;
+    outline: none;
+}
+.cl__refresh-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cl__refresh-btn:hover { background: #1B2A4A; color: #D4A843; }
+.cl__refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cl__spin { animation: spin 0.8s linear infinite; }
+
+/* ============================================================
+   ADDITIONS & OVERRIDES — paste these at the bottom of
+   your existing case-list.css
+   ============================================================ */
+
+/* ── Stats grid — 3 col desktop, 2 col tablet, 1 col mobile ── */
+.cl__stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 768px) {
+    .cl__stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 480px) {
+    .cl__stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Stats collapse toggle ─────────────────────────────────── */
+.cl__stats-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+.cl__collapse-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    background: #fff;
+    border: 1px solid var(--lts-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cl__collapse-btn:hover {
+    background: var(--lts-navy);
+    color: var(--lts-gold);
+    border-color: var(--lts-navy);
+}
+
+/* ── Filter Tabs — redesign ────────────────────────────────── */
+.cl__filter-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.cl__filter-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    background: #fff;
+    color: var(--lts-text-gray);
+    box-shadow: var(--lts-shadow-sm);
+}
+
+/* All Cases tab */
+.cl__filter-tab:nth-child(1) {
+    border-color: #E2E8F0;
+}
+.cl__filter-tab:nth-child(1):hover,
+.cl__filter-tab--active:nth-child(1) {
+    background: #FFFBF0;
+    border-color: var(--lts-gold);
+    color: #7A5010;
+}
+.cl__filter-tab:nth-child(1) .cl__tab-badge {
+    background: rgba(212,168,67,0.15);
+    color: #8A6020;
+}
+.cl__filter-tab--active:nth-child(1) .cl__tab-badge {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
+}
+
+/* Pending tab */
+.cl__filter-tab:nth-child(2) {
+    border-color: #E2E8F0;
+}
+.cl__filter-tab:nth-child(2):hover,
+.cl__filter-tab--active:nth-child(2) {
+    background: #FFFBEB;
+    border-color: #F59E0B;
+    color: #78350F;
+}
+.cl__filter-tab:nth-child(2) .cl__tab-badge {
+    background: rgba(245,158,11,0.15);
+    color: #D97706;
+}
+.cl__filter-tab--active:nth-child(2) .cl__tab-badge {
+    background: #F59E0B;
+    color: #fff;
+}
+
+/* Finalized tab */
+.cl__filter-tab:nth-child(3) {
+    border-color: #E2E8F0;
+}
+.cl__filter-tab:nth-child(3):hover,
+.cl__filter-tab--active:nth-child(3) {
+    background: #F0FDF4;
+    border-color: #22C55E;
+    color: #14532D;
+}
+.cl__filter-tab:nth-child(3) .cl__tab-badge {
+    background: rgba(34,197,94,0.15);
+    color: #16A34A;
+}
+.cl__filter-tab--active:nth-child(3) .cl__tab-badge {
+    background: #22C55E;
+    color: #fff;
+}
+
+/* Tab badge */
+.cl__tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+/* Active tab bottom indicator */
+.cl__filter-tab--active {
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ── Table header controls ─────────────────────────────────── */
+.cl__table-header {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.cl__table-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.cl__page-size-select {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+.cl__page-size-select:hover {
+    background: rgba(255,255,255,0.2);
+}
+.cl__page-size-select option {
+    background: var(--lts-navy);
+    color: #fff;
+}
+.cl__refresh-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+.cl__refresh-btn:hover {
+    background: var(--lts-gold);
+    color: var(--lts-navy);
+    border-color: var(--lts-gold);
+}
+.cl__refresh-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.cl__spin {
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ── Responsive table — mobile card style ──────────────────── */
+@media (max-width: 768px) {
+
+    /* Header */
+    .cl__header-inner {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .cl__title {
+        font-size: 22px;
+    }
+    .cl__btn-new {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Search */
+    .cl__search-card .row {
+        flex-direction: column;
+    }
+    .cl__btn-search,
+    .cl__btn-clear {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Table → card style */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .cl__table {
+        min-width: 600px;
+    }
+
+    /* Pagination */
+    .cl__pagination {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* Table controls */
+    .cl__table-header {
+        padding: 12px 14px;
+    }
+    .cl__table-controls {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cl__filter-tab {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+    .cl__stat-card {
+        padding: 16px;
+    }
+    .cl__stat-number {
+        font-size: 28px;
+    }
+}
+
+/* ── Disabled buttons ──────────────────────────────────────── */
+.cl__btn-clear:disabled,
+.cl__close-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { documentsApi } from '../api/documents'
-import type { UploadDocumentDto } from '../types'
+import type { UploadDocumentDto } from '../types/document.types'
+import { toastService } from '../../../lib/toast.service'
 
 const DOCUMENT_KEYS = {
     byCase: (caseId: string) => ['documents', 'case', caseId],
@@ -29,17 +30,15 @@ export function useUploadDocument(caseId: string) {
     return useMutation({
         mutationFn: (dto: UploadDocumentDto) => documentsApi.upload(dto),
         onSuccess: (response) => {
-            alert(response?.message);
-
+            toastService.success(response.message);
             queryClient.invalidateQueries({
                 queryKey: DOCUMENT_KEYS.byCase(caseId),
             });
         },
-
-        onError: (error: any) => {
-            alert(error.message);
-        },
-    });
+        onError: (error: unknown) => {
+            toastService.error(error);
+        }
+    })
 }
 
 export function useDeleteDocument(caseId: string) {
@@ -47,10 +46,14 @@ export function useDeleteDocument(caseId: string) {
 
     return useMutation({
         mutationFn: (id: string) => documentsApi.delete(id),
-        onSuccess: () => {
+        onSuccess: (response) => {
+            toastService.success(response.message);
             queryClient.invalidateQueries({
                 queryKey: DOCUMENT_KEYS.byCase(caseId),
             })
         },
+        onError: (error: unknown) => {
+            toastService.error(error);
+        }
     })
 }

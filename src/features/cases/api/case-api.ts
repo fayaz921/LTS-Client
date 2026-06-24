@@ -1,11 +1,12 @@
 import AxiosInstance from "../../../lib/axios";
-import type { ApiResponse, PaginatedResponse } from "../../../shared/types/api.types";
-import type { CaseDto, CreateCaseDto, SearchCaseResponse, SearchParams } from "../types/case.types";
+import type { ApiResponse } from "../../../shared/types/api.types";
+import type { CreateCaseDto, SearchCaseResponse, SearchParams } from "../types/case.types";
+import type { PaginatedCaseResponse } from '../types/case.types';
 
 // ── Helper ────────────────────────────────────────────────────────
 const withTotalPages = (
-    response: ApiResponse<PaginatedResponse<CaseDto>>
-): ApiResponse<PaginatedResponse<CaseDto>> => {
+    response: ApiResponse<PaginatedCaseResponse>
+): ApiResponse<PaginatedCaseResponse> => {
     if (!response.data) return response;
 
     return {
@@ -22,13 +23,12 @@ const withTotalPages = (
 
 // ── Get All Cases (paginated) ─────────────────────────────────────
 export const getCases = async (
-    organizationId: string,
     page: number = 1,
     pageSize: number = 10
-): Promise<ApiResponse<PaginatedResponse<CaseDto>>> => {
-    const response = await AxiosInstance.get<ApiResponse<PaginatedResponse<CaseDto>>>(
+): Promise<ApiResponse<PaginatedCaseResponse>> => {
+    const response = await AxiosInstance.get<ApiResponse<PaginatedCaseResponse>>(
         '/Case/getAll',
-        { params: { organizationId, page, pageSize } }
+        { params: { page, pageSize } }
     );
     return withTotalPages(response.data);
 };
