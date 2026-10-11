@@ -1,17 +1,19 @@
-import { useIsFetching, useIsMutating } from '@tanstack/react-query'
+// import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 import { RouterProvider } from 'react-router-dom'
 import { useEffect } from 'react'
-import { Loader } from './shared/components/Loader'
+// import { Loader } from './shared/components/Loader'
 import { router } from './router'
 import { useAuthStore } from './store/authStore'
 import { getMe, refreshToken } from './features/auth/api/auth.api'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
-    const isFetching = useIsFetching()
-    const isMutating = useIsMutating()
+
+    // const isFetching = useIsFetching()
+    // const isMutating = useIsMutating()
     const { setAuth, setAccessToken, accessToken } = useAuthStore()
 
-    const isLoading = isFetching > 0 || isMutating > 0
+    // const isLoading = isFetching > 0 || isMutating > 0
 
     useEffect(() => {
         const initAuth = async () => {
@@ -69,7 +71,8 @@ const App = () => {
 
     return (
         <>
-            {isLoading && <Loader />}
+            <Toaster position="top-right" />
+            {/* {isLoading && <Loader />} */}
             <RouterProvider router={router} />
         </>
     )

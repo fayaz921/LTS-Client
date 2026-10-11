@@ -1,8 +1,7 @@
-// hooks/useFollowups.ts
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { followupApi } from '../api/followupApi'
 import type { CreateFollowUpDto, UpdateFollowUpDto, FollowUpPageParams } from '../types/followup.types'
+import { toastService } from '../../../lib/toast.service'
 
 export const followupKeys = {
     all: ['followups'] as const,
@@ -30,9 +29,13 @@ export const useCreateFollowUp = () => {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (data: CreateFollowUpDto) => followupApi.create(data),
-        onSuccess: () => {
+        onSuccess: (response) => {
+            toastService.success(response.message);
             qc.invalidateQueries({ queryKey: followupKeys.all })
         },
+        onError: (error: unknown) => {
+            toastService.error(error);
+        }
     })
 }
 
@@ -50,8 +53,12 @@ export const useDeleteFollowUp = () => {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (id: string) => followupApi.delete(id),
-        onSuccess: () => {
+        onSuccess: (response) => {
+            toastService.success(response.message);
             qc.invalidateQueries({ queryKey: followupKeys.all })
         },
-    })
+        onError: (error: unknown) => {
+            toastService.error(error);
+        }
+    });
 }
