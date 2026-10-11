@@ -54,11 +54,13 @@ export interface UpdateCaseDto {
 
 // ── API Response Shapes ──────────────────────────────────────────
 export interface PaginatedCaseResponse {
-    items: CaseDto[];
-    pageNumber: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
+    items: CaseDto[]
+    totalCount: number
+    pendingCount: number
+    finalizedCount: number
+    pageNumber: number
+    pageSize: number
+    totalPages: number
 }
 
 // Search uses the same paged shape — no separate SearchCaseResponse needed

@@ -426,3 +426,32 @@
   transition: background 0.15s;
 }
 .ccm__btn-submit:hover { background: var(--lts-gold); }
+
+/* ── Validation ─────────────────────────────────────────────── */
+.ccm__input--error {
+    border-color: #DC2626 !important;
+    background: #FEF2F2 !important;
+}
+.ccm__input--error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+.ccm__field-error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #DC2626;
+    font-weight: 500;
+}
+.ccm__field-error::before {
+    content: '⚠ ';
+    font-size: 10px;
+}
+
+.ccm__btn-clear:disabled,
+.ccm__close-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}

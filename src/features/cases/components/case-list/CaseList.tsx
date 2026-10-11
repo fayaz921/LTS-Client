@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
-import CasePageHeader from './CasePageHeader';
-import CaseStatsBar from './CaseStatsBar';
-import CaseFilterTabs from './CaseFilterTabs';
-import type { CaseFilterTab } from './CaseFilterTabs';
-import CaseTable from './CaseTable';
-import CaseDrawer from '../case-drawer/CaseDrawer';
+import CasePageHeader from './sections/CasePageHeader';
+import CaseStatsBar from './sections/CaseStatsBar';
+import CaseFilterTabs from './sections/CaseFilterTabs';
+import type { CaseFilterTab } from './sections/CaseFilterTabs';
+import CaseTable from './sections/CaseTable';
+import CaseDrawer from './CaseDrawer/CaseDrawer';
 import CreateCaseModal from '../create-case/CreateCaseModal';
-import CaseDetailsModal from '../CaseDetailsModal';
+import CaseDetailsModal from './Casedetailsmodal';
 import { useGetAllCases, useSearchCases, useDeleteCase } from '../../hooks/useCases';
 import { useCaseModal } from '../../hooks/useCaseModal';
 import type { CaseDto, SearchParams } from '../../types/case.types';  // ✅ CaseDto only, no GetCaseDto
@@ -25,6 +25,7 @@ export default function CasesList() {
     // ── Pagination & tab state ────────────────────────────────
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState<CaseFilterTab>('All');
+    const [statsCollapsed, setStatsCollapsed] = useState(false)
 
     // ── Search field state ────────────────────────────────────
     // Single query field — user types here, hits Search, triggers API call
@@ -38,7 +39,7 @@ export default function CasesList() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(5)
     const deleteCaseMutation = useDeleteCase();
 
     // ── Data fetching ─────────────────────────────────────────
@@ -47,6 +48,7 @@ export default function CasesList() {
         data: listResponse,
         isLoading: listLoading,
         isError: listError,
+        refetch: refetchList,
     } = useGetAllCases(currentPage, pageSize);      // ✅ renamed from HandleGetAllCases
 
     const {
@@ -54,6 +56,7 @@ export default function CasesList() {
         isLoading: searchLoading,
         isError: searchError,
         isFetching: searchFetching,
+        refetch: refetchSearch,
     } = useSearchCases({                            // ✅ server-side filter — no more client filter
         ...activeSearch,
         status: activeTab !== 'All' ? activeTab : undefined,  // tab drives status filter
@@ -69,6 +72,8 @@ export default function CasesList() {
 
     const cases = (response?.data?.items ?? []) as CaseDto[];
     const totalCasesCount = response?.data?.totalCount ?? 0;
+    const pendingCount = listResponse?.data?.pendingCount ?? 0;
+    const finalizedCount = listResponse?.data?.finalizedCount ?? 0;
     const totalPages = response?.data?.totalPages ?? 0;
 
     // ── Modal helpers ─────────────────────────────────────────
@@ -139,11 +144,16 @@ export default function CasesList() {
         setDrawer({ open: true, caseItem, tab: 'followups' });
     };
 
+    const handleRefresh = () => {
+        if (isSearching || activeTab !== 'All') refetchSearch?.()
+        else refetchList()
+    }
+
     // ---- Active Tab -----------------
     const counts: Record<CaseFilterTab, number> = {
         All: totalCasesCount,
-        Pending: cases.filter(c => c.status === 'Pending').length,
-        Finalized: cases.filter(c => c.status === 'Finalized').length,
+        Pending: listResponse?.data?.pendingCount ?? 0,
+        Finalized: listResponse?.data?.finalizedCount ?? 0,
     };
 
     // ── Render ────────────────────────────────────────────────
@@ -156,8 +166,25 @@ export default function CasesList() {
 
             <div className="container-xl py-4">
 
+                {/* Stats header with collapse btn */}
+                <div className="cl__stats-toggle">
+                    <button
+                        className="cl__collapse-btn"
+                        onClick={() => setStatsCollapsed(p => !p)}
+                        title={statsCollapsed ? 'Show stats' : 'Hide stats'}
+                    >
+                        <i className={`bi bi-chevron-${statsCollapsed ? 'down' : 'up'}`} />
+                        {statsCollapsed ? 'Show Overview' : 'Hide Overview'}
+                    </button>
+                </div>
+
                 {/* ── STATS ── */}
-                <CaseStatsBar totalCount={totalCasesCount} cases={cases} />
+                {!statsCollapsed && (
+                    <CaseStatsBar
+                        totalCount={totalCasesCount}
+                        pendingCount={pendingCount}
+                        finalizedCount={finalizedCount}
+                    />)}
 
                 {/* ── FILTER TABS ── */}
                 <CaseFilterTabs activeTab={activeTab} onChange={handleTabChange} counts={counts} />
@@ -227,13 +254,38 @@ export default function CasesList() {
                         <>
                             <div className="cl__table-header">
                                 <span className="cl__table-title">📋 Case Registry</span>
-                                <span className="cl__table-count">
-                                    {isSearching
-                                        ? `${totalCasesCount} result${totalCasesCount !== 1 ? 's' : ''}`
-                                        : activeTab === 'All'
-                                            ? `${totalCasesCount} cases`
-                                            : `${totalCasesCount} ${activeTab}`}
-                                </span>
+
+                                <div className="cl__table-controls">
+                                    {/* Page size selector */}
+                                    <select
+                                        className="cl__page-size-select"
+                                        value={pageSize}
+                                        onChange={e => {
+                                            setPageSize(Number(e.target.value))
+                                            setCurrentPage(1)
+                                        }}
+                                    >
+                                        {[5, 10, 15, 30, 50].map(s => (
+                                            <option key={s} value={s}>Show {s}</option>
+                                        ))}
+                                    </select>
+
+                                    {/* Refresh btn */}
+                                    <button
+                                        className="cl__refresh-btn"
+                                        onClick={handleRefresh}
+                                        disabled={isLoading}
+                                        title="Refresh table"
+                                    >
+                                        <i className={`bi bi-arrow-clockwise ${isLoading ? 'cl__spin' : ''}`} />
+                                    </button>
+
+                                    <span className="cl__table-count">
+                                        {isSearching
+                                            ? `${totalCasesCount} result${totalCasesCount !== 1 ? 's' : ''}`
+                                            : `${totalCasesCount} cases`}
+                                    </span>
+                                </div>
                             </div>
 
                             <CaseTable

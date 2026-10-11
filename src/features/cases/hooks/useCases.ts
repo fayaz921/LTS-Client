@@ -16,7 +16,7 @@ export const caseKeys = {
 
 // ── Cases ─────────────────────────────────────────────────────────
 
-export const useGetAllCases = (page: number = 1, pageSize: number = 10) => {
+export const useGetAllCases = (page: number = 1, pageSize: number = 5) => {
     return useQuery({
         queryKey: caseKeys.list(page, pageSize),
         queryFn: () => getCases(page, pageSize),

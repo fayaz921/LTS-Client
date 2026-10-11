@@ -1,13 +1,10 @@
-import type { GetCaseDto } from '../../types/case.types';
-
 interface Props {
     totalCount: number;
-    cases: GetCaseDto[];
+    pendingCount: number
+    finalizedCount: number
 }
 
-export default function CaseStatsBar({ totalCount, cases }: Props) {
-    const pendingCount = cases.filter(c => c.status === 'Pending').length;
-    const finalizedCount = cases.filter(c => c.status === 'Finalized').length;
+export default function CaseStatsBar({ totalCount, pendingCount, finalizedCount }: Props) {
 
     return (
         <div className="cl__stats-grid">
@@ -21,23 +18,19 @@ export default function CaseStatsBar({ totalCount, cases }: Props) {
 
             <div className="cl__stat-card">
                 <div className="cl__stat-header">
-                    <span className="cl__stat-number cl__stat-number--pending">
-                        {pendingCount}
-                    </span>
+                    <span className="cl__stat-number cl__stat-number--pending">{pendingCount}</span>
                     <span className="badge bg-warning text-dark">Pending</span>
                 </div>
-                <p className="cl__stat-label">Active Cases</p>
+                <p className="cl__stat-label">Pending Cases</p>
             </div>
 
             <div className="cl__stat-card">
                 <div className="cl__stat-header">
-                    <span className="cl__stat-number cl__stat-number--success">
-                        {finalizedCount}
-                    </span>
+                    <span className="cl__stat-number cl__stat-number--success">{finalizedCount}</span>
                     <span className="badge bg-success">Finalized</span>
                 </div>
-                <p className="cl__stat-label">Completed</p>
+                <p className="cl__stat-label">Completed Cases</p>
             </div>
         </div>
-    );
+    )
 }

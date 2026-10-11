@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { documentsApi } from '../api/documents'
-import type { UploadDocumentDto } from '../types'
+import type { UploadDocumentDto } from '../types/document.types'
 import { toastService } from '../../../lib/toast.service'
 
 const DOCUMENT_KEYS = {

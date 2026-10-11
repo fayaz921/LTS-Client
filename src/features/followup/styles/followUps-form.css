@@ -156,3 +156,127 @@
     color: #DC2626;
     font-size: 12px;
 }
+/* ── Header ─────────────────────────────────────────────────── */
+.fu-header {
+    background: linear-gradient(135deg, #1B2A4A 0%, #243560 50%, #1B2A4A 100%);
+    padding: 20px 20px 0;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.fu-header-deco {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 168, 67, 0.15);
+}
+.fu-header-deco--lg { top: -15px; right: -15px; width: 80px; height: 80px; }
+.fu-header-deco--sm { top: 5px;   right: 5px;   width: 50px; height: 50px; border-color: rgba(212,168,67,0.10); }
+
+.fu-close-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+.fu-close-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+.fu-header-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding-bottom: 16px;
+}
+
+.fu-header-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #D4A843 0%, #E8C05A 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(212, 168, 67, 0.3);
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+.fu-header-badge {
+    margin: 0 0 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #D4A843;
+    text-transform: uppercase;
+}
+
+.fu-header-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.fu-header-wave {
+    display: block;
+    margin-bottom: -1px;
+}
+
+/* ── Field ──────────────────────────────────────────────────── */
+.fu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.fu-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #4A5568;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.fu-label-num {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    background: #1B2A4A;
+    color: #D4A843;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.fu-required { color: #DC2626; }
+
+.fu-optional {
+    font-size: 9px;
+    color: #A0ABBE;
+    background: #F1F5F9;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+.fu-spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(27, 42, 74, 0.3);
+    border-top-color: #1B2A4A;
+    animation: spin 0.8s linear infinite;
+}
